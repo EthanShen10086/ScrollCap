@@ -1,0 +1,31 @@
+---
+description: SwiftUI view conventions - structure, styling, animations, navigation
+globs: "**/*.swift"
+alwaysApply: false
+---
+
+# SwiftUI Conventions
+
+## View Structure
+
+- Keep views under 200 lines. Extract sub-views into separate files.
+- Use `MARK: -` to section views.
+- Prefer `@Environment` for DI over singletons.
+
+## Styling
+
+- Use `SCTheme` for spacing, typography, corner radius, colors.
+- Do NOT hardcode colors. Use `SCTheme.Colors` or `.primary`/`.secondary`.
+- Card backgrounds: `SCTheme.Colors.cardBackground` or `.ultraThinMaterial`.
+
+## Modifiers
+
+- `.adaptiveGlass()` for glass containers.
+- `.applyUserMode()` at root only.
+- Platform: `#if os(macOS)` / `#if os(iOS)`.
+
+## Animations
+
+- Default: `SCTheme.Animation.standard`.
+- Respect `@Environment(\.accessibilityReduceMotion)`.
+- Elder mode: disable non-essential animations.

@@ -1,0 +1,82 @@
+---
+description: i18n rules - every user-facing string MUST be localized in en + zh-Hans
+alwaysApply: true
+---
+
+# i18n Rules (国际化)
+
+Every new feature MUST support i18n. This is non-negotiable.
+
+## Core Rule
+
+**ALL user-visible strings must use localized keys.** Never hardcode English or Chinese text in Swift files.
+
+## How To
+
+### 1. Add keys to BOTH files simultaneously
+
+```
+App/Shared/Resources/en.lproj/Localizable.strings
+App/Shared/Resources/zh-Hans.lproj/Localizable.strings
+```
+
+### 2. Use correct patterns in SwiftUI
+
+```swift
+// ✅ GOOD - Text with localization key
+Text("capture.ready")
+Label("detail.edit", systemImage: "pencil")
+Button("capture.cancel") { }
+
+// ✅ GOOD - String with localization
+String(localized: "error.capture.recording")
+
+// ✅ GOOD - Format strings with parameters
+Text("capture.frames \(count)")  // key: "capture.frames %lld"
+
+// ❌ BAD - hardcoded English
+Text("Ready to Capture")
+Label("Edit", systemImage: "pencil")
+.alert("Error", isPresented: $show)
+
+// ❌ BAD - raw error.localizedDescription shown to user
+StatusPill(error.localizedDescription)  // English from system
+```
+
+### 3. Accessibility labels must also be localized
+
+```swift
+// ✅ GOOD
+.accessibilityLabel(Text("a11y.capture.start"))
+
+// ❌ BAD
+.accessibilityLabel("Start capture")
+```
+
+### 4. Error messages: use SCError.userMessage, not localizedDescription
+
+```swift
+// ✅ GOOD
+let msg = (error as? SCError)?.userMessage ?? String(localized: "error.capture.recording")
+
+// ❌ BAD
+errorMessage = error.localizedDescription  // English from package layer
+```
+
+### 5. Naming convention for keys
+
+```
+feature.element           →  "capture.ready", "export.save"
+feature.element.desc      →  "settings.autoScroll.desc"
+a11y.element.action       →  "a11y.capture.start"
+error.domain.type         →  "error.network.offline"
+```
+
+## Checklist for every new feature
+
+- [ ] All `Text()`, `Label()`, `Button()`, `.navigationTitle()`, `.alert()` use localized keys
+- [ ] Accessibility labels use `Text("key")` not `"English string"`
+- [ ] en.lproj and zh-Hans.lproj updated together (same keys)
+- [ ] No `error.localizedDescription` shown directly to users
+- [ ] Unit values localized (秒/s, 帧/fps, 像素/px)
+- [ ] If adding new Info.plist keys, update InfoPlist.strings in both languages

@@ -1,0 +1,43 @@
+---
+description: ScrollCap core architecture rules - module boundaries, state management, error handling
+alwaysApply: true
+---
+
+# Architecture Rules
+
+## Module Boundaries (SPM)
+
+- **SharedModels**: Zero deps. Data types only.
+- **DesignSystem**: Zero internal deps. Theme, components, modifiers.
+- **StitchingEngine**: → SharedModels only.
+- **CaptureKit**: → SharedModels only.
+- **ImageEditor**: → SharedModels only.
+- **App layer**: Can import all packages.
+
+**NEVER** add upward dependencies (e.g. CaptureKit importing DesignSystem).
+
+## State Management
+
+- `AppState` = single source of truth (screenshots, settings, user mode).
+- `CaptureViewModel` syncs to `AppState` via `bind(to:)`.
+- Do NOT create duplicate state.
+
+## Error Handling
+
+- All errors: `SCError` typed. Present via `ErrorPresenter.shared.present(_:)`.
+- Never show raw `error.localizedDescription` to users — use `SCError.userMessage`.
+- Never silently catch errors.
+
+## Network
+
+- All HTTP: `APIClient.shared`. Never raw `URLSession`.
+
+## User Mode
+
+- Check via `@Environment(\.userMode)` or `UserModeAdaptiveModifier`.
+- Payment: `AppState.shouldHidePayment`.
+
+## Code Quality
+
+- SwiftLint + SwiftFormat enforced via pre-commit hook.
+- Conventional Commits: `type(scope): description`.
