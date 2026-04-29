@@ -37,5 +37,7 @@
     </array>
     <key>NSCameraUsageDescription</key>
     <string>ScrollCap needs camera access for screen capture features.</string>
+    <key>NSSupportsLiveActivities</key>
+    <true/>
 </dict>
 </plist>

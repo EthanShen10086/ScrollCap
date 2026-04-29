@@ -106,6 +106,15 @@
 "pro.feature.iCloud.desc" = "在所有 Apple 设备间同步截图历史。";
 "pro.feature.formats" = "高级导出";
 "pro.feature.formats.desc" = "导出为 PDF、HEIC 等专业格式。";
+"pro.feature.editor" = "图片编辑";
+"pro.feature.editor.desc" = "使用专业工具对截图进行标注、裁剪和编辑。";
+
+/* Live Activity */
+"status.preparing" = "准备中...";
+"status.recording" = "录制中";
+"status.stitching" = "拼接中...";
+"status.completed" = "已完成";
+"status.failed" = "失败";
 
 /* macOS Capture */
 "mac.selectedRegion" = "已选区域";

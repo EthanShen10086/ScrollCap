@@ -167,7 +167,7 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 自动续费检测 | ✅ 已完成 | `RenewalState` 检查 (subscribed/inGracePeriod/expired/revoked) |
 | 管理订阅跳转 | ✅ 已完成 | `AppStore.showManageSubscriptions` (iOS) / URL (macOS) |
 | 交易监听 | ✅ 已完成 | `Transaction.updates` 后台监听 + 自动刷新 |
-| Pro 功能门控 | ✅ 已完成 | `ProFeatureGate` ViewModifier + 模糊遮罩 |
+| Pro 功能门控 | ✅ 已完成 | `ProFeatureGate` ViewModifier + 模糊遮罩；OCR/编辑/iCloud/自动滚动/高级导出均已接入门控 |
 | StoreKit 测试配置 | ✅ 已完成 | `Products.storekit` 含 introductory offer |
 
 ### Apple Pay (PassKit 原生)
@@ -241,7 +241,7 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 脉冲动画按钮 | ✅ 已完成 | `CaptureButton` idle 呼吸光环 + 捕获态红色波纹 |
 | Glass Card 增强 | ✅ 已完成 | 双层材质 + 渐变描边 + 深浅适配 |
 | 品牌化空态 | ✅ 已完成 | `symbolEffect(.bounce)` + 渐变色图标 |
-| Floating Action Bar | ⚠️ 组件就绪 | `FloatingActionBar` 胶囊形底部控制栏 - DesignSystem 包中已实现，尚未接入产品 UI |
+| Floating Action Bar | ✅ 已完成 | `FloatingActionBar` 胶囊形底部控制栏 - 已接入 CaptureView 控制栏 + ScreenshotDetailView 底部操作栏 (iOS) |
 | Hover 交互反馈 | ✅ 已完成 | `ScreenshotCard` scale + shadow 变化 |
 | Scale Button Style | ✅ 已完成 | 全局按钮按压缩放效果 |
 | Liquid Glass (iOS 26+) | ⚠️ 降级中 | 仅 `.ultraThinMaterial` 降级方案，需 Xcode 26 SDK 后添加条件编译路径 |
@@ -436,10 +436,10 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 功能 | 优先级 | 说明 |
 |------|--------|------|
 | 原生 Liquid Glass | 高 | Xcode 26 SDK 发布后添加 `#if swift(>=6.1)` 条件编译路径 |
-| Live Activity | 高 | ActivityKit 显示捕获进度（帧数/阶段），需新 Extension |
+| ~~Live Activity~~ | ~~高~~ | ✅ 已实现：`CaptureActivityAttributes` + 灵动岛/锁屏 UI + CaptureViewModel 生命周期挂钩 |
+| ~~FloatingActionBar 接入~~ | ~~中~~ | ✅ 已接入 CaptureView + ScreenshotDetailView |
+| ~~ProFeatureGate 接入~~ | ~~中~~ | ✅ OCR/编辑/iCloud/自动滚动/高级导出 + ProUpgradeTeaser 升级按钮 |
 | 更多语言支持 | 中 | 日语、韩语、法语等 (结构已具备) |
-| FloatingActionBar 接入 | 中 | 组件已在 DesignSystem 中，需接入截图操作 UI |
-| ProFeatureGate 接入 | 中 | `requiresPro(_:)` ViewModifier 已就绪，需接入具体功能限制 |
 | 第三方支付后端 | 中 | 客户端已完成，需部署服务端预下单 / 验证接口 |
 | 视频录制模式 | 低 | 滚动过程录制为视频 |
 | TestFlight 分发 | 低 | 需要 Apple Developer 账号 |

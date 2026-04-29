@@ -9,17 +9,36 @@ struct ExportSheet: View {
     @State private var selectedFormat: ExportFormat = .png
     @State private var quality: Double = 0.9
     @State private var isSaving = false
+    @State private var showPaywall = false
+
+    private var availableFormats: [ExportFormat] {
+        if StoreManager.shared.isPro {
+            return ExportFormat.allCases
+        }
+        return [.png, .jpeg]
+    }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("export.format") {
                     Picker("export.format", selection: self.$selectedFormat) {
-                        ForEach(ExportFormat.allCases) { format in
+                        ForEach(self.availableFormats) { format in
                             Text(format.displayName).tag(format)
                         }
                     }
                     .pickerStyle(.segmented)
+
+                    if !StoreManager.shared.isPro {
+                        Button {
+                            self.showPaywall = true
+                            AnalyticsManager.shared.track(.proUpgradeTapped)
+                        } label: {
+                            Label("pro.feature.formats", systemImage: "lock.fill")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
 
                     if self.selectedFormat.supportedCompressionQuality {
                         VStack(alignment: .leading) {
@@ -81,6 +100,9 @@ struct ExportSheet: View {
         #if os(macOS)
         .frame(minWidth: 350, minHeight: 300)
         #endif
+        .sheet(isPresented: self.$showPaywall) {
+            PaywallView()
+        }
     }
 
     private func saveImage() async {

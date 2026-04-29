@@ -106,6 +106,15 @@
 "pro.feature.iCloud.desc" = "Sync your capture history across all Apple devices.";
 "pro.feature.formats" = "Advanced Export";
 "pro.feature.formats.desc" = "Export in PDF, HEIC, and other professional formats.";
+"pro.feature.editor" = "Image Editor";
+"pro.feature.editor.desc" = "Annotate, crop, and edit your screenshots with professional tools.";
+
+/* Live Activity */
+"status.preparing" = "Preparing...";
+"status.recording" = "Recording";
+"status.stitching" = "Stitching...";
+"status.completed" = "Completed";
+"status.failed" = "Failed";
 
 /* macOS Capture */
 "mac.selectedRegion" = "Selected Region";

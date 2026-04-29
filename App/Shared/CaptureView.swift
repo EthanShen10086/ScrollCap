@@ -286,36 +286,38 @@ struct CaptureView: View {
 
     // MARK: - Control Bar
 
-    private func controlBar(in geometry: GeometryProxy) -> some View {
+    private func controlBar(in _: GeometryProxy) -> some View {
         VStack(spacing: SCTheme.Spacing.md) {
-            HStack(spacing: SCTheme.Spacing.xl) {
-                if self.viewModel.isCapturing {
-                    Button {
-                        self.viewModel.cancelCapture()
-                    } label: {
-                        if self.userMode == .elder {
-                            Label("capture.cancel", systemImage: "xmark")
-                                .font(.title3.weight(.medium))
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 12)
-                                .background(.ultraThinMaterial, in: Capsule())
-                        } else {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(.secondary)
-                                .frame(width: 44, height: 44)
-                                .background(.ultraThinMaterial, in: Circle())
+            FloatingActionBar {
+                HStack(spacing: SCTheme.Spacing.xl) {
+                    if self.viewModel.isCapturing {
+                        Button {
+                            self.viewModel.cancelCapture()
+                        } label: {
+                            if self.userMode == .elder {
+                                Label("capture.cancel", systemImage: "xmark")
+                                    .font(.title3.weight(.medium))
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 12)
+                                    .background(.ultraThinMaterial, in: Capsule())
+                            } else {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundStyle(.secondary)
+                                    .frame(width: 44, height: 44)
+                                    .background(.ultraThinMaterial, in: Circle())
+                            }
                         }
-                    }
-                    .buttonStyle(ScaleButtonStyle())
-                    .transition(.scale.combined(with: .opacity))
+                        .buttonStyle(ScaleButtonStyle())
+                        .transition(.scale.combined(with: .opacity))
 
-                    self.adaptiveCaptureButton(isCapturing: true) {
-                        Task { await self.viewModel.stopCapture() }
-                    }
-                } else if self.viewModel.capturedScreenshot == nil {
-                    self.adaptiveCaptureButton(isCapturing: false) {
-                        Task { await self.viewModel.startCapture(region: self.selectedRegion) }
+                        self.adaptiveCaptureButton(isCapturing: true) {
+                            Task { await self.viewModel.stopCapture() }
+                        }
+                    } else if self.viewModel.capturedScreenshot == nil {
+                        self.adaptiveCaptureButton(isCapturing: false) {
+                            Task { await self.viewModel.startCapture(region: self.selectedRegion) }
+                        }
                     }
                 }
             }

@@ -65,33 +65,41 @@ struct SettingsView: View {
                 self.iOSCaptureSettings
                 #endif
 
-                Toggle("settings.autoScroll", isOn: $state.autoScrollEnabled)
+                VStack(alignment: .leading) {
+                    Toggle("settings.autoScroll", isOn: $state.autoScrollEnabled)
+                        .disabled(!StoreManager.shared.isPro)
 
-                Text("settings.autoScroll.desc")
-                    .font(self.adaptiveCaption)
-                    .foregroundStyle(.secondary)
+                    Text("settings.autoScroll.desc")
+                        .font(self.adaptiveCaption)
+                        .foregroundStyle(.secondary)
+                }
+                .requiresPro(.autoScroll)
             }
 
             Section("settings.sync") {
-                Toggle("settings.iCloudSync", isOn: $state.iCloudSyncEnabled)
-                    .onChange(of: self.appState.iCloudSyncEnabled) { _, enabled in
-                        if enabled {
-                            ICloudSyncManager.shared.startMonitoring()
-                        } else {
-                            ICloudSyncManager.shared.stopMonitoring()
+                VStack(alignment: .leading) {
+                    Toggle("settings.iCloudSync", isOn: $state.iCloudSyncEnabled)
+                        .disabled(!StoreManager.shared.isPro)
+                        .onChange(of: self.appState.iCloudSyncEnabled) { _, enabled in
+                            if enabled {
+                                ICloudSyncManager.shared.startMonitoring()
+                            } else {
+                                ICloudSyncManager.shared.stopMonitoring()
+                            }
+                            AnalyticsManager.shared.track(.settingsChanged(key: "icloud_sync", value: "\(enabled)"))
                         }
-                        AnalyticsManager.shared.track(.settingsChanged(key: "icloud_sync", value: "\(enabled)"))
-                    }
 
-                if ICloudSyncManager.shared.isAvailable {
-                    HStack {
-                        Circle()
-                            .fill(self.syncStatusColor)
-                            .frame(width: 8, height: 8)
-                        Text(self.syncStatusText)
-                            .font(self.adaptiveCaption)
+                    if ICloudSyncManager.shared.isAvailable {
+                        HStack {
+                            Circle()
+                                .fill(self.syncStatusColor)
+                                .frame(width: 8, height: 8)
+                            Text(self.syncStatusText)
+                                .font(self.adaptiveCaption)
+                        }
                     }
                 }
+                .requiresPro(.iCloudSync)
 
                 Text("settings.iCloudSync.desc")
                     .font(self.adaptiveCaption)
@@ -206,6 +214,7 @@ struct SettingsView: View {
 
 struct ProUpgradeTeaser: View {
     @Environment(\.colorScheme) private var colorScheme
+    @State private var showPaywall = false
 
     var body: some View {
         ScrollView {
@@ -253,7 +262,8 @@ struct ProUpgradeTeaser: View {
                 }
 
                 BrandedButton("pro.upgrade", systemImage: "sparkles") {
-                    // Triggers paywall (Phase 8)
+                    self.showPaywall = true
+                    AnalyticsManager.shared.track(.proUpgradeTapped)
                 }
                 .padding(.top, SCTheme.Spacing.md)
             }
@@ -264,6 +274,9 @@ struct ProUpgradeTeaser: View {
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif
+            .sheet(isPresented: self.$showPaywall) {
+                PaywallView()
+            }
     }
 
     private func proFeatureRow(icon: String, title: LocalizedStringKey, description: LocalizedStringKey) -> some View {

@@ -10,6 +10,7 @@ struct ScreenshotDetailView: View {
     @State private var showEditor = false
     @State private var showExport = false
     @State private var showOCR = false
+    @State private var showPaywall = false
     @State private var viewModel = CaptureViewModel()
 
     var body: some View {
@@ -21,6 +22,14 @@ struct ScreenshotDetailView: View {
                 if self.userMode == .elder {
                     self.elderActionButtons
                 }
+
+                Spacer()
+
+                #if os(iOS)
+                if self.userMode != .elder {
+                    self.detailFloatingBar
+                }
+                #endif
             }
             .padding(SCTheme.Spacing.md)
         }
@@ -31,17 +40,18 @@ struct ScreenshotDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
         #endif
             .toolbar {
+                #if os(macOS)
                 if self.userMode != .elder {
                     ToolbarItemGroup {
                         Button {
-                            self.showOCR = true
+                            self.proAction(.ocr) { self.showOCR = true }
                         } label: {
                             Label("ocr.title", systemImage: "text.viewfinder")
                         }
 
                         if self.userMode != .minor {
                             Button {
-                                self.showEditor = true
+                                self.proAction(.imageEditor) { self.showEditor = true }
                             } label: {
                                 Label("detail.edit", systemImage: "pencil")
                             }
@@ -60,6 +70,10 @@ struct ScreenshotDetailView: View {
                         }
                     }
                 }
+                #endif
+            }
+            .sheet(isPresented: self.$showPaywall) {
+                PaywallView()
             }
             .sheet(isPresented: self.$showEditor) {
                 NavigationStack {
@@ -155,15 +169,59 @@ struct ScreenshotDetailView: View {
 
             HStack(spacing: SCTheme.Spacing.md) {
                 self.elderActionButton(title: String(localized: "ocr.title"), icon: "text.viewfinder", color: .purple) {
-                    self.showOCR = true
+                    self.proAction(.ocr) { self.showOCR = true }
                 }
                 self.elderActionButton(title: String(localized: "detail.edit"), icon: "pencil", color: .orange) {
-                    self.showEditor = true
+                    self.proAction(.imageEditor) { self.showEditor = true }
                 }
             }
         }
         .padding(.top, SCTheme.Spacing.sm)
     }
+
+    #if os(iOS)
+    private var detailFloatingBar: some View {
+        FloatingActionBar {
+            HStack(spacing: SCTheme.Spacing.lg) {
+                Button {
+                    self.proAction(.ocr) { self.showOCR = true }
+                } label: {
+                    Label("ocr.title", systemImage: "text.viewfinder")
+                        .labelStyle(.iconOnly)
+                }
+                .accessibilityLabel(Text("ocr.title"))
+
+                if self.userMode != .minor {
+                    Button {
+                        self.proAction(.imageEditor) { self.showEditor = true }
+                    } label: {
+                        Label("detail.edit", systemImage: "pencil")
+                            .labelStyle(.iconOnly)
+                    }
+                    .accessibilityLabel(Text("detail.edit"))
+                }
+
+                Button {
+                    self.showExport = true
+                } label: {
+                    Label("detail.export", systemImage: "square.and.arrow.up")
+                        .labelStyle(.iconOnly)
+                }
+                .accessibilityLabel(Text("detail.export"))
+
+                Button(role: .destructive) {
+                    self.appState.removeScreenshot(self.screenshot)
+                    AnalyticsManager.shared.track(.screenshotDeleted)
+                } label: {
+                    Label("detail.delete", systemImage: "trash")
+                        .labelStyle(.iconOnly)
+                }
+                .accessibilityLabel(Text("detail.delete"))
+            }
+            .font(.system(size: 20))
+        }
+    }
+    #endif
 
     private func elderActionButton(
         title: String,
@@ -186,5 +244,14 @@ struct ScreenshotDetailView: View {
         .buttonStyle(.plain)
         .accessibilityLabel(title)
         .accessibilityAddTraits(.isButton)
+    }
+
+    private func proAction(_ feature: ProFeature, perform action: () -> Void) {
+        if StoreManager.shared.isPro {
+            action()
+        } else {
+            AnalyticsManager.shared.track(.proUpgradeTapped)
+            self.showPaywall = true
+        }
     }
 }

@@ -39,6 +39,7 @@ final class CaptureViewModel {
             Task { @MainActor in
                 self?.captureState = state
                 self?.syncToAppState()
+                self?.updateLiveActivity(state)
             }
         }
 
@@ -52,6 +53,27 @@ final class CaptureViewModel {
     private func syncToAppState() {
         self.appStateRef?.captureState = self.captureState
     }
+
+    #if os(iOS)
+    private func updateLiveActivity(_ state: CaptureState) {
+        switch state {
+        case let .capturing(progress):
+            LiveActivityManager.shared.update(
+                frames: progress.capturedFrames,
+                elapsed: progress.elapsedTime,
+                estimatedHeight: progress.estimatedHeight,
+                phase: .capturing
+            )
+        case .stitching:
+            LiveActivityManager.shared.update(frames: 0, elapsed: 0, estimatedHeight: 0, phase: .stitching)
+        case let .failed(message):
+            _ = message
+            LiveActivityManager.shared.endWithFailure()
+        default:
+            break
+        }
+    }
+    #endif
 
     private weak var appStateRef: AppState?
 
@@ -91,6 +113,9 @@ final class CaptureViewModel {
         self.captureSignpostID = PerformanceMonitor.beginCapture()
         SCLogger.capture.started("region: \(region.map { "\($0)" } ?? "full")")
         AnalyticsManager.shared.track(.captureStarted(method: method))
+        #if os(iOS)
+        LiveActivityManager.shared.startCapture()
+        #endif
 
         do {
             try await self.captureService.startCapture(region: region)
@@ -121,6 +146,9 @@ final class CaptureViewModel {
                     duration: duration
                 ))
                 HapticManager.captureStopped()
+                #if os(iOS)
+                LiveActivityManager.shared.endCapture(frames: screenshot.metadata.frameCount)
+                #endif
             } else {
                 let duration = CFAbsoluteTimeGetCurrent() - self.captureStartTime
                 SCLogger.capture.failed("stopCapture returned nil (stitch failed)", error: nil)
@@ -146,6 +174,9 @@ final class CaptureViewModel {
         self.syncToAppState()
         SCLogger.capture.info("Capture cancelled by user")
         AnalyticsManager.shared.track(.captureCancelled)
+        #if os(iOS)
+        LiveActivityManager.shared.endWithFailure()
+        #endif
     }
 
     func reset() {

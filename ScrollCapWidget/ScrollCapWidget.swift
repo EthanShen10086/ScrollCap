@@ -1,4 +1,6 @@
+import ActivityKit
 import AppIntents
+import SharedModels
 import SwiftUI
 import WidgetKit
 
@@ -153,9 +155,100 @@ struct ScrollCapQuickCaptureWidget: Widget {
 
 // MARK: - Widget Bundle
 
+// MARK: - Live Activity
+
+struct CaptureActivityWidget: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: CaptureActivityAttributes.self) { context in
+            CaptureActivityLockScreenView(state: context.state)
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.leading) {
+                    Label("\(context.state.capturedFrames)", systemImage: "photo.stack")
+                        .font(.system(.headline, design: .rounded))
+                        .foregroundStyle(.blue)
+                }
+                DynamicIslandExpandedRegion(.trailing) {
+                    Text("\(context.state.elapsedSeconds)s")
+                        .font(.system(.headline, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                }
+                DynamicIslandExpandedRegion(.center) {
+                    Text(context.state.phase.displayText)
+                        .font(.system(.subheadline, design: .rounded).weight(.medium))
+                }
+                DynamicIslandExpandedRegion(.bottom) {
+                    if context.state.estimatedHeight > 0 {
+                        HStack {
+                            Image(systemName: "arrow.up.and.down")
+                            Text("~\(context.state.estimatedHeight)px")
+                                .font(.system(.caption, design: .monospaced))
+                        }
+                        .foregroundStyle(.secondary)
+                    }
+                }
+            } compactLeading: {
+                Image(systemName: "camera.viewfinder")
+                    .foregroundStyle(.blue)
+            } compactTrailing: {
+                Text("\(context.state.capturedFrames)")
+                    .font(.system(.body, design: .rounded).weight(.semibold))
+                    .foregroundStyle(.blue)
+            } minimal: {
+                Image(systemName: "camera.viewfinder")
+                    .foregroundStyle(.blue)
+            }
+        }
+    }
+}
+
+struct CaptureActivityLockScreenView: View {
+    let state: CaptureActivityAttributes.ContentState
+
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: "camera.viewfinder")
+                .font(.system(size: 24, weight: .medium))
+                .foregroundStyle(.blue)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(self.state.phase.displayText)
+                    .font(.system(.headline, design: .rounded))
+
+                HStack(spacing: 12) {
+                    Label("\(self.state.capturedFrames) frames", systemImage: "photo.stack")
+                    Label("\(self.state.elapsedSeconds)s", systemImage: "clock")
+                    if self.state.estimatedHeight > 0 {
+                        Label("~\(self.state.estimatedHeight)px", systemImage: "arrow.up.and.down")
+                    }
+                }
+                .font(.system(.caption, design: .monospaced))
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .activityBackgroundTint(.black.opacity(0.75))
+    }
+}
+
+extension CaptureActivityAttributes.CapturePhase {
+    var displayText: String {
+        switch self {
+        case .preparing: String(localized: "status.preparing")
+        case .capturing: String(localized: "status.recording")
+        case .stitching: String(localized: "status.stitching")
+        case .completed: String(localized: "status.completed")
+        case .failed: String(localized: "status.failed")
+        }
+    }
+}
+
 @main
 struct ScrollCapWidgetBundle: WidgetBundle {
     var body: some Widget {
         ScrollCapQuickCaptureWidget()
+        CaptureActivityWidget()
     }
 }

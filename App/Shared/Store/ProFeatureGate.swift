@@ -6,6 +6,7 @@ enum ProFeature: String, CaseIterable {
     case autoScroll = "AutoScroll"
     case iCloudSync
     case advancedExport = "AdvancedExport"
+    case imageEditor = "ImageEditor"
 
     var displayName: LocalizedStringKey {
         switch self {
@@ -13,6 +14,7 @@ enum ProFeature: String, CaseIterable {
         case .autoScroll: "pro.feature.autoScroll"
         case .iCloudSync: "pro.feature.iCloud"
         case .advancedExport: "pro.feature.formats"
+        case .imageEditor: "pro.feature.editor"
         }
     }
 
@@ -22,6 +24,7 @@ enum ProFeature: String, CaseIterable {
         case .autoScroll: "arrow.up.and.down.text.horizontal"
         case .iCloudSync: "icloud"
         case .advancedExport: "photo.badge.plus"
+        case .imageEditor: "pencil.and.outline"
         }
     }
 }

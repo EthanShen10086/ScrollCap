@@ -29,7 +29,9 @@
 		394E43E021011765620692F6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B6937977BEBB59024C65A5 /* ContentView.swift */; };
 		3CFD84328C9E45FB840BAF7D /* ImageEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754F51215AF2AF395E4D9754 /* ImageEditorView.swift */; };
 		3D51E05632C1849F045D6F54 /* PerformanceMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB76673C43E900FAD14B54C /* PerformanceMonitor.swift */; };
+		3DB3469A6D80FBF59C88D1C7 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D03040209E639D9DC92CB1 /* LiveActivityManager.swift */; };
 		4774A4AFC7E10BE4758F6034 /* PaymentConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FB40459A356CCD237AE0F5 /* PaymentConfig.swift */; };
+		479F6C3A30BE1DAF0AF1731C /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D03040209E639D9DC92CB1 /* LiveActivityManager.swift */; };
 		48DD690F4C3605E7722E313A /* ThirdPartyPaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE6D413A67C95C239643DA4 /* ThirdPartyPaymentService.swift */; };
 		5069C451CF2B1BA629DFE178 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6F23DBB1C9BCC47352ADAA /* AppState.swift */; };
 		50BF46ADC9C02CE67CD36592 /* OCRResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175A80D0AE3F935A60008FD5 /* OCRResultView.swift */; };
@@ -177,6 +179,7 @@
 		87D453F7E3FF83C4BA3C53F5 /* PaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethod.swift; sourceTree = "<group>"; };
 		881317002FB514B2E9880FF2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		931A7BF594704F0C3812EEF1 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		96D03040209E639D9DC92CB1 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
 		9A435D4A74016EA22D0DB077 /* MacCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacCaptureView.swift; sourceTree = "<group>"; };
 		9C69C486217F7AAD152A918F /* FrameReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameReader.swift; sourceTree = "<group>"; };
 		9C73DB355BA18491FCCC0F96 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -294,6 +297,7 @@
 			isa = PBXGroup;
 			children = (
 				C43AE94A4A768CF886FABE51 /* ExportService.swift */,
+				96D03040209E639D9DC92CB1 /* LiveActivityManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -626,6 +630,7 @@
 				74F48ED54B176196A04F288A /* IOSCaptureView.swift in Sources */,
 				AF5A9847D3A0C8F6BF223BBC /* ImageEditorView.swift in Sources */,
 				BA51637AA054CAA14E628A84 /* InstructionRow.swift in Sources */,
+				479F6C3A30BE1DAF0AF1731C /* LiveActivityManager.swift in Sources */,
 				6B8CD149EDA2BE3F7EC1676E /* NetworkMonitor.swift in Sources */,
 				D9E52E4E460EE43788A68845 /* OCRResultView.swift in Sources */,
 				D10D0EC8BF9C3555C780BB88 /* PaymentConfig.swift in Sources */,
@@ -665,6 +670,7 @@
 				0485F30A1D201F29329EACB6 /* HistoryView.swift in Sources */,
 				3CFD84328C9E45FB840BAF7D /* ImageEditorView.swift in Sources */,
 				EA93512F13D556132E6CBA28 /* InstructionRow.swift in Sources */,
+				3DB3469A6D80FBF59C88D1C7 /* LiveActivityManager.swift in Sources */,
 				380C8D1EF9C2F98891D68D05 /* MacCaptureView.swift in Sources */,
 				01974B6D8027116ED3F02CF0 /* MenuBarView.swift in Sources */,
 				9054336C4FF6D60F6B3CDAA1 /* NetworkMonitor.swift in Sources */,
