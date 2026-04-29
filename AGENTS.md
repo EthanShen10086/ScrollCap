@@ -50,6 +50,18 @@ ScrollCap/
 
 Mode is set via `AppState.userMode` and propagated through `@Environment(\.userMode)`.
 
+## Cursor Rules (`.cursor/rules/`)
+
+| Rule | Scope | What it enforces |
+|------|-------|------------------|
+| `architecture.mdc` | Always | Module boundaries, state, error handling, network |
+| `swiftui.mdc` | `**/*.swift` | View structure, styling, theming |
+| `i18n.mdc` | Always | All strings localized (en + zh-Hans) |
+| `user-modes.mdc` | Always | Minor mode restrictions, elder mode adaptations |
+| `accessibility.mdc` | Always | VoiceOver labels, ReduceMotion, traits |
+| `dark-mode.mdc` | `**/*.swift` | Semantic colors, adaptive shadows, contrast |
+| `multi-platform.mdc` | Always | iOS/iPadOS/macOS layout, environment injection |
+
 ## Testing
 
 - Select `ScrollCap-macOS` or `ScrollCap-iOS` scheme in Xcode.

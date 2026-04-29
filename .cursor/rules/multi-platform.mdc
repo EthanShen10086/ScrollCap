@@ -1,0 +1,111 @@
+---
+description: Multi-platform rules - iOS/iPadOS/macOS layout, environment, and platform guards
+alwaysApply: true
+---
+
+# Multi-Platform Rules (多平台适配)
+
+ScrollCap targets iOS 17+, iPadOS 17+, macOS 14+. Every feature MUST work on all three.
+
+## File organization
+
+```
+App/Shared/     → Cross-platform code (majority of views/services)
+App/iOS/         → iOS/iPadOS-only (IOSCaptureView, FrameReader, etc.)
+App/macOS/       → macOS-only (MacCaptureView, MenuBarView, OverlayWindow, etc.)
+```
+
+## Platform guards
+
+```swift
+// ✅ GOOD - compile-time guard for platform-specific APIs
+#if os(macOS)
+    NSSavePanel()
+#elseif os(iOS)
+    UIPasteboard.general
+#endif
+
+// ✅ GOOD - runtime device check for iPad vs iPhone
+if UIDevice.current.userInterfaceIdiom == .pad {
+    NavigationSplitView { ... }
+} else {
+    TabView { ... }
+}
+```
+
+## Environment injection
+
+Every window/scene MUST inject the full environment chain:
+
+```swift
+// ✅ GOOD - complete for ALL scenes
+WindowGroup {
+    ContentView()
+        .environment(appState)
+        .environment(\.userMode, appState.userMode)
+        .applyUserMode(appState.userMode)
+}
+
+// macOS-specific scenes ALSO need full injection:
+Settings {
+    SettingsView()
+        .environment(appState)
+        .environment(\.userMode, appState.userMode)
+        .applyUserMode(appState.userMode)
+}
+MenuBarExtra("ScrollCap", systemImage: "camera.viewfinder") {
+    MenuBarView()
+        .environment(appState)
+        .environment(\.userMode, appState.userMode)
+        .applyUserMode(appState.userMode)
+}
+
+// ❌ BAD - Settings/MenuBarExtra DON'T inherit from WindowGroup
+Settings { SettingsView().environment(appState) }  // missing userMode!
+```
+
+## iPad-specific
+
+```swift
+// ✅ GOOD - inject PadMetrics for iPad
+if UIDevice.current.userInterfaceIdiom == .pad {
+    splitView.environment(\.platformMetrics, PadMetrics())
+}
+
+// Available metrics: PhoneMetrics (default), PadMetrics, MacMetrics
+// Key differences: sidebarWidth, minContentWidth, capturePreviewMaxWidth
+```
+
+## macOS-specific
+
+- macOS `Settings` scene has its own window — inject ALL environments
+- `MenuBarExtra` window is separate — inject ALL environments
+- Use `.frame(minWidth:minHeight:)` on sheets/panels for reasonable macOS sizing
+- Support keyboard shortcuts via `.keyboardShortcut()`
+
+## Shared views best practices
+
+```swift
+// ✅ GOOD - platform-adaptive in shared view
+var body: some View {
+    #if os(macOS)
+    content.frame(minWidth: 350, minHeight: 300)
+    #else
+    content
+    #endif
+}
+
+// ✅ GOOD - use PlatformMetrics for adaptive layout
+@Environment(\.platformMetrics) private var metrics
+.padding(metrics.defaultPadding)
+.frame(maxWidth: metrics.capturePreviewMaxWidth)
+```
+
+## Checklist for new features
+
+- [ ] Works on iOS (iPhone), iPadOS, and macOS
+- [ ] Platform-specific APIs guarded with `#if os()`
+- [ ] iPad gets `PadMetrics` environment (wider sidebar, bigger previews)
+- [ ] macOS sheets have `.frame(minWidth:minHeight:)`
+- [ ] All window scenes inject complete environment chain
+- [ ] Keyboard shortcuts added for macOS where appropriate

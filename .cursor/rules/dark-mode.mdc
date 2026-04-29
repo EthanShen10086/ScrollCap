@@ -1,0 +1,74 @@
+---
+description: Dark mode rules - semantic colors, adaptive materials, contrast safety
+globs: "**/*.swift"
+alwaysApply: false
+---
+
+# Dark Mode Rules (深色模式)
+
+Every view MUST look correct in both light and dark mode. Never assume a color scheme.
+
+## Color usage
+
+```swift
+// ✅ GOOD - semantic colors that adapt automatically
+.foregroundStyle(.primary)
+.foregroundStyle(.secondary)
+Color(uiColor: .systemBackground)   // iOS
+Color(nsColor: .windowBackgroundColor) // macOS
+
+// ✅ GOOD - colorScheme-aware custom styling
+@Environment(\.colorScheme) private var colorScheme
+.fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.white)
+.shadow(color: colorScheme == .dark ? .black.opacity(0.3) : .black.opacity(0.06), ...)
+
+// ✅ GOOD - brand colors (acceptable as accent, not for backgrounds)
+SCTheme.Colors.brandBlue  // OK for buttons, accents, gradients
+
+// ❌ BAD - hardcoded colors that break in dark mode
+.background(Color.white)        // blinding white in dark mode
+.foregroundStyle(Color.black)   // invisible on dark background
+Color(red: 0.9, green: 0.9, blue: 0.9)  // doesn't adapt
+```
+
+## Materials & Blur
+
+```swift
+// ✅ GOOD - materials adapt to colorScheme automatically
+.background(.ultraThinMaterial)
+.background(.regularMaterial)
+
+// ✅ GOOD - GlassCard / adaptiveGlass() already handles this
+GlassCard { content }
+```
+
+## Shadows
+
+```swift
+// ✅ GOOD - adapt shadow intensity to scheme
+.shadow(
+    color: colorScheme == .dark ? .black.opacity(0.3) : .black.opacity(0.06),
+    radius: 8, y: 4
+)
+
+// ❌ BAD - fixed shadow (too strong in dark, invisible in light)
+.shadow(color: .black.opacity(0.15), radius: 8)
+```
+
+## Text on colored backgrounds
+
+```swift
+// ✅ GOOD - white text on brand gradient (readable on both schemes)
+.foregroundStyle(.white)  // OK when on accent-colored pill/badge
+
+// ✅ GOOD - check contrast ratio
+// Use .primary on backgrounds, .white only on vivid fills
+```
+
+## Checklist for new views
+
+- [ ] No hardcoded `.white` / `.black` as background or text color (use semantic)
+- [ ] `@Environment(\.colorScheme)` used if custom styling diverges per scheme
+- [ ] Shadows adapt intensity to dark/light
+- [ ] Tested visually in both appearances (Xcode → Debug → Color Scheme)
+- [ ] Card/container uses `GlassCard`, `.ultraThinMaterial`, or colorScheme-branched fill

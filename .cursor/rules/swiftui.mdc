@@ -1,5 +1,5 @@
 ---
-description: SwiftUI view conventions - structure, styling, animations, navigation
+description: SwiftUI view conventions - structure, styling, theming
 globs: "**/*.swift"
 alwaysApply: false
 ---
@@ -15,17 +15,16 @@ alwaysApply: false
 ## Styling
 
 - Use `SCTheme` for spacing, typography, corner radius, colors.
-- Do NOT hardcode colors. Use `SCTheme.Colors` or `.primary`/`.secondary`.
-- Card backgrounds: `SCTheme.Colors.cardBackground` or `.ultraThinMaterial`.
+- Do NOT hardcode colors — use `SCTheme.Colors` or `.primary`/`.secondary`.
+- Card backgrounds: `GlassCard` or `.ultraThinMaterial`.
 
 ## Modifiers
 
 - `.adaptiveGlass()` for glass containers.
-- `.applyUserMode()` at root only.
+- `.applyUserMode()` at root scenes only.
 - Platform: `#if os(macOS)` / `#if os(iOS)`.
 
 ## Animations
 
-- Default: `SCTheme.Animation.standard`.
-- Respect `@Environment(\.accessibilityReduceMotion)`.
-- Elder mode: disable non-essential animations.
+- Default: `SCTheme.Animation.standard` / `.spring` / `.gentle`.
+- Always use `shouldReduceMotion` pattern (see `accessibility.mdc`).

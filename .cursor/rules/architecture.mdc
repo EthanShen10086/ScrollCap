@@ -32,12 +32,15 @@ alwaysApply: true
 
 - All HTTP: `APIClient.shared`. Never raw `URLSession`.
 
-## User Mode
-
-- Check via `@Environment(\.userMode)` or `UserModeAdaptiveModifier`.
-- Payment: `AppState.shouldHidePayment`.
-
 ## Code Quality
 
 - SwiftLint + SwiftFormat enforced via pre-commit hook.
 - Conventional Commits: `type(scope): description`.
+
+## Cross-cutting concerns (detailed in dedicated rules)
+
+- **User modes**: See `user-modes.mdc` — minor/elder adaptation
+- **i18n**: See `i18n.mdc` — all strings localized
+- **Accessibility**: See `accessibility.mdc` — VoiceOver, ReduceMotion
+- **Dark mode**: See `dark-mode.mdc` — semantic colors
+- **Multi-platform**: See `multi-platform.mdc` — iOS/iPadOS/macOS

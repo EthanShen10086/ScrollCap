@@ -1,0 +1,92 @@
+---
+description: Accessibility rules - VoiceOver, ReduceMotion, traits, and reading order
+alwaysApply: true
+---
+
+# Accessibility Rules (无障碍)
+
+Every interactive element MUST be VoiceOver-accessible. Every animation MUST respect ReduceMotion.
+
+## VoiceOver Labels
+
+```swift
+// ✅ GOOD - unique, localized label describing the item
+.accessibilityLabel(Text("a11y.screenshot.label \(screenshot.createdAt.formatted(...))"))
+
+// ❌ BAD - same generic label for every item in a list
+.accessibilityLabel(Text("detail.title"))  // all cards read the same
+
+// ❌ BAD - hardcoded English
+.accessibilityLabel("Start capture")
+```
+
+## Hints & Traits
+
+```swift
+// ✅ GOOD - hint explains what happens on activation
+.accessibilityHint(Text("a11y.capture.hint"))
+.accessibilityAddTraits(.isButton)
+
+// ✅ GOOD - selected state for toggleable items
+.accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
+```
+
+## Decorative vs Informative Images
+
+```swift
+// ✅ GOOD - decorative icon hidden from VoiceOver
+Image(systemName: "sparkles")
+    .accessibilityHidden(true)
+
+// ✅ GOOD - informative image with description
+Image(decorative: screenshot.image, scale: 1.0)  // already hidden
+```
+
+## Container Grouping
+
+```swift
+// ✅ GOOD - card reads as single element
+.accessibilityElement(children: .combine)
+
+// Use for: cards, list rows, instruction steps, info displays
+```
+
+## Reduce Motion
+
+```swift
+// ✅ GOOD - the shouldReduceMotion pattern (also respects elder mode)
+@Environment(\.accessibilityReduceMotion) private var reduceMotion
+@Environment(\.userMode) private var userMode
+private var shouldReduceMotion: Bool { reduceMotion || userMode == .elder }
+
+// ✅ GOOD - guard all animations
+.animation(shouldReduceMotion ? nil : SCTheme.Animation.standard, value: x)
+.transition(shouldReduceMotion ? .identity : .opacity)
+
+// ✅ GOOD - skip animated backgrounds entirely
+if shouldReduceMotion {
+    // static gradient fallback
+} else if #available(iOS 18.0, macOS 15.0, *) {
+    AnimatedMeshBackground()
+}
+
+// ✅ GOOD - guard onAppear animations
+.onAppear {
+    guard !shouldReduceMotion else { return }
+    withAnimation(...) { pulseScale = 1.15 }
+}
+
+// ❌ BAD - unguarded symbolEffect
+base.symbolEffect(.bounce, options: .repeating)  // ignores preference
+```
+
+## Checklist for every new view
+
+- [ ] Every `Button` / interactive element has `.accessibilityLabel` (localized)
+- [ ] Non-obvious actions have `.accessibilityHint`
+- [ ] Appropriate `.accessibilityAddTraits` (`.isButton`, `.isHeader`, `.isSelected`)
+- [ ] Decorative images use `.accessibilityHidden(true)` or `Image(decorative:)`
+- [ ] Cards / grouped content use `.accessibilityElement(children: .combine)`
+- [ ] List items have UNIQUE labels (include date/name/index)
+- [ ] All `withAnimation`, `.animation()`, `.transition()`, `.symbolEffect()` guarded
+- [ ] `shouldReduceMotion` pattern used (combines system pref + elder mode)

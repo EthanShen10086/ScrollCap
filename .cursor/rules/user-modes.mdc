@@ -1,0 +1,110 @@
+---
+description: User modes (Minor + Elder) - every new view/feature MUST adapt to all three user modes
+alwaysApply: true
+---
+
+# User Modes Rules (用户模式)
+
+ScrollCap has 3 modes: `.standard`, `.minor`, `.elder`. Every new feature MUST work correctly in ALL modes.
+
+## How to read current mode
+
+```swift
+@Environment(\.userMode) private var userMode
+```
+
+## Minor Mode (未成年模式)
+
+### What to hide/block
+
+```swift
+// ✅ GOOD - check shouldHidePayment for anything payment-related
+if !appState.shouldHidePayment {
+    ProUpgradeTeaser()
+}
+
+// ✅ GOOD - block payment deep links
+case "payment":
+    guard !appState.shouldHidePayment else { return }
+
+// ❌ BAD - showing payment UI without checking
+PaywallView()  // minor can see and purchase
+```
+
+### Rules
+
+- **Payment**: ALL entry points to payment/Pro features must check `appState.shouldHidePayment`
+- **External links**: Hide URLs, source code links, social media in minor mode
+- **Edit tools**: Restrict advanced editing tools if `userMode == .minor`
+- **Usage timer**: `AppState.checkUsageTime()` is called every 60s; show `UsageTimerBanner` when triggered
+
+### Checklist for new features
+
+- [ ] Does it involve payment? → guard with `shouldHidePayment`
+- [ ] Does it link externally? → hide in minor mode
+- [ ] Is it an advanced feature? → consider whether to restrict
+
+## Elder Mode (适老化模式)
+
+### Text & Touch
+
+```swift
+// ✅ GOOD - adaptive sizing
+.frame(width: userMode == .elder ? 64 : 48, height: userMode == .elder ? 56 : 44)
+
+// ✅ GOOD - padding for bigger touch targets
+.padding(userMode == .elder ? 8 : 4)
+.contentShape(Circle())  // extend hit area
+
+// ❌ BAD - fixed tiny targets
+.frame(width: 20, height: 20)  // elder can't tap this
+```
+
+### Animation suppression
+
+```swift
+// ✅ GOOD - use shouldReduceMotion pattern
+private var shouldReduceMotion: Bool { reduceMotion || userMode == .elder }
+
+// then use it everywhere:
+.animation(shouldReduceMotion ? nil : SCTheme.Animation.standard, value: state)
+.scaleEffect(shouldReduceMotion ? 1.0 : (isHovered ? 1.03 : 1.0))
+
+// ✅ GOOD - guard animated onAppear
+.onAppear {
+    guard !shouldReduceMotion else { return }
+    withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) { ... }
+}
+
+// ❌ BAD - unguarded animation
+withAnimation(SCTheme.Animation.spring) { ... }  // elder sees bouncing
+```
+
+### Rules
+
+- **Touch targets**: Minimum 44×44pt (Apple HIG), elder mode should be 56+ pt
+- **Text**: `UserModeAdaptiveModifier` sets `.dynamicTypeSize(.xxxLarge)` — don't override with fixed font sizes
+- **Animations**: Always combine `@Environment(\.accessibilityReduceMotion)` with `userMode == .elder`
+- **Buttons**: Use `ElderButtonStyle()` or `ElderCaptureButton` in elder mode
+- **Contrast**: Prefer `.primary` / `.secondary` semantic colors over low-opacity custom colors
+
+### Checklist for new features
+
+- [ ] All tap targets ≥ 44pt, elder ≥ 56pt
+- [ ] All animations guarded with `shouldReduceMotion`
+- [ ] Elder mode has larger/simpler UI variant or uses `ElderButtonStyle`
+- [ ] No fixed small font sizes (use dynamic type)
+
+## Environment injection
+
+EVERY window/scene that hosts UI must inject user mode:
+
+```swift
+// ✅ GOOD - all three
+WindowGroup { ContentView().environment(appState).environment(\.userMode, appState.userMode).applyUserMode(appState.userMode) }
+Settings { SettingsView().environment(appState).environment(\.userMode, appState.userMode).applyUserMode(appState.userMode) }
+MenuBarExtra { MenuBarView().environment(appState).environment(\.userMode, appState.userMode).applyUserMode(appState.userMode) }
+
+// ❌ BAD - missing userMode (Settings/MenuBar won't respect elder/minor)
+Settings { SettingsView().environment(appState) }
+```
