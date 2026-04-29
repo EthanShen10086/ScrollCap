@@ -37,11 +37,11 @@ enum AppDestination: Hashable, Identifiable {
 
     var id: Self { self }
 
-    var title: String {
+    var title: LocalizedStringKey {
         switch self {
-        case .capture: "Capture"
-        case .history: "History"
-        case .settings: "Settings"
+        case .capture: "nav.capture"
+        case .history: "nav.history"
+        case .settings: "nav.settings"
         }
     }
 

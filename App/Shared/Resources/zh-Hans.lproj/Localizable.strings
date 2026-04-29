@@ -1,0 +1,122 @@
+/* Navigation & Tabs */
+"nav.capture" = "截图";
+"nav.history" = "历史";
+"nav.settings" = "设置";
+"nav.scrollcap" = "ScrollCap";
+
+/* Capture View */
+"capture.title" = "截图";
+"capture.ready" = "准备就绪";
+"capture.ready.desc.mac" = "选择屏幕区域，然后滚动以捕获长截图。";
+"capture.ready.desc.ios" = "开始录制，切换到目标应用，然后滚动以捕获。";
+"capture.howItWorks" = "使用方法";
+"capture.step.mac.1" = "1. 点击截图按钮";
+"capture.step.mac.2" = "2. 选择屏幕截取区域";
+"capture.step.mac.3" = "3. 缓慢滚动浏览内容";
+"capture.step.mac.4" = "4. 点击停止完成拼接";
+"capture.shortcut" = "快捷键：⌘⇧6";
+"capture.step.ios.1" = "点击截图按钮";
+"capture.step.ios.2" = "切换到目标应用";
+"capture.step.ios.3" = "缓慢滚动浏览内容";
+"capture.step.ios.4" = "返回此处点击停止";
+"capture.livePreview" = "实时预览";
+"capture.complete" = "截图完成";
+"capture.frames %lld" = "%lld 帧";
+"capture.cancel" = "取消";
+"capture.new" = "新建截图";
+"capture.newScroll" = "新建滚动截图";
+
+/* Capture Status */
+"status.ready" = "就绪";
+"status.selectRegion" = "选择区域";
+"status.preparing" = "准备中…";
+"status.recording" = "录制中";
+"status.stitching" = "拼接中…";
+"status.done %lld" = "完成（%lld 帧）";
+
+/* Permission */
+"permission.title" = "需要权限";
+"permission.message" = "ScrollCap 需要屏幕录制权限。请在「系统设置 > 隐私与安全性 > 屏幕录制」中授予访问权限。";
+"permission.ok" = "好的";
+
+/* Export */
+"export.title" = "导出";
+"export.format" = "格式";
+"export.info" = "信息";
+"export.quality %lld" = "质量：%lld%%";
+"export.dimensions" = "尺寸";
+"export.frames" = "帧数";
+"export.save" = "保存";
+"export.share" = "分享";
+"export.sharePreview" = "ScrollCap 截图";
+
+/* Screenshot Detail */
+"detail.title" = "截图详情";
+"detail.edit" = "编辑";
+"detail.export" = "导出";
+"detail.delete" = "删除";
+"detail.done" = "完成";
+"detail.size" = "尺寸";
+"detail.frames" = "帧数";
+"detail.duration" = "时长";
+"detail.method" = "方式";
+
+/* Image Editor */
+"editor.title" = "编辑";
+"editor.select" = "选择";
+"editor.crop" = "裁剪";
+"editor.rectangle" = "矩形";
+"editor.arrow" = "箭头";
+"editor.highlight" = "高亮";
+"editor.cropHint" = "拖动选择裁剪区域";
+"editor.applyCrop" = "应用裁剪";
+
+/* History */
+"history.empty" = "暂无截图";
+"history.empty.desc" = "截取的截图将显示在这里。";
+
+/* Settings */
+"settings.export" = "导出";
+"settings.capture" = "截图";
+"settings.about" = "关于";
+"settings.version" = "版本";
+"settings.build" = "构建号";
+"settings.sourceCode" = "源代码";
+"settings.captureMethod" = "截图方式";
+"settings.showCursor" = "截图时显示光标";
+"settings.frameRate" = "帧率";
+"settings.ios.captureDesc" = "点击截图按钮，然后切换到目标应用并滚动。ScrollCap 将自动录制并拼接画面。";
+
+/* macOS Capture */
+"mac.selectedRegion" = "已选区域";
+"mac.change" = "更改";
+"mac.selectRegion" = "选择区域";
+
+/* iOS Capture */
+"ios.broadcast" = "屏幕广播";
+"ios.broadcast.desc" = "使用系统广播选择器开始录制。ScrollCap 将捕获您使用的任何应用的画面。";
+"ios.recording" = "录制中…";
+"ios.framesCaptured %lld" = "已捕获 %lld 帧";
+"ios.estimatedHeight %@" = "预计高度 %@ 像素";
+"ios.startBroadcast" = "开始广播";
+"ios.startBroadcast.desc" = "点击上方按钮通过系统广播选择器开始屏幕录制。";
+
+/* Menu Bar (macOS) */
+"menu.quit" = "退出 ScrollCap";
+"menu.version" = "v1.0";
+"menu.capturing" = "截图中…";
+"menu.ready" = "就绪";
+"menu.captures %lld" = "%lld 张截图";
+"menu.newCapture" = "新建滚动截图";
+"menu.open" = "打开 ScrollCap";
+
+/* Format Names */
+"format.png" = "PNG";
+"format.jpeg" = "JPEG";
+"format.heic" = "HEIC";
+"format.pdf" = "PDF";
+
+/* Capture Methods */
+"method.screenCaptureKit" = "ScreenCaptureKit";
+"method.replayKit" = "ReplayKit";
+"method.unknown" = "未知";

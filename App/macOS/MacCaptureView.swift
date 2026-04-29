@@ -23,7 +23,7 @@ struct MacCaptureView: View {
         GlassCard {
             HStack {
                 VStack(alignment: .leading, spacing: SCTheme.Spacing.xs) {
-                    Text("Selected Region")
+                    Text("mac.selectedRegion")
                         .font(SCTheme.Typography.headline)
 
                     HStack(spacing: SCTheme.Spacing.md) {
@@ -36,7 +36,7 @@ struct MacCaptureView: View {
 
                 Spacer()
 
-                Button("Change") {
+                Button("mac.change") {
                     showRegionSelector()
                 }
                 .buttonStyle(.bordered)
@@ -49,7 +49,7 @@ struct MacCaptureView: View {
             Button {
                 showRegionSelector()
             } label: {
-                Label("Select Region", systemImage: "rectangle.dashed")
+                Label("mac.selectRegion", systemImage: "rectangle.dashed")
             }
             .buttonStyle(.bordered)
         }

@@ -8,8 +8,8 @@ struct SettingsView: View {
     var body: some View {
         @Bindable var state = appState
         Form {
-            Section("Export") {
-                Picker("Format", selection: $state.exportFormat) {
+            Section("settings.export") {
+                Picker("export.format", selection: $state.exportFormat) {
                     ForEach(ExportFormat.allCases) { format in
                         Text(format.displayName).tag(format)
                     }
@@ -17,13 +17,13 @@ struct SettingsView: View {
 
                 if appState.exportFormat.supportedCompressionQuality {
                     VStack(alignment: .leading) {
-                        Text("Quality: \(Int(appState.exportQuality * 100))%")
+                        Text("export.quality \(Int(appState.exportQuality * 100))")
                         Slider(value: $state.exportQuality, in: 0.1...1.0, step: 0.05)
                     }
                 }
             }
 
-            Section("Capture") {
+            Section("settings.capture") {
                 #if os(macOS)
                 macOSCaptureSettings
                 #else
@@ -31,16 +31,16 @@ struct SettingsView: View {
                 #endif
             }
 
-            Section("About") {
-                LabeledContent("Version", value: "1.0.0")
-                LabeledContent("Build", value: "1")
+            Section("settings.about") {
+                LabeledContent("settings.version", value: "1.0.0")
+                LabeledContent("settings.build", value: "1")
 
                 Link(destination: URL(string: "https://github.com/EthanShen10086/ScrollCap")!) {
-                    Label("Source Code", systemImage: "curlybraces")
+                    Label("settings.sourceCode", systemImage: "curlybraces")
                 }
             }
         }
-        .navigationTitle("Settings")
+        .navigationTitle("nav.settings")
         #if os(macOS)
         .formStyle(.grouped)
         .frame(minWidth: 400, minHeight: 300)
@@ -50,11 +50,11 @@ struct SettingsView: View {
     #if os(macOS)
     private var macOSCaptureSettings: some View {
         Group {
-            LabeledContent("Capture Method", value: "ScreenCaptureKit")
+            LabeledContent("settings.captureMethod", value: String(localized: "method.screenCaptureKit"))
 
-            Toggle("Show cursor in capture", isOn: .constant(false))
+            Toggle("settings.showCursor", isOn: .constant(false))
 
-            LabeledContent("Frame Rate", value: "10 fps")
+            LabeledContent("settings.frameRate", value: "10 fps")
         }
     }
     #endif
@@ -62,9 +62,9 @@ struct SettingsView: View {
     #if os(iOS)
     private var iOSCaptureSettings: some View {
         Group {
-            LabeledContent("Capture Method", value: "ReplayKit")
+            LabeledContent("settings.captureMethod", value: String(localized: "method.replayKit"))
 
-            Text("Tap the capture button, then switch to the target app and scroll. ScrollCap will record and stitch the frames automatically.")
+            Text("settings.ios.captureDesc")
                 .font(SCTheme.Typography.caption)
                 .foregroundStyle(.secondary)
         }

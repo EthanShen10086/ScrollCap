@@ -21,13 +21,13 @@ struct BroadcastPickerRepresentable: UIViewRepresentable {
 struct BroadcastSetupView: View {
     var body: some View {
         VStack(spacing: 16) {
-            Text("Start Broadcast")
+            Text("ios.startBroadcast")
                 .font(.headline)
 
             BroadcastPickerRepresentable()
                 .frame(width: 60, height: 60)
 
-            Text("Tap the button above to start screen recording via the system broadcast picker.")
+            Text("ios.startBroadcast.desc")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

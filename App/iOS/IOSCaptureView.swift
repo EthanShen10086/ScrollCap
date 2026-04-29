@@ -9,10 +9,10 @@ struct IOSCaptureView: View {
 
     var body: some View {
         VStack(spacing: SCTheme.Spacing.lg) {
-            Text("Screen Broadcast")
+            Text("ios.broadcast")
                 .font(SCTheme.Typography.title)
 
-            Text("Use the system broadcast picker to start recording. ScrollCap will capture frames from any app you use.")
+            Text("ios.broadcast.desc")
                 .font(SCTheme.Typography.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -39,17 +39,17 @@ struct IOSCaptureView: View {
                         .scaleEffect(1.2)
                         .animation(.easeInOut(duration: 0.6).repeatForever(), value: true)
 
-                    Text("Recording...")
+                    Text("ios.recording")
                         .font(SCTheme.Typography.headline)
                         .foregroundStyle(SCTheme.Colors.captureActive)
                 }
 
                 if case .capturing(let progress) = appState.captureState {
-                    Text("\(progress.capturedFrames) frames captured")
+                    Text("ios.framesCaptured \(progress.capturedFrames)")
                         .font(SCTheme.Typography.monoCaption)
                         .foregroundStyle(.secondary)
 
-                    Text(String(format: "%.0f px estimated height", progress.estimatedHeight))
+                    Text("ios.estimatedHeight \(String(format: "%.0f", progress.estimatedHeight))")
                         .font(SCTheme.Typography.monoCaption)
                         .foregroundStyle(.tertiary)
                 }

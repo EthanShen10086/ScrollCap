@@ -33,28 +33,28 @@ struct CaptureView: View {
                 .padding(SCTheme.Spacing.lg)
             }
         }
-        .navigationTitle("Capture")
+        .navigationTitle("capture.title")
         .toolbar {
             ToolbarItemGroup {
                 if viewModel.capturedScreenshot != nil {
                     Button {
                         showExportSheet = true
                     } label: {
-                        Label("Export", systemImage: "square.and.arrow.up")
+                        Label("export.title", systemImage: "square.and.arrow.up")
                     }
 
                     Button {
                         viewModel.reset()
                     } label: {
-                        Label("New Capture", systemImage: "plus")
+                        Label("capture.new", systemImage: "plus")
                     }
                 }
             }
         }
-        .alert("Permission Required", isPresented: $showPermissionAlert) {
-            Button("OK") {}
+        .alert("permission.title", isPresented: $showPermissionAlert) {
+            Button("permission.ok") {}
         } message: {
-            Text("ScrollCap needs screen recording permission. Please grant access in System Settings > Privacy & Security > Screen Recording.")
+            Text("permission.message")
         }
         .sheet(isPresented: $showExportSheet) {
             if let screenshot = viewModel.capturedScreenshot {
@@ -92,7 +92,7 @@ struct CaptureView: View {
         VStack(spacing: SCTheme.Spacing.lg) {
             EmptyStateView(
                 systemImage: "scroll",
-                title: "Ready to Capture",
+                title: String(localized: "capture.ready"),
                 description: platformDescription
             )
 
@@ -107,9 +107,9 @@ struct CaptureView: View {
 
     private var platformDescription: String {
         #if os(macOS)
-        "Select a region on screen, then scroll to capture a long screenshot."
+        String(localized: "capture.ready.desc.mac")
         #else
-        "Start recording, switch to the target app, and scroll to capture."
+        String(localized: "capture.ready.desc.ios")
         #endif
     }
 
@@ -117,14 +117,14 @@ struct CaptureView: View {
     private var macOSInstructions: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: SCTheme.Spacing.sm) {
-                Label("How it works", systemImage: "questionmark.circle")
+                Label("capture.howItWorks", systemImage: "questionmark.circle")
                     .font(SCTheme.Typography.headline)
 
                 VStack(alignment: .leading, spacing: SCTheme.Spacing.xs) {
-                    Text("1. Click the capture button")
-                    Text("2. Select the screen region to capture")
-                    Text("3. Scroll through the content slowly")
-                    Text("4. Click stop to finish and stitch")
+                    Text("capture.step.mac.1")
+                    Text("capture.step.mac.2")
+                    Text("capture.step.mac.3")
+                    Text("capture.step.mac.4")
                 }
                 .font(SCTheme.Typography.body)
                 .foregroundStyle(.secondary)
@@ -132,7 +132,7 @@ struct CaptureView: View {
                 HStack {
                     Image(systemName: "keyboard")
                         .foregroundStyle(.tertiary)
-                    Text("Shortcut: ⌘⇧6")
+                    Text("capture.shortcut")
                         .font(SCTheme.Typography.monoCaption)
                         .foregroundStyle(.tertiary)
                 }
@@ -146,14 +146,14 @@ struct CaptureView: View {
     private var iOSInstructions: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: SCTheme.Spacing.sm) {
-                Label("How it works", systemImage: "questionmark.circle")
+                Label("capture.howItWorks", systemImage: "questionmark.circle")
                     .font(SCTheme.Typography.headline)
 
                 VStack(alignment: .leading, spacing: SCTheme.Spacing.xs) {
-                    InstructionRow(number: 1, text: "Tap the capture button")
-                    InstructionRow(number: 2, text: "Switch to the target app")
-                    InstructionRow(number: 3, text: "Scroll slowly through the content")
-                    InstructionRow(number: 4, text: "Return here and tap stop")
+                    InstructionRow(number: 1, text: String(localized: "capture.step.ios.1"))
+                    InstructionRow(number: 2, text: String(localized: "capture.step.ios.2"))
+                    InstructionRow(number: 3, text: String(localized: "capture.step.ios.3"))
+                    InstructionRow(number: 4, text: String(localized: "capture.step.ios.4"))
                 }
             }
         }
@@ -165,7 +165,7 @@ struct CaptureView: View {
 
     private func previewSection(_ image: CGImage, in geometry: GeometryProxy) -> some View {
         VStack(spacing: SCTheme.Spacing.sm) {
-            Text("Live Preview")
+            Text("capture.livePreview")
                 .font(SCTheme.Typography.caption)
                 .foregroundStyle(.secondary)
 
@@ -185,7 +185,7 @@ struct CaptureView: View {
 
     private func resultSection(_ screenshot: Screenshot, in geometry: GeometryProxy) -> some View {
         VStack(spacing: SCTheme.Spacing.sm) {
-            Text("Capture Complete")
+            Text("capture.complete")
                 .font(SCTheme.Typography.headline)
 
             ScrollView {
@@ -199,7 +199,7 @@ struct CaptureView: View {
 
             HStack(spacing: SCTheme.Spacing.md) {
                 Label("\(screenshot.image.width)×\(screenshot.image.height)", systemImage: "ruler")
-                Label("\(screenshot.metadata.frameCount) frames", systemImage: "square.stack.3d.up")
+                Label("capture.frames \(screenshot.metadata.frameCount)", systemImage: "square.stack.3d.up")
                 Label(String(format: "%.1fs", screenshot.metadata.durationSeconds), systemImage: "clock")
             }
             .font(SCTheme.Typography.monoCaption)
@@ -216,7 +216,7 @@ struct CaptureView: View {
                     Task { await viewModel.stopCapture() }
                 }
 
-                Button("Cancel", role: .destructive) {
+                Button("capture.cancel", role: .destructive) {
                     viewModel.cancelCapture()
                 }
                 .buttonStyle(.bordered)
@@ -236,15 +236,15 @@ struct CaptureView: View {
     private var statusBar: some View {
         switch viewModel.captureState {
         case .idle:
-            StatusPill("Ready", color: SCTheme.Colors.captureReady)
+            StatusPill(String(localized: "status.ready"), color: SCTheme.Colors.captureReady)
         case .selectingRegion:
-            StatusPill("Select Region", color: .orange)
+            StatusPill(String(localized: "status.selectRegion"), color: .orange)
         case .preparing:
-            StatusPill("Preparing...", color: .orange)
+            StatusPill(String(localized: "status.preparing"), color: .orange)
         case .capturing(let progress):
             HStack(spacing: SCTheme.Spacing.sm) {
-                StatusPill("Recording", color: SCTheme.Colors.captureActive)
-                Text("\(progress.capturedFrames) frames")
+                StatusPill(String(localized: "status.recording"), color: SCTheme.Colors.captureActive)
+                Text("capture.frames \(progress.capturedFrames)")
                     .font(SCTheme.Typography.monoCaption)
                     .foregroundStyle(.secondary)
             }
@@ -252,10 +252,10 @@ struct CaptureView: View {
             HStack(spacing: SCTheme.Spacing.sm) {
                 ProgressView()
                     .controlSize(.small)
-                StatusPill("Stitching...", color: .purple)
+                StatusPill(String(localized: "status.stitching"), color: .purple)
             }
         case .completed(let count):
-            StatusPill("Done (\(count) frames)", color: SCTheme.Colors.captureDone)
+            StatusPill(String(localized: "status.done \(count)"), color: SCTheme.Colors.captureDone)
         case .failed(let message):
             StatusPill(message, color: SCTheme.Colors.destructive)
         }
@@ -275,8 +275,8 @@ struct ExportSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Format") {
-                    Picker("Format", selection: $selectedFormat) {
+                Section("export.format") {
+                    Picker("export.format", selection: $selectedFormat) {
                         ForEach(ExportFormat.allCases) { format in
                             Text(format.displayName).tag(format)
                         }
@@ -285,15 +285,15 @@ struct ExportSheet: View {
 
                     if selectedFormat.supportedCompressionQuality {
                         VStack(alignment: .leading) {
-                            Text("Quality: \(Int(quality * 100))%")
+                            Text("export.quality \(Int(quality * 100))")
                             Slider(value: $quality, in: 0.1...1.0, step: 0.05)
                         }
                     }
                 }
 
-                Section("Info") {
-                    LabeledContent("Dimensions", value: "\(screenshot.image.width)×\(screenshot.image.height)")
-                    LabeledContent("Frames", value: "\(screenshot.metadata.frameCount)")
+                Section("export.info") {
+                    LabeledContent("export.dimensions", value: "\(screenshot.image.width)×\(screenshot.image.height)")
+                    LabeledContent("export.frames", value: "\(screenshot.metadata.frameCount)")
                 }
 
                 Section {
@@ -306,7 +306,7 @@ struct ExportSheet: View {
                                 ProgressView()
                                     .controlSize(.small)
                             } else {
-                                Label("Save", systemImage: "square.and.arrow.down")
+                                Label("export.save", systemImage: "square.and.arrow.down")
                             }
                             Spacer()
                         }
@@ -314,23 +314,23 @@ struct ExportSheet: View {
                     .disabled(isSaving)
 
                     #if os(iOS)
-                    ShareLink(item: Image(decorative: screenshot.image, scale: 1.0), preview: SharePreview("ScrollCap Screenshot")) {
+                    ShareLink(item: Image(decorative: screenshot.image, scale: 1.0), preview: SharePreview(Text("export.sharePreview"))) {
                         HStack {
                             Spacer()
-                            Label("Share", systemImage: "square.and.arrow.up")
+                            Label("export.share", systemImage: "square.and.arrow.up")
                             Spacer()
                         }
                     }
                     #endif
                 }
             }
-            .navigationTitle("Export")
+            .navigationTitle("export.title")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("capture.cancel") { dismiss() }
                 }
             }
         }

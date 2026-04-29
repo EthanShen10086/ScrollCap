@@ -14,14 +14,14 @@ struct HistoryView: View {
             if appState.screenshots.isEmpty {
                 EmptyStateView(
                     systemImage: "photo.on.rectangle.angled",
-                    title: "No Screenshots Yet",
-                    description: "Captured screenshots will appear here."
+                    title: String(localized: "history.empty"),
+                    description: String(localized: "history.empty.desc")
                 )
             } else {
                 screenshotGrid
             }
         }
-        .navigationTitle("History")
+        .navigationTitle("nav.history")
     }
 
     private var screenshotGrid: some View {
@@ -33,7 +33,7 @@ struct HistoryView: View {
                             appState.selectedScreenshot = screenshot
                         }
                         .contextMenu {
-                            Button("Delete", role: .destructive) {
+                            Button("detail.delete", role: .destructive) {
                                 withAnimation(SCTheme.Animation.standard) {
                                     appState.removeScreenshot(screenshot)
                                 }
@@ -65,7 +65,7 @@ struct ScreenshotCard: View {
                         .font(SCTheme.Typography.caption)
                         .foregroundStyle(.secondary)
 
-                    Text("\(screenshot.metadata.frameCount) frames")
+                    Text("capture.frames \(screenshot.metadata.frameCount)")
                         .font(SCTheme.Typography.monoCaption)
                         .foregroundStyle(.tertiary)
                 }

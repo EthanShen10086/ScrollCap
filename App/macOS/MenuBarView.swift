@@ -19,7 +19,7 @@ struct MenuBarView: View {
 
             Divider()
 
-            Button("Quit ScrollCap") {
+            Button(String(localized: "menu.quit")) {
                 NSApplication.shared.terminate(nil)
             }
             .keyboardShortcut("q")
@@ -34,12 +34,12 @@ struct MenuBarView: View {
                 .font(.title3)
                 .foregroundStyle(.blue)
 
-            Text("ScrollCap")
+            Text("nav.scrollcap")
                 .font(SCTheme.Typography.headline)
 
             Spacer()
 
-            Text("v1.0")
+            Text("menu.version")
                 .font(SCTheme.Typography.monoCaption)
                 .foregroundStyle(.tertiary)
         }
@@ -51,7 +51,7 @@ struct MenuBarView: View {
             Button {
                 startQuickCapture()
             } label: {
-                Label("New Scroll Capture", systemImage: "scroll")
+                Label("menu.newCapture", systemImage: "scroll")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .keyboardShortcut("n")
@@ -60,7 +60,7 @@ struct MenuBarView: View {
             Button {
                 openMainWindow()
             } label: {
-                Label("Open ScrollCap", systemImage: "macwindow")
+                Label("menu.open", systemImage: "macwindow")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .keyboardShortcut("o")
@@ -74,13 +74,13 @@ struct MenuBarView: View {
                 .fill(appState.isCapturing ? SCTheme.Colors.captureActive : .green)
                 .frame(width: 8, height: 8)
 
-            Text(appState.isCapturing ? "Capturing..." : "Ready")
+            Text(appState.isCapturing ? String(localized: "menu.capturing") : String(localized: "menu.ready"))
                 .font(SCTheme.Typography.caption)
                 .foregroundStyle(.secondary)
 
             Spacer()
 
-            Text("\(appState.screenshots.count) captures")
+            Text("menu.captures \(appState.screenshots.count)")
                 .font(SCTheme.Typography.monoCaption)
                 .foregroundStyle(.tertiary)
         }

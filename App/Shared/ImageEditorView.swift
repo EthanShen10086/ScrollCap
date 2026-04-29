@@ -38,7 +38,7 @@ struct ImageEditorView: View {
                 }
             }
         }
-        .navigationTitle("Edit")
+        .navigationTitle("editor.title")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
@@ -49,11 +49,11 @@ struct ImageEditorView: View {
     private var toolbar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: SCTheme.Spacing.sm) {
-                toolButton(.none, "hand.raised", "Select")
-                toolButton(.crop, "crop", "Crop")
-                toolButton(.rectangle, "rectangle", "Rectangle")
-                toolButton(.arrow, "arrow.up.right", "Arrow")
-                toolButton(.highlight, "highlighter", "Highlight")
+                toolButton(.none, "hand.raised", String(localized: "editor.select"))
+                toolButton(.crop, "crop", String(localized: "editor.crop"))
+                toolButton(.rectangle, "rectangle", String(localized: "editor.rectangle"))
+                toolButton(.arrow, "arrow.up.right", String(localized: "editor.arrow"))
+                toolButton(.highlight, "highlighter", String(localized: "editor.highlight"))
 
                 Divider()
                     .frame(height: 24)
@@ -125,19 +125,19 @@ struct ImageEditorView: View {
             Color.black.opacity(0.4)
 
             VStack(spacing: SCTheme.Spacing.md) {
-                Text("Drag to select crop area")
+                Text("editor.cropHint")
                     .font(SCTheme.Typography.caption)
                     .foregroundStyle(.white)
 
                 HStack {
-                    Button("Cancel") {
+                    Button("capture.cancel") {
                         isCropping = false
                         selectedTool = .none
                     }
                     .buttonStyle(.bordered)
                     .tint(.white)
 
-                    Button("Apply Crop") {
+                    Button("editor.applyCrop") {
                         applyCrop()
                     }
                     .buttonStyle(.borderedProminent)

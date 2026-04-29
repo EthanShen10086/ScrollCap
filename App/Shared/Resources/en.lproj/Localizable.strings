@@ -1,0 +1,122 @@
+/* Navigation & Tabs */
+"nav.capture" = "Capture";
+"nav.history" = "History";
+"nav.settings" = "Settings";
+"nav.scrollcap" = "ScrollCap";
+
+/* Capture View */
+"capture.title" = "Capture";
+"capture.ready" = "Ready to Capture";
+"capture.ready.desc.mac" = "Select a region on screen, then scroll to capture a long screenshot.";
+"capture.ready.desc.ios" = "Start recording, switch to the target app, and scroll to capture.";
+"capture.howItWorks" = "How it works";
+"capture.step.mac.1" = "1. Click the capture button";
+"capture.step.mac.2" = "2. Select the screen region to capture";
+"capture.step.mac.3" = "3. Scroll through the content slowly";
+"capture.step.mac.4" = "4. Click stop to finish and stitch";
+"capture.shortcut" = "Shortcut: ⌘⇧6";
+"capture.step.ios.1" = "Tap the capture button";
+"capture.step.ios.2" = "Switch to the target app";
+"capture.step.ios.3" = "Scroll slowly through the content";
+"capture.step.ios.4" = "Return here and tap stop";
+"capture.livePreview" = "Live Preview";
+"capture.complete" = "Capture Complete";
+"capture.frames %lld" = "%lld frames";
+"capture.cancel" = "Cancel";
+"capture.new" = "New Capture";
+"capture.newScroll" = "New Scroll Capture";
+
+/* Capture Status */
+"status.ready" = "Ready";
+"status.selectRegion" = "Select Region";
+"status.preparing" = "Preparing...";
+"status.recording" = "Recording";
+"status.stitching" = "Stitching...";
+"status.done %lld" = "Done (%lld frames)";
+
+/* Permission */
+"permission.title" = "Permission Required";
+"permission.message" = "ScrollCap needs screen recording permission. Please grant access in System Settings > Privacy & Security > Screen Recording.";
+"permission.ok" = "OK";
+
+/* Export */
+"export.title" = "Export";
+"export.format" = "Format";
+"export.info" = "Info";
+"export.quality %lld" = "Quality: %lld%%";
+"export.dimensions" = "Dimensions";
+"export.frames" = "Frames";
+"export.save" = "Save";
+"export.share" = "Share";
+"export.sharePreview" = "ScrollCap Screenshot";
+
+/* Screenshot Detail */
+"detail.title" = "Screenshot";
+"detail.edit" = "Edit";
+"detail.export" = "Export";
+"detail.delete" = "Delete";
+"detail.done" = "Done";
+"detail.size" = "Size";
+"detail.frames" = "Frames";
+"detail.duration" = "Duration";
+"detail.method" = "Method";
+
+/* Image Editor */
+"editor.title" = "Edit";
+"editor.select" = "Select";
+"editor.crop" = "Crop";
+"editor.rectangle" = "Rectangle";
+"editor.arrow" = "Arrow";
+"editor.highlight" = "Highlight";
+"editor.cropHint" = "Drag to select crop area";
+"editor.applyCrop" = "Apply Crop";
+
+/* History */
+"history.empty" = "No Screenshots Yet";
+"history.empty.desc" = "Captured screenshots will appear here.";
+
+/* Settings */
+"settings.export" = "Export";
+"settings.capture" = "Capture";
+"settings.about" = "About";
+"settings.version" = "Version";
+"settings.build" = "Build";
+"settings.sourceCode" = "Source Code";
+"settings.captureMethod" = "Capture Method";
+"settings.showCursor" = "Show cursor in capture";
+"settings.frameRate" = "Frame Rate";
+"settings.ios.captureDesc" = "Tap the capture button, then switch to the target app and scroll. ScrollCap will record and stitch the frames automatically.";
+
+/* macOS Capture */
+"mac.selectedRegion" = "Selected Region";
+"mac.change" = "Change";
+"mac.selectRegion" = "Select Region";
+
+/* iOS Capture */
+"ios.broadcast" = "Screen Broadcast";
+"ios.broadcast.desc" = "Use the system broadcast picker to start recording. ScrollCap will capture frames from any app you use.";
+"ios.recording" = "Recording...";
+"ios.framesCaptured %lld" = "%lld frames captured";
+"ios.estimatedHeight %@" = "%@ px estimated height";
+"ios.startBroadcast" = "Start Broadcast";
+"ios.startBroadcast.desc" = "Tap the button above to start screen recording via the system broadcast picker.";
+
+/* Menu Bar (macOS) */
+"menu.quit" = "Quit ScrollCap";
+"menu.version" = "v1.0";
+"menu.capturing" = "Capturing...";
+"menu.ready" = "Ready";
+"menu.captures %lld" = "%lld captures";
+"menu.newCapture" = "New Scroll Capture";
+"menu.open" = "Open ScrollCap";
+
+/* Format Names */
+"format.png" = "PNG";
+"format.jpeg" = "JPEG";
+"format.heic" = "HEIC";
+"format.pdf" = "PDF";
+
+/* Capture Methods */
+"method.screenCaptureKit" = "ScreenCaptureKit";
+"method.replayKit" = "ReplayKit";
+"method.unknown" = "Unknown";

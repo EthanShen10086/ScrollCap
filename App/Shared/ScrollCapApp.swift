@@ -20,7 +20,7 @@ struct ScrollCapApp: App {
         .defaultSize(width: 900, height: 600)
         .commands {
             CommandGroup(after: .newItem) {
-                Button("New Scroll Capture") {
+                Button(String(localized: "capture.newScroll")) {
                     startQuickCapture()
                 }
                 .keyboardShortcut("6", modifiers: [.command, .shift])

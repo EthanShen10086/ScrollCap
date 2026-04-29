@@ -17,7 +17,7 @@ struct ScreenshotDetailView: View {
             }
             .padding(SCTheme.Spacing.md)
         }
-        .navigationTitle("Screenshot")
+        .navigationTitle("detail.title")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
@@ -26,19 +26,19 @@ struct ScreenshotDetailView: View {
                 Button {
                     showEditor = true
                 } label: {
-                    Label("Edit", systemImage: "pencil")
+                    Label("detail.edit", systemImage: "pencil")
                 }
 
                 Button {
                     showExport = true
                 } label: {
-                    Label("Export", systemImage: "square.and.arrow.up")
+                    Label("detail.export", systemImage: "square.and.arrow.up")
                 }
 
                 Button(role: .destructive) {
                     appState.removeScreenshot(screenshot)
                 } label: {
-                    Label("Delete", systemImage: "trash")
+                    Label("detail.delete", systemImage: "trash")
                 }
             }
         }
@@ -47,7 +47,7 @@ struct ScreenshotDetailView: View {
                 ImageEditorView(screenshot: screenshot)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
-                            Button("Done") { showEditor = false }
+                            Button("detail.done") { showEditor = false }
                         }
                     }
             }
@@ -73,10 +73,10 @@ struct ScreenshotDetailView: View {
 
     private var metadataBar: some View {
         HStack(spacing: SCTheme.Spacing.lg) {
-            metadataItem(icon: "ruler", label: "Size", value: "\(screenshot.image.width)×\(screenshot.image.height)")
-            metadataItem(icon: "square.stack.3d.up", label: "Frames", value: "\(screenshot.metadata.frameCount)")
-            metadataItem(icon: "clock", label: "Duration", value: String(format: "%.1fs", screenshot.metadata.durationSeconds))
-            metadataItem(icon: "gearshape", label: "Method", value: screenshot.metadata.captureMethod.rawValue)
+            metadataItem(icon: "ruler", label: String(localized: "detail.size"), value: "\(screenshot.image.width)×\(screenshot.image.height)")
+            metadataItem(icon: "square.stack.3d.up", label: String(localized: "detail.frames"), value: "\(screenshot.metadata.frameCount)")
+            metadataItem(icon: "clock", label: String(localized: "detail.duration"), value: String(format: "%.1fs", screenshot.metadata.durationSeconds))
+            metadataItem(icon: "gearshape", label: String(localized: "detail.method"), value: screenshot.metadata.captureMethod.rawValue)
         }
         .padding(SCTheme.Spacing.sm)
         .adaptiveGlass(cornerRadius: SCTheme.CornerRadius.md)

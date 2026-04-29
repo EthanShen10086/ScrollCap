@@ -44,7 +44,7 @@ struct ContentView: View {
                         CaptureView()
                     }
                     .tabItem {
-                        Label("Capture", systemImage: "camera.viewfinder")
+                        Label("nav.capture", systemImage: "camera.viewfinder")
                     }
                     .tag(Optional(AppDestination.capture))
 
@@ -52,7 +52,7 @@ struct ContentView: View {
                         HistoryView()
                     }
                     .tabItem {
-                        Label("History", systemImage: "clock.arrow.circlepath")
+                        Label("nav.history", systemImage: "clock.arrow.circlepath")
                     }
                     .tag(Optional(AppDestination.history))
 
@@ -60,7 +60,7 @@ struct ContentView: View {
                         SettingsView()
                     }
                     .tabItem {
-                        Label("Settings", systemImage: "gear")
+                        Label("nav.settings", systemImage: "gear")
                     }
                     .tag(Optional(AppDestination.settings))
                 }
@@ -79,7 +79,7 @@ struct ContentView: View {
                     .tag(dest)
             }
         }
-        .navigationTitle("ScrollCap")
+        .navigationTitle("nav.scrollcap")
     }
 
     @ViewBuilder
