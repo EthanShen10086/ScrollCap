@@ -26,7 +26,9 @@ struct ScrollCapApp: App {
                 .keyboardShortcut("6", modifiers: [.command, .shift])
             }
         }
+        #endif
 
+        #if os(macOS)
         MenuBarExtra("ScrollCap", systemImage: "camera.viewfinder") {
             MenuBarView()
                 .environment(appState)

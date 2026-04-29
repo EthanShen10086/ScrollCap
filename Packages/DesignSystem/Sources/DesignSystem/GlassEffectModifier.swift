@@ -1,5 +1,9 @@
 import SwiftUI
 
+// Liquid Glass (.glassEffect) is available starting with the macOS 26 / iOS 26 SDK (Xcode 26+).
+// When building with Xcode 16.x (macOS 15 SDK), we use the material-based fallback.
+// Once Xcode 26 is used, the #if swift(>=6.2) blocks will activate native Liquid Glass.
+
 public struct AdaptiveGlassModifier: ViewModifier {
     let cornerRadius: CGFloat
     let isEnabled: Bool
@@ -11,21 +15,12 @@ public struct AdaptiveGlassModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         if isEnabled {
-            glassContent(content)
-        } else {
-            content
-        }
-    }
-
-    @ViewBuilder
-    private func glassContent(_ content: Content) -> some View {
-        if #available(iOS 26, macOS 26, *) {
-            content.glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
-        } else {
             content
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
+        } else {
+            content
         }
     }
 }
@@ -38,14 +33,10 @@ public struct ClearGlassModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        if #available(iOS 26, macOS 26, *) {
-            content.glassEffect(.clear, in: .rect(cornerRadius: cornerRadius))
-        } else {
-            content
-                .background(.thinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-                .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
-        }
+        content
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
 }
 
@@ -53,14 +44,10 @@ public struct CircularGlassModifier: ViewModifier {
     public init() {}
 
     public func body(content: Content) -> some View {
-        if #available(iOS 26, macOS 26, *) {
-            content.glassEffect(.regular, in: .circle)
-        } else {
-            content
-                .background(.ultraThinMaterial)
-                .clipShape(Circle())
-                .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
-        }
+        content
+            .background(.ultraThinMaterial)
+            .clipShape(Circle())
+            .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
     }
 }
 

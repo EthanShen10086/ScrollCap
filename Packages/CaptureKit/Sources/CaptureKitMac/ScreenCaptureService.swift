@@ -1,7 +1,7 @@
 #if os(macOS)
 import Foundation
 import CoreGraphics
-import ScreenCaptureKit
+@preconcurrency import ScreenCaptureKit
 import SharedModels
 import CaptureKit
 import StitchingEngine

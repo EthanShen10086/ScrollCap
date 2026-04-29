@@ -77,8 +77,13 @@ struct CaptureView: View {
     // MARK: - Background
 
     private var backgroundGradient: some View {
-        Color(.systemBackground)
+        #if os(macOS)
+        Color(NSColor.windowBackgroundColor)
             .ignoresSafeArea()
+        #else
+        Color(UIColor.systemBackground)
+            .ignoresSafeArea()
+        #endif
     }
 
     // MARK: - Idle State
