@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [master, main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-packages:
     name: Build Swift Packages
@@ -16,20 +20,13 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
 
-      - name: Build SharedModels
-        run: cd Packages/SharedModels && swift build
-
-      - name: Build DesignSystem
-        run: cd Packages/DesignSystem && swift build
-
-      - name: Build StitchingEngine
-        run: cd Packages/StitchingEngine && swift build
-
-      - name: Build CaptureKit
-        run: cd Packages/CaptureKit && swift build
-
-      - name: Build ImageEditor
-        run: cd Packages/ImageEditor && swift build
+      - name: Resolve Package Dependencies
+        run: |
+          for pkg in SharedModels DesignSystem StitchingEngine CaptureKit ImageEditor; do
+            echo "::group::Build $pkg"
+            cd Packages/$pkg && swift build && cd ../..
+            echo "::endgroup::"
+          done
 
   test-packages:
     name: Test Swift Packages
@@ -51,12 +48,18 @@ jobs:
         run: cd Packages/ImageEditor && swift test
 
   build-xcode:
-    name: Build Xcode Project
+    name: Build ${{ matrix.scheme }} (${{ matrix.platform }})
     runs-on: macos-15
     needs: build-packages
     strategy:
       matrix:
-        scheme: [ScrollCap-macOS]
+        include:
+          - scheme: ScrollCap-macOS
+            platform: macOS
+            destination: "platform=macOS"
+          - scheme: ScrollCap-iOS
+            platform: iOS Simulator
+            destination: "platform=iOS Simulator,name=iPhone 16 Pro"
     steps:
       - uses: actions/checkout@v4
 
@@ -74,6 +77,12 @@ jobs:
           xcodebuild build \
             -project ScrollCap.xcodeproj \
             -scheme ${{ matrix.scheme }} \
-            -destination "platform=macOS" \
+            -destination "${{ matrix.destination }}" \
+            -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
-            | tail -20
+            ONLY_ACTIVE_ARCH=YES \
+            2>&1 | xcpretty || true
+
+      - name: Build Result
+        if: always()
+        run: echo "Build for ${{ matrix.scheme }} completed"
