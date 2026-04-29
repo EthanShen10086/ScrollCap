@@ -16,12 +16,12 @@ struct PaywallView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: SCTheme.Spacing.xl) {
-                    headerSection
-                    featuresSection
-                    paymentMethodSection
-                    pricingSection
-                    subscriptionInfoSection
-                    restoreButton
+                    self.headerSection
+                    self.featuresSection
+                    self.paymentMethodSection
+                    self.pricingSection
+                    self.subscriptionInfoSection
+                    self.restoreButton
                 }
                 .padding(SCTheme.Spacing.lg)
             }
@@ -32,15 +32,15 @@ struct PaywallView: View {
             #endif
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("detail.done") { dismiss() }
+                        Button("detail.done") { self.dismiss() }
                     }
                 }
                 .task {
                     await StoreManager.shared.loadProducts()
                 }
                 .alert("error.title", isPresented: .init(
-                    get: { errorMessage != nil },
-                    set: { if !$0 { errorMessage = nil } }
+                    get: { self.errorMessage != nil },
+                    set: { if !$0 { self.errorMessage = nil } }
                 )) {
                     Button("permission.ok") {}
                 } message: {
@@ -48,8 +48,8 @@ struct PaywallView: View {
                         Text(error)
                     }
                 }
-                .alert("paywall.success", isPresented: $showSuccessAlert) {
-                    Button("permission.ok") { dismiss() }
+                .alert("paywall.success", isPresented: self.$showSuccessAlert) {
+                    Button("permission.ok") { self.dismiss() }
                 }
         }
         #if os(macOS)
@@ -100,7 +100,7 @@ struct PaywallView: View {
         .padding(SCTheme.Spacing.lg)
         .background {
             RoundedRectangle(cornerRadius: SCTheme.CornerRadius.lg)
-                .fill(cardFill)
+                .fill(self.cardFill)
         }
     }
 
@@ -120,17 +120,17 @@ struct PaywallView: View {
                 spacing: SCTheme.Spacing.sm
             ) {
                 ForEach(PaymentMethod.allCases.filter(\.isAvailable), id: \.rawValue) { method in
-                    paymentMethodButton(method)
+                    self.paymentMethodButton(method)
                 }
             }
         }
     }
 
     private func paymentMethodButton(_ method: PaymentMethod) -> some View {
-        let isSelected = selectedPaymentMethod == method
+        let isSelected = self.selectedPaymentMethod == method
         return Button {
             withAnimation(SCTheme.Animation.snappy) {
-                selectedPaymentMethod = method
+                self.selectedPaymentMethod = method
             }
         } label: {
             VStack(spacing: 4) {
@@ -145,7 +145,7 @@ struct PaywallView: View {
             .foregroundStyle(isSelected ? .white : .primary)
             .background {
                 RoundedRectangle(cornerRadius: SCTheme.CornerRadius.sm)
-                    .fill(isSelected ? AnyShapeStyle(SCTheme.Gradients.brand) : AnyShapeStyle(cardFill))
+                    .fill(isSelected ? AnyShapeStyle(SCTheme.Gradients.brand) : AnyShapeStyle(self.cardFill))
                     .overlay(
                         RoundedRectangle(cornerRadius: SCTheme.CornerRadius.sm)
                             .stroke(isSelected ? Color.clear : Color.secondary.opacity(0.2), lineWidth: 1)
@@ -159,10 +159,10 @@ struct PaywallView: View {
 
     private var pricingSection: some View {
         VStack(spacing: SCTheme.Spacing.md) {
-            if selectedPaymentMethod == .applePurchase {
-                storeKitPricingSection
+            if self.selectedPaymentMethod == .applePurchase {
+                self.storeKitPricingSection
             } else {
-                externalPricingSection
+                self.externalPricingSection
             }
         }
     }
@@ -186,14 +186,14 @@ struct PaywallView: View {
                 .padding()
             } else {
                 ForEach(StoreManager.shared.products, id: \.id) { product in
-                    productCard(product)
+                    self.productCard(product)
                 }
 
                 if let selected = selectedProduct {
                     BrandedButton("paywall.subscribe", systemImage: "sparkles") {
-                        Task { await purchaseViaStoreKit(selected) }
+                        Task { await self.purchaseViaStoreKit(selected) }
                     }
-                    .disabled(isPurchasing)
+                    .disabled(self.isPurchasing)
                     .padding(.top, SCTheme.Spacing.sm)
                 }
             }
@@ -202,18 +202,18 @@ struct PaywallView: View {
 
     private var externalPricingSection: some View {
         VStack(spacing: SCTheme.Spacing.md) {
-            externalProductRow(
+            self.externalProductRow(
                 name: String(localized: "pro.title"),
                 description: "paywall.lifetime.desc",
-                price: selectedPaymentMethod.localizedPrice
+                price: self.selectedPaymentMethod.localizedPrice
             )
 
             BrandedButton("paywall.payNow", systemImage: "creditcard") {
-                Task { await purchaseViaExternal() }
+                Task { await self.purchaseViaExternal() }
             }
-            .disabled(isPurchasing)
+            .disabled(self.isPurchasing)
 
-            if isPurchasing {
+            if self.isPurchasing {
                 ProgressView()
                     .padding(.top, SCTheme.Spacing.sm)
             }
@@ -237,7 +237,7 @@ struct PaywallView: View {
         .padding(SCTheme.Spacing.md)
         .background {
             RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md)
-                .fill(cardFill)
+                .fill(self.cardFill)
         }
     }
 
@@ -275,16 +275,16 @@ struct PaywallView: View {
             .padding(SCTheme.Spacing.md)
             .background {
                 RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md)
-                    .fill(cardFill)
+                    .fill(self.cardFill)
             }
         }
     }
 
     private func productCard(_ product: Product) -> some View {
-        let isSelected = selectedProduct?.id == product.id
+        let isSelected = self.selectedProduct?.id == product.id
         return Button {
             withAnimation(SCTheme.Animation.snappy) {
-                selectedProduct = product
+                self.selectedProduct = product
             }
         } label: {
             HStack {
@@ -306,7 +306,7 @@ struct PaywallView: View {
             .padding(SCTheme.Spacing.md)
             .background {
                 RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md)
-                    .fill(isSelected ? AnyShapeStyle(SCTheme.Gradients.brand) : AnyShapeStyle(cardFill))
+                    .fill(isSelected ? AnyShapeStyle(SCTheme.Gradients.brand) : AnyShapeStyle(self.cardFill))
                     .overlay(
                         RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md)
                             .stroke(isSelected ? Color.clear : Color.secondary.opacity(0.2), lineWidth: 1)
@@ -326,18 +326,18 @@ struct PaywallView: View {
             Task {
                 await StoreManager.shared.restorePurchases()
                 if StoreManager.shared.isPro {
-                    restoreMessage = String(localized: "paywall.restoreSuccess")
+                    self.restoreMessage = String(localized: "paywall.restoreSuccess")
                 } else {
-                    restoreMessage = String(localized: "paywall.restoreEmpty")
+                    self.restoreMessage = String(localized: "paywall.restoreEmpty")
                 }
-                showRestoreAlert = true
+                self.showRestoreAlert = true
             }
         }
         .font(SCTheme.Typography.caption)
         .foregroundStyle(.secondary)
-        .alert("paywall.restore", isPresented: $showRestoreAlert) {
+        .alert("paywall.restore", isPresented: self.$showRestoreAlert) {
             Button("permission.ok") {
-                if StoreManager.shared.isPro { dismiss() }
+                if StoreManager.shared.isPro { self.dismiss() }
             }
         } message: {
             if let msg = restoreMessage { Text(msg) }
@@ -347,31 +347,31 @@ struct PaywallView: View {
     // MARK: - Purchase Flows
 
     private func purchaseViaStoreKit(_ product: Product) async {
-        isPurchasing = true
+        self.isPurchasing = true
         defer { isPurchasing = false }
 
         do {
             let success = try await StoreManager.shared.purchase(product)
-            if success { dismiss() }
+            if success { self.dismiss() }
         } catch {
-            errorMessage = error.localizedDescription
+            self.errorMessage = error.localizedDescription
         }
     }
 
     private func purchaseViaExternal() async {
-        isPurchasing = true
+        self.isPurchasing = true
         defer { isPurchasing = false }
 
         do {
             let result = try await executeExternalPayment()
-            handlePaymentResult(result)
+            self.handlePaymentResult(result)
         } catch {
-            errorMessage = error.localizedDescription
+            self.errorMessage = error.localizedDescription
         }
     }
 
     private func executeExternalPayment() async throws -> PaymentResult {
-        switch selectedPaymentMethod {
+        switch self.selectedPaymentMethod {
         case .applePay:
             return await ApplePayService.shared.requestPayment(
                 amount: 29.99, currency: "CNY", productDescription: String(localized: "pro.title")
@@ -399,15 +399,15 @@ struct PaywallView: View {
 
     private func handlePaymentResult(_ result: PaymentResult) {
         switch result {
-        case .success: showSuccessAlert = true
+        case .success: self.showSuccessAlert = true
         case .cancelled: break
-        case let .failed(error): errorMessage = error.localizedDescription
+        case let .failed(error): self.errorMessage = error.localizedDescription
         }
     }
 
     // MARK: - Helpers
 
     private var cardFill: some ShapeStyle {
-        colorScheme == .dark ? AnyShapeStyle(Color.white.opacity(0.05)) : AnyShapeStyle(Color.white.opacity(0.8))
+        self.colorScheme == .dark ? AnyShapeStyle(Color.white.opacity(0.05)) : AnyShapeStyle(Color.white.opacity(0.8))
     }
 }

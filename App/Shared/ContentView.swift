@@ -6,9 +6,9 @@ struct ContentView: View {
 
     var body: some View {
         #if os(macOS)
-        macOSLayout
+        self.macOSLayout
         #elseif os(iOS)
-        iOSLayout
+        self.iOSLayout
         #endif
     }
 
@@ -16,12 +16,12 @@ struct ContentView: View {
 
     #if os(macOS)
     private var macOSLayout: some View {
-        @Bindable var state = appState
+        @Bindable var state = self.appState
         return NavigationSplitView {
-            sidebarContent
+            self.sidebarContent
                 .navigationSplitViewColumnWidth(min: 200, ideal: 240, max: 300)
         } detail: {
-            detailContent
+            self.detailContent
         }
     }
     #endif
@@ -30,14 +30,15 @@ struct ContentView: View {
 
     #if os(iOS)
     private var iOSLayout: some View {
-        @Bindable var state = appState
+        @Bindable var state = self.appState
         return Group {
             if UIDevice.current.userInterfaceIdiom == .pad {
                 NavigationSplitView {
-                    sidebarContent
+                    self.sidebarContent
                 } detail: {
-                    detailContent
+                    self.detailContent
                 }
+                .environment(\.platformMetrics, PadMetrics())
             } else {
                 TabView(selection: $state.selectedDestination) {
                     NavigationStack {
@@ -72,7 +73,7 @@ struct ContentView: View {
     // MARK: - Shared Components
 
     private var sidebarContent: some View {
-        @Bindable var state = appState
+        @Bindable var state = self.appState
         return List(selection: $state.selectedDestination) {
             ForEach([AppDestination.capture, .history, .settings]) { dest in
                 Label(dest.title, systemImage: dest.systemImage)
@@ -84,7 +85,7 @@ struct ContentView: View {
 
     @ViewBuilder
     private var detailContent: some View {
-        switch appState.selectedDestination ?? .capture {
+        switch self.appState.selectedDestination ?? .capture {
         case .capture:
             CaptureView()
                 .onAppear { AnalyticsManager.shared.track(.screenViewed(name: "capture")) }

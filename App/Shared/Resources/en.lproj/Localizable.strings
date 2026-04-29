@@ -260,4 +260,5 @@
 "mac.pixels %lld %lld" = "%lld×%lld px";
 
 /* History Accessibility */
+"a11y.screenshot.label %@" = "Screenshot taken %@";
 "a11y.screenshot.hint %lld %lld %lld" = "%lld frames, %lld×%lld";

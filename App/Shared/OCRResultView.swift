@@ -1,4 +1,5 @@
 import DesignSystem
+import ImageEditor
 import SwiftUI
 
 struct OCRResultView: View {
@@ -11,7 +12,7 @@ struct OCRResultView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                if isLoading {
+                if self.isLoading {
                     VStack(spacing: SCTheme.Spacing.md) {
                         ProgressView()
                             .controlSize(.large)
@@ -32,7 +33,7 @@ struct OCRResultView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
-                        Text(recognizedText)
+                        Text(self.recognizedText)
                             .font(SCTheme.Typography.body)
                             .textSelection(.enabled)
                             .padding(SCTheme.Spacing.md)
@@ -46,13 +47,13 @@ struct OCRResultView: View {
             #endif
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("detail.done") { dismiss() }
+                        Button("detail.done") { self.dismiss() }
                     }
 
-                    if !recognizedText.isEmpty {
+                    if !self.recognizedText.isEmpty {
                         ToolbarItem(placement: .primaryAction) {
                             Button {
-                                copyToClipboard()
+                                self.copyToClipboard()
                             } label: {
                                 Label("ocr.copy", systemImage: "doc.on.doc")
                             }
@@ -61,7 +62,7 @@ struct OCRResultView: View {
                 }
         }
         .task {
-            await performOCR()
+            await self.performOCR()
         }
         #if os(macOS)
         .frame(minWidth: 400, minHeight: 300)
@@ -71,24 +72,24 @@ struct OCRResultView: View {
     private func performOCR() async {
         let ocrService = OCRService()
         do {
-            let text = try await ocrService.recognizeFullText(in: image)
-            recognizedText = text.isEmpty ? String(localized: "ocr.noText") : text
+            let text = try await ocrService.recognizeFullText(in: self.image)
+            self.recognizedText = text.isEmpty ? String(localized: "ocr.noText") : text
             if !text.isEmpty {
                 AnalyticsManager.shared.track(.ocrPerformed(characterCount: text.count))
             }
         } catch {
-            errorMessage = error.localizedDescription
+            self.errorMessage = error.localizedDescription
             AnalyticsManager.shared.track(.ocrFailed(error: error.localizedDescription))
         }
-        isLoading = false
+        self.isLoading = false
     }
 
     private func copyToClipboard() {
         #if os(macOS)
         NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(recognizedText, forType: .string)
+        NSPasteboard.general.setString(self.recognizedText, forType: .string)
         #elseif os(iOS)
-        UIPasteboard.general.string = recognizedText
+        UIPasteboard.general.string = self.recognizedText
         #endif
     }
 }

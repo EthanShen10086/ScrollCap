@@ -7,15 +7,15 @@ struct MenuBarView: View {
 
     var body: some View {
         VStack(spacing: SCTheme.Spacing.sm) {
-            headerSection
+            self.headerSection
 
             Divider()
 
-            actionButtons
+            self.actionButtons
 
             Divider()
 
-            statusSection
+            self.statusSection
 
             Divider()
 
@@ -49,16 +49,16 @@ struct MenuBarView: View {
     private var actionButtons: some View {
         VStack(spacing: SCTheme.Spacing.xs) {
             Button {
-                startQuickCapture()
+                self.startQuickCapture()
             } label: {
                 Label("menu.newCapture", systemImage: "scroll")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .keyboardShortcut("n")
-            .disabled(appState.isCapturing)
+            .disabled(self.appState.isCapturing)
 
             Button {
-                openMainWindow()
+                self.openMainWindow()
             } label: {
                 Label("menu.open", systemImage: "macwindow")
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -71,16 +71,16 @@ struct MenuBarView: View {
     private var statusSection: some View {
         HStack {
             Circle()
-                .fill(appState.isCapturing ? SCTheme.Colors.captureActive : .green)
+                .fill(self.appState.isCapturing ? SCTheme.Colors.captureActive : .green)
                 .frame(width: 8, height: 8)
 
-            Text(appState.isCapturing ? String(localized: "menu.capturing") : String(localized: "menu.ready"))
+            Text(self.appState.isCapturing ? String(localized: "menu.capturing") : String(localized: "menu.ready"))
                 .font(SCTheme.Typography.caption)
                 .foregroundStyle(.secondary)
 
             Spacer()
 
-            Text("menu.captures \(appState.screenshots.count)")
+            Text("menu.captures \(self.appState.screenshots.count)")
                 .font(SCTheme.Typography.monoCaption)
                 .foregroundStyle(.tertiary)
         }
@@ -88,7 +88,7 @@ struct MenuBarView: View {
     }
 
     private func startQuickCapture() {
-        appState.captureState = .selectingRegion
+        self.appState.captureState = .selectingRegion
     }
 
     private func openMainWindow() {

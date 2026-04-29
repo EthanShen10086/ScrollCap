@@ -7,6 +7,12 @@ public struct CaptureButton: View {
     let action: () -> Void
     @State private var pulseScale: CGFloat = 1.0
     @State private var isPressed = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.userMode) private var userMode
+
+    private var shouldReduceMotion: Bool {
+        self.reduceMotion || self.userMode == .elder
+    }
 
     public init(isCapturing: Bool, action: @escaping () -> Void) {
         self.isCapturing = isCapturing
@@ -14,33 +20,35 @@ public struct CaptureButton: View {
     }
 
     public var body: some View {
-        Button(action: action) {
+        Button(action: self.action) {
             ZStack {
-                if !isCapturing {
+                if !self.isCapturing {
                     Circle()
                         .fill(SCTheme.Colors.captureReady.opacity(0.15))
                         .frame(width: 80, height: 80)
-                        .scaleEffect(pulseScale)
+                        .scaleEffect(self.shouldReduceMotion ? 1.0 : self.pulseScale)
                         .onAppear {
+                            guard !self.shouldReduceMotion else { return }
                             withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-                                pulseScale = 1.15
+                                self.pulseScale = 1.15
                             }
                         }
                 } else {
                     Circle()
                         .fill(SCTheme.Colors.captureActive.opacity(0.2))
                         .frame(width: 88, height: 88)
-                        .scaleEffect(pulseScale)
+                        .scaleEffect(self.shouldReduceMotion ? 1.0 : self.pulseScale)
                         .onAppear {
+                            guard !self.shouldReduceMotion else { return }
                             withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
-                                pulseScale = 1.1
+                                self.pulseScale = 1.1
                             }
                         }
                 }
 
                 Circle()
                     .fill(
-                        isCapturing
+                        self.isCapturing
                             ? LinearGradient(
                                 colors: [SCTheme.Colors.captureActive, SCTheme.Colors.captureActive.opacity(0.8)],
                                 startPoint: .top,
@@ -54,12 +62,13 @@ public struct CaptureButton: View {
                     )
                     .frame(width: 64, height: 64)
                     .shadow(
-                        color: (isCapturing ? SCTheme.Colors.captureActive : SCTheme.Colors.brandBlue).opacity(0.4),
+                        color: (self.isCapturing ? SCTheme.Colors.captureActive : SCTheme.Colors.brandBlue)
+                            .opacity(0.4),
                         radius: 12,
                         y: 4
                     )
 
-                if isCapturing {
+                if self.isCapturing {
                     RoundedRectangle(cornerRadius: 6)
                         .fill(.white)
                         .frame(width: 22, height: 22)
@@ -73,10 +82,10 @@ public struct CaptureButton: View {
             }
         }
         .buttonStyle(ScaleButtonStyle())
-        .accessibilityLabel(isCapturing ? Text("a11y.capture.stop") : Text("a11y.capture.start"))
-        .accessibilityHint(isCapturing ? Text("a11y.capture.stop.hint") : Text("a11y.capture.hint"))
+        .accessibilityLabel(self.isCapturing ? Text("a11y.capture.stop") : Text("a11y.capture.start"))
+        .accessibilityHint(self.isCapturing ? Text("a11y.capture.stop.hint") : Text("a11y.capture.hint"))
         .accessibilityAddTraits(.isButton)
-        .animation(SCTheme.Animation.spring, value: isCapturing)
+        .animation(SCTheme.Animation.spring, value: self.isCapturing)
     }
 }
 
@@ -104,15 +113,15 @@ public struct StatusPill: View {
     }
 
     public var body: some View {
-        Text(text)
+        Text(self.text)
             .font(SCTheme.Typography.caption)
             .fontWeight(.medium)
             .foregroundStyle(.white)
             .padding(.horizontal, SCTheme.Spacing.sm + 4)
             .padding(.vertical, SCTheme.Spacing.xs + 2)
-            .background(color.gradient, in: Capsule())
-            .shadow(color: color.opacity(0.3), radius: 4, y: 2)
-            .accessibilityLabel(text)
+            .background(self.color.gradient, in: Capsule())
+            .shadow(color: self.color.opacity(0.3), radius: 4, y: 2)
+            .accessibilityLabel(self.text)
             .accessibilityAddTraits(.isStaticText)
     }
 }
@@ -128,7 +137,7 @@ public struct GlassCard<Content: View>: View {
     }
 
     public var body: some View {
-        content
+        self.content
             .padding(SCTheme.Spacing.md)
             .background {
                 RoundedRectangle(cornerRadius: SCTheme.CornerRadius.lg)
@@ -138,8 +147,8 @@ public struct GlassCard<Content: View>: View {
                             .stroke(
                                 LinearGradient(
                                     colors: [
-                                        Color.white.opacity(colorScheme == .dark ? 0.15 : 0.4),
-                                        Color.white.opacity(colorScheme == .dark ? 0.05 : 0.1),
+                                        Color.white.opacity(self.colorScheme == .dark ? 0.15 : 0.4),
+                                        Color.white.opacity(self.colorScheme == .dark ? 0.05 : 0.1),
                                     ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
@@ -148,7 +157,7 @@ public struct GlassCard<Content: View>: View {
                             )
                     )
                     .shadow(
-                        color: colorScheme == .dark ? .black.opacity(0.3) : .black.opacity(0.08),
+                        color: self.colorScheme == .dark ? .black.opacity(0.3) : .black.opacity(0.08),
                         radius: 12, y: 6
                     )
             }
@@ -161,6 +170,12 @@ public struct EmptyStateView: View {
     let systemImage: String
     let title: String
     let description: String
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.userMode) private var userMode
+
+    private var shouldReduceMotion: Bool {
+        self.reduceMotion || self.userMode == .elder
+    }
 
     public init(systemImage: String, title: String, description: String) {
         self.systemImage = systemImage
@@ -170,14 +185,14 @@ public struct EmptyStateView: View {
 
     public var body: some View {
         VStack(spacing: SCTheme.Spacing.lg) {
-            emptyStateIcon
+            self.emptyStateIcon
                 .accessibilityHidden(true)
 
             VStack(spacing: SCTheme.Spacing.sm) {
-                Text(title)
+                Text(self.title)
                     .font(SCTheme.Typography.title)
 
-                Text(description)
+                Text(self.description)
                     .font(SCTheme.Typography.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -193,7 +208,9 @@ public struct EmptyStateView: View {
         let base = Image(systemName: systemImage)
             .font(.system(size: 56, weight: .light))
             .foregroundStyle(SCTheme.Gradients.brand)
-        if #available(iOS 18.0, macOS 15.0, *) {
+        if self.shouldReduceMotion {
+            base
+        } else if #available(iOS 18.0, macOS 15.0, *) {
             base.symbolEffect(.bounce, options: .repeating.speed(0.3))
         } else {
             base
@@ -216,8 +233,8 @@ public struct GlassButton: View {
     }
 
     public var body: some View {
-        Button(action: action) {
-            Label(title, systemImage: systemImage)
+        Button(action: self.action) {
+            Label(self.title, systemImage: self.systemImage)
                 .font(SCTheme.Typography.callout)
                 .fontWeight(.medium)
                 .foregroundStyle(.primary)
@@ -226,7 +243,7 @@ public struct GlassButton: View {
                 .background(.ultraThinMaterial, in: Capsule())
                 .overlay(
                     Capsule()
-                        .stroke(Color.white.opacity(colorScheme == .dark ? 0.1 : 0.3), lineWidth: 0.5)
+                        .stroke(Color.white.opacity(self.colorScheme == .dark ? 0.1 : 0.3), lineWidth: 0.5)
                 )
         }
         .buttonStyle(ScaleButtonStyle())
@@ -247,8 +264,8 @@ public struct BrandedButton: View {
     }
 
     public var body: some View {
-        Button(action: action) {
-            Label(title, systemImage: systemImage)
+        Button(action: self.action) {
+            Label(self.title, systemImage: self.systemImage)
                 .font(SCTheme.Typography.callout)
                 .fontWeight(.semibold)
                 .foregroundStyle(.white)
@@ -272,7 +289,7 @@ public struct FloatingActionBar<Content: View>: View {
     }
 
     public var body: some View {
-        content
+        self.content
             .padding(.horizontal, SCTheme.Spacing.lg)
             .padding(.vertical, SCTheme.Spacing.md)
             .background {
@@ -280,10 +297,10 @@ public struct FloatingActionBar<Content: View>: View {
                     .fill(.ultraThinMaterial)
                     .overlay(
                         Capsule()
-                            .stroke(Color.white.opacity(colorScheme == .dark ? 0.1 : 0.25), lineWidth: 0.5)
+                            .stroke(Color.white.opacity(self.colorScheme == .dark ? 0.1 : 0.25), lineWidth: 0.5)
                     )
                     .shadow(
-                        color: colorScheme == .dark ? .black.opacity(0.4) : .black.opacity(0.1),
+                        color: self.colorScheme == .dark ? .black.opacity(0.4) : .black.opacity(0.1),
                         radius: 20, y: 8
                     )
             }
@@ -308,9 +325,9 @@ public struct ScreenshotCard: View {
     }
 
     public var body: some View {
-        Button(action: action) {
+        Button(action: self.action) {
             VStack(alignment: .leading, spacing: SCTheme.Spacing.sm) {
-                Image(decorative: image, scale: 1.0)
+                Image(decorative: self.image, scale: 1.0)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 160)
@@ -318,13 +335,13 @@ public struct ScreenshotCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md))
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
+                    Text(self.title)
                         .font(SCTheme.Typography.caption)
                         .fontWeight(.medium)
                         .foregroundStyle(.primary)
                         .lineLimit(1)
 
-                    Text(subtitle)
+                    Text(self.subtitle)
                         .font(SCTheme.Typography.caption2)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -334,23 +351,23 @@ public struct ScreenshotCard: View {
             .padding(SCTheme.Spacing.sm)
             .background {
                 RoundedRectangle(cornerRadius: SCTheme.CornerRadius.lg)
-                    .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.white)
+                    .fill(self.colorScheme == .dark ? Color.white.opacity(0.05) : Color.white)
                     .shadow(
-                        color: colorScheme == .dark ? .black.opacity(0.3) : .black.opacity(0.06),
-                        radius: isHovered ? 16 : 8,
-                        y: isHovered ? 8 : 4
+                        color: self.colorScheme == .dark ? .black.opacity(0.3) : .black.opacity(0.06),
+                        radius: self.isHovered ? 16 : 8,
+                        y: self.isHovered ? 8 : 4
                     )
             }
-            .scaleEffect(isHovered ? 1.02 : 1.0)
-            .animation(SCTheme.Animation.gentle, value: isHovered)
+            .scaleEffect(self.isHovered ? 1.02 : 1.0)
+            .animation(SCTheme.Animation.gentle, value: self.isHovered)
         }
         .buttonStyle(.plain)
         .onHover { hovering in
-            isHovered = hovering
+            self.isHovered = hovering
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(title)
-        .accessibilityHint(subtitle)
+        .accessibilityLabel(self.title)
+        .accessibilityHint(self.subtitle)
         .accessibilityAddTraits(.isButton)
     }
 }

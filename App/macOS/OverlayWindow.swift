@@ -9,7 +9,7 @@ final class OverlayWindowController {
     private var onRegionSelected: ((CaptureRegion) -> Void)?
 
     func showRegionSelector(onSelected: @escaping (CaptureRegion) -> Void) {
-        onRegionSelected = onSelected
+        self.onRegionSelected = onSelected
 
         guard let screen = NSScreen.main else { return }
 
@@ -37,13 +37,13 @@ final class OverlayWindowController {
         hostingView.frame = screen.frame
         window.contentView = hostingView
 
-        overlayWindow = window
+        self.overlayWindow = window
         window.makeKeyAndOrderFront(nil)
     }
 
     func dismiss() {
-        overlayWindow?.orderOut(nil)
-        overlayWindow = nil
+        self.overlayWindow?.orderOut(nil)
+        self.overlayWindow = nil
     }
 }
 #endif

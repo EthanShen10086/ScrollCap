@@ -15,11 +15,11 @@ struct ScreenshotDetailView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: SCTheme.Spacing.md) {
-                imagePreview(in: geometry)
-                metadataBar
+                self.imagePreview(in: geometry)
+                self.metadataBar
 
-                if userMode == .elder {
-                    elderActionButtons
+                if self.userMode == .elder {
+                    self.elderActionButtons
                 }
             }
             .padding(SCTheme.Spacing.md)
@@ -31,42 +31,42 @@ struct ScreenshotDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
         #endif
             .toolbar {
-                if userMode != .elder {
+                if self.userMode != .elder {
                     ToolbarItemGroup {
                         Button {
-                            showOCR = true
+                            self.showOCR = true
                         } label: {
                             Label("ocr.title", systemImage: "text.viewfinder")
                         }
 
-                        if userMode != .minor {
+                        if self.userMode != .minor {
                             Button {
-                                showEditor = true
+                                self.showEditor = true
                             } label: {
                                 Label("detail.edit", systemImage: "pencil")
                             }
                         }
 
                         Button {
-                            showExport = true
+                            self.showExport = true
                         } label: {
                             Label("detail.export", systemImage: "square.and.arrow.up")
                         }
 
                         Button(role: .destructive) {
-                            appState.removeScreenshot(screenshot)
+                            self.appState.removeScreenshot(self.screenshot)
                         } label: {
                             Label("detail.delete", systemImage: "trash")
                         }
                     }
                 }
             }
-            .sheet(isPresented: $showEditor) {
+            .sheet(isPresented: self.$showEditor) {
                 NavigationStack {
-                    ImageEditorView(screenshot: screenshot)
+                    ImageEditorView(screenshot: self.screenshot)
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
-                                Button("detail.done") { showEditor = false }
+                                Button("detail.done") { self.showEditor = false }
                             }
                         }
                 }
@@ -74,17 +74,17 @@ struct ScreenshotDetailView: View {
                 .frame(minWidth: 600, minHeight: 400)
                 #endif
             }
-            .sheet(isPresented: $showExport) {
-                ExportSheet(screenshot: screenshot, viewModel: viewModel)
+            .sheet(isPresented: self.$showExport) {
+                ExportSheet(screenshot: self.screenshot, viewModel: self.viewModel)
             }
-            .sheet(isPresented: $showOCR) {
-                OCRResultView(image: screenshot.image)
+            .sheet(isPresented: self.$showOCR) {
+                OCRResultView(image: self.screenshot.image)
             }
     }
 
     private func imagePreview(in geometry: GeometryProxy) -> some View {
         ScrollView([.horizontal, .vertical]) {
-            Image(decorative: screenshot.image, scale: 1.0)
+            Image(decorative: self.screenshot.image, scale: 1.0)
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: geometry.size.width - SCTheme.Spacing.md * 2)
@@ -95,27 +95,27 @@ struct ScreenshotDetailView: View {
 
     private var metadataBar: some View {
         HStack(spacing: SCTheme.Spacing.lg) {
-            metadataItem(
+            self.metadataItem(
                 icon: "ruler",
                 label: String(localized: "detail.size"),
-                value: "\(screenshot.image.width)×\(screenshot.image.height)"
+                value: "\(self.screenshot.image.width)×\(self.screenshot.image.height)"
             )
-            metadataItem(
+            self.metadataItem(
                 icon: "square.stack.3d.up",
                 label: String(localized: "detail.frames"),
-                value: "\(screenshot.metadata.frameCount)"
+                value: "\(self.screenshot.metadata.frameCount)"
             )
-            metadataItem(
+            self.metadataItem(
                 icon: "clock",
                 label: String(localized: "detail.duration"),
                 value: String(
-                    localized: "detail.duration.value \(String(format: "%.1f", screenshot.metadata.durationSeconds))"
+                    localized: "detail.duration.value \(String(format: "%.1f", self.screenshot.metadata.durationSeconds))"
                 )
             )
-            metadataItem(
+            self.metadataItem(
                 icon: "gearshape",
                 label: String(localized: "detail.method"),
-                value: screenshot.metadata.captureMethod.localizedName
+                value: self.screenshot.metadata.captureMethod.localizedName
             )
         }
         .padding(SCTheme.Spacing.md)
@@ -125,13 +125,13 @@ struct ScreenshotDetailView: View {
     private func metadataItem(icon: String, label: String, value: String) -> some View {
         VStack(spacing: 2) {
             Image(systemName: icon)
-                .font(userMode == .elder ? .body : .caption)
+                .font(self.userMode == .elder ? .body : .caption)
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
             Text(value)
-                .font(userMode == .elder ? .body.monospaced() : SCTheme.Typography.monoCaption)
+                .font(self.userMode == .elder ? .body.monospaced() : SCTheme.Typography.monoCaption)
             Text(label)
-                .font(userMode == .elder ? .caption : .system(size: 9))
+                .font(self.userMode == .elder ? .caption : .system(size: 9))
                 .foregroundStyle(.tertiary)
         }
         .accessibilityElement(children: .combine)
@@ -141,24 +141,24 @@ struct ScreenshotDetailView: View {
     private var elderActionButtons: some View {
         VStack(spacing: SCTheme.Spacing.md) {
             HStack(spacing: SCTheme.Spacing.md) {
-                elderActionButton(
+                self.elderActionButton(
                     title: String(localized: "detail.export"),
                     icon: "square.and.arrow.up",
                     color: .blue
                 ) {
-                    showExport = true
+                    self.showExport = true
                 }
-                elderActionButton(title: String(localized: "detail.delete"), icon: "trash", color: .red) {
-                    appState.removeScreenshot(screenshot)
+                self.elderActionButton(title: String(localized: "detail.delete"), icon: "trash", color: .red) {
+                    self.appState.removeScreenshot(self.screenshot)
                 }
             }
 
             HStack(spacing: SCTheme.Spacing.md) {
-                elderActionButton(title: String(localized: "ocr.title"), icon: "text.viewfinder", color: .purple) {
-                    showOCR = true
+                self.elderActionButton(title: String(localized: "ocr.title"), icon: "text.viewfinder", color: .purple) {
+                    self.showOCR = true
                 }
-                elderActionButton(title: String(localized: "detail.edit"), icon: "pencil", color: .orange) {
-                    showEditor = true
+                self.elderActionButton(title: String(localized: "detail.edit"), icon: "pencil", color: .orange) {
+                    self.showEditor = true
                 }
             }
         }
@@ -184,5 +184,7 @@ struct ScreenshotDetailView: View {
             .foregroundStyle(color)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(.isButton)
     }
 }

@@ -12,8 +12,8 @@ public actor FrameAligner {
     }
 
     public func reset() {
-        lastFrame = nil
-        cumulativeOffset = .zero
+        self.lastFrame = nil
+        self.cumulativeOffset = .zero
     }
 
     public struct AlignmentResult: Sendable {
@@ -24,8 +24,8 @@ public actor FrameAligner {
 
     public func processFrame(_ image: CGImage) async throws -> AlignmentResult? {
         guard let previous = lastFrame else {
-            lastFrame = image
-            cumulativeOffset = .zero
+            self.lastFrame = image
+            self.cumulativeOffset = .zero
             return AlignmentResult(
                 frame: StitchFrame(image: image, cumulativeOffset: .zero),
                 deltaOffset: .zero,
@@ -35,19 +35,19 @@ public actor FrameAligner {
 
         let delta = try await stitcher.computeAlignment(reference: previous, floating: image)
 
-        guard await stitcher.shouldAcceptFrame(offset: delta) else {
+        guard await self.stitcher.shouldAcceptFrame(offset: delta) else {
             return nil
         }
 
-        cumulativeOffset = CGPoint(
-            x: cumulativeOffset.x + delta.x,
-            y: cumulativeOffset.y + delta.y
+        self.cumulativeOffset = CGPoint(
+            x: self.cumulativeOffset.x + delta.x,
+            y: self.cumulativeOffset.y + delta.y
         )
 
-        lastFrame = image
+        self.lastFrame = image
 
         return AlignmentResult(
-            frame: StitchFrame(image: image, cumulativeOffset: cumulativeOffset),
+            frame: StitchFrame(image: image, cumulativeOffset: self.cumulativeOffset),
             deltaOffset: delta,
             isNewContent: true
         )

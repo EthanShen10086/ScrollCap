@@ -20,10 +20,10 @@ public struct CaptureFrame: Sendable, Identifiable {
     }
 
     public var width: Int {
-        image.width
+        self.image.width
     }
 
     public var height: Int {
-        image.height
+        self.image.height
     }
 }

@@ -6,7 +6,13 @@ struct CaptureView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.platformMetrics) private var metrics
     @Environment(\.userMode) private var userMode
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var viewModel = CaptureViewModel()
+
+    private var shouldReduceMotion: Bool {
+        self.reduceMotion || self.userMode == .elder
+    }
+
     @State private var showPermissionAlert = false
     @State private var showExportSheet = false
     @State private var selectedRegion: CaptureRegion?
@@ -17,52 +23,52 @@ struct CaptureView: View {
                 BrandBackground()
 
                 VStack(spacing: 0) {
-                    if appState.showUsageWarning {
+                    if self.appState.showUsageWarning {
                         UsageTimerBanner(
-                            minutesUsed: appState.sessionMinutesUsed,
-                            limitMinutes: appState.minorUsageLimitMinutes,
-                            onDismiss: { appState.dismissUsageWarning() }
+                            minutesUsed: self.appState.sessionMinutesUsed,
+                            limitMinutes: self.appState.minorUsageLimitMinutes,
+                            onDismiss: { self.appState.dismissUsageWarning() }
                         )
                         .padding(.top, SCTheme.Spacing.sm)
                     }
 
                     Spacer()
 
-                    contentArea(in: geometry)
+                    self.contentArea(in: geometry)
                         .transition(.asymmetric(
                             insertion: .scale(scale: 0.95).combined(with: .opacity),
                             removal: .scale(scale: 1.05).combined(with: .opacity)
                         ))
                         .animation(
-                            userMode == .elder ? nil : SCTheme.Animation.gentle,
-                            value: viewModel.captureState.isCapturing
+                            self.userMode == .elder ? nil : SCTheme.Animation.gentle,
+                            value: self.viewModel.captureState.isCapturing
                         )
                         .animation(
-                            userMode == .elder ? nil : SCTheme.Animation.gentle,
-                            value: viewModel.capturedScreenshot?.id
+                            self.userMode == .elder ? nil : SCTheme.Animation.gentle,
+                            value: self.viewModel.capturedScreenshot?.id
                         )
 
                     Spacer()
 
-                    controlBar(in: geometry)
+                    self.controlBar(in: geometry)
                         .padding(.bottom, SCTheme.Spacing.lg)
                 }
-                .padding(.horizontal, metrics.defaultPadding)
+                .padding(.horizontal, self.metrics.defaultPadding)
             }
         }
         .navigationTitle("capture.title")
         .toolbar {
             ToolbarItemGroup {
-                if viewModel.capturedScreenshot != nil {
+                if self.viewModel.capturedScreenshot != nil {
                     Button {
-                        showExportSheet = true
+                        self.showExportSheet = true
                     } label: {
                         Label("export.title", systemImage: "square.and.arrow.up")
                     }
 
                     Button {
                         withAnimation(SCTheme.Animation.spring) {
-                            viewModel.reset()
+                            self.viewModel.reset()
                         }
                     } label: {
                         Label("capture.new", systemImage: "plus")
@@ -70,26 +76,26 @@ struct CaptureView: View {
                 }
             }
         }
-        .alert("permission.title", isPresented: $showPermissionAlert) {
+        .alert("permission.title", isPresented: self.$showPermissionAlert) {
             Button("permission.ok") {}
         } message: {
             Text("permission.message")
         }
-        .sheet(isPresented: $showExportSheet) {
+        .sheet(isPresented: self.$showExportSheet) {
             if let screenshot = viewModel.capturedScreenshot {
-                ExportSheet(screenshot: screenshot, viewModel: viewModel)
+                ExportSheet(screenshot: screenshot, viewModel: self.viewModel)
             }
         }
         .task {
-            viewModel.bind(to: appState)
+            self.viewModel.bind(to: self.appState)
             let hasPermission = await viewModel.requestPermission()
             if !hasPermission {
-                showPermissionAlert = true
+                self.showPermissionAlert = true
             }
         }
-        .onChange(of: viewModel.capturedScreenshot?.id) { _, _ in
+        .onChange(of: self.viewModel.capturedScreenshot?.id) { _, _ in
             if let screenshot = viewModel.capturedScreenshot {
-                appState.addScreenshot(screenshot)
+                self.appState.addScreenshot(screenshot)
             }
         }
         .alert(
@@ -112,11 +118,11 @@ struct CaptureView: View {
     @ViewBuilder
     private func contentArea(in geometry: GeometryProxy) -> some View {
         if let screenshot = viewModel.capturedScreenshot {
-            resultSection(screenshot, in: geometry)
+            self.resultSection(screenshot, in: geometry)
         } else if let preview = viewModel.currentPreview {
-            previewSection(preview, in: geometry)
+            self.previewSection(preview, in: geometry)
         } else {
-            idleSection
+            self.idleSection
         }
     }
 
@@ -127,13 +133,13 @@ struct CaptureView: View {
             EmptyStateView(
                 systemImage: "camera.viewfinder",
                 title: String(localized: "capture.ready"),
-                description: platformDescription
+                description: self.platformDescription
             )
 
             #if os(macOS)
-            macOSInstructions
+            self.macOSInstructions
             #else
-            iOSInstructions
+            self.iOSInstructions
             #endif
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -215,7 +221,7 @@ struct CaptureView: View {
                 Image(decorative: image, scale: 1.0)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: min(geometry.size.width * 0.7, metrics.capturePreviewMaxWidth))
+                    .frame(maxWidth: min(geometry.size.width * 0.7, self.metrics.capturePreviewMaxWidth))
                     .clipShape(RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md))
                     .shadow(color: .black.opacity(0.15), radius: 20, y: 10)
                     .accessibilityLabel(String(localized: "capture.livePreview"))
@@ -244,7 +250,7 @@ struct CaptureView: View {
                 Image(decorative: screenshot.image, scale: 1.0)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: min(geometry.size.width * 0.7, metrics.capturePreviewMaxWidth))
+                    .frame(maxWidth: min(geometry.size.width * 0.7, self.metrics.capturePreviewMaxWidth))
                     .clipShape(RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md))
                     .shadow(color: .black.opacity(0.12), radius: 16, y: 8)
                     .accessibilityLabel(String(localized: "capture.complete"))
@@ -253,9 +259,9 @@ struct CaptureView: View {
             .frame(maxHeight: geometry.size.height * 0.5)
 
             HStack(spacing: SCTheme.Spacing.lg) {
-                metadataBadge(icon: "ruler", value: "\(screenshot.image.width)×\(screenshot.image.height)")
-                metadataBadge(icon: "square.stack.3d.up", value: "\(screenshot.metadata.frameCount)")
-                metadataBadge(icon: "clock", value: String(format: "%.1fs", screenshot.metadata.durationSeconds))
+                self.metadataBadge(icon: "ruler", value: "\(screenshot.image.width)×\(screenshot.image.height)")
+                self.metadataBadge(icon: "square.stack.3d.up", value: "\(screenshot.metadata.frameCount)")
+                self.metadataBadge(icon: "clock", value: String(format: "%.1fs", screenshot.metadata.durationSeconds))
             }
         }
         .padding(SCTheme.Spacing.md)
@@ -283,11 +289,11 @@ struct CaptureView: View {
     private func controlBar(in geometry: GeometryProxy) -> some View {
         VStack(spacing: SCTheme.Spacing.md) {
             HStack(spacing: SCTheme.Spacing.xl) {
-                if viewModel.isCapturing {
+                if self.viewModel.isCapturing {
                     Button {
-                        viewModel.cancelCapture()
+                        self.viewModel.cancelCapture()
                     } label: {
-                        if userMode == .elder {
+                        if self.userMode == .elder {
                             Label("capture.cancel", systemImage: "xmark")
                                 .font(.title3.weight(.medium))
                                 .padding(.horizontal, 16)
@@ -304,27 +310,27 @@ struct CaptureView: View {
                     .buttonStyle(ScaleButtonStyle())
                     .transition(.scale.combined(with: .opacity))
 
-                    adaptiveCaptureButton(isCapturing: true) {
-                        Task { await viewModel.stopCapture() }
+                    self.adaptiveCaptureButton(isCapturing: true) {
+                        Task { await self.viewModel.stopCapture() }
                     }
-                } else if viewModel.capturedScreenshot == nil {
-                    adaptiveCaptureButton(isCapturing: false) {
-                        Task { await viewModel.startCapture(region: selectedRegion) }
+                } else if self.viewModel.capturedScreenshot == nil {
+                    self.adaptiveCaptureButton(isCapturing: false) {
+                        Task { await self.viewModel.startCapture(region: self.selectedRegion) }
                     }
                 }
             }
             .animation(
-                userMode == .elder ? .easeInOut(duration: 0.2) : SCTheme.Animation.spring,
-                value: viewModel.isCapturing
+                self.userMode == .elder ? .easeInOut(duration: 0.2) : SCTheme.Animation.spring,
+                value: self.viewModel.isCapturing
             )
 
-            statusIndicator
+            self.statusIndicator
         }
     }
 
     @ViewBuilder
     private func adaptiveCaptureButton(isCapturing: Bool, action: @escaping () -> Void) -> some View {
-        if userMode == .elder {
+        if self.userMode == .elder {
             ElderCaptureButton(isCapturing: isCapturing, action: action)
         } else {
             CaptureButton(isCapturing: isCapturing, action: action)
@@ -335,7 +341,7 @@ struct CaptureView: View {
 
     private var statusIndicator: some View {
         Group {
-            switch viewModel.captureState {
+            switch self.viewModel.captureState {
             case .idle:
                 StatusPill(String(localized: "status.ready"), color: SCTheme.Colors.captureReady)
             case .selectingRegion:
@@ -361,7 +367,10 @@ struct CaptureView: View {
                 StatusPill(String(localized: "error.capture.recording"), color: SCTheme.Colors.destructive)
             }
         }
-        .transition(.opacity)
-        .animation(SCTheme.Animation.standard, value: viewModel.captureState.statusKey)
+        .transition(self.shouldReduceMotion ? .identity : .opacity)
+        .animation(
+            self.shouldReduceMotion ? nil : SCTheme.Animation.standard,
+            value: self.viewModel.captureState.statusKey
+        )
     }
 }

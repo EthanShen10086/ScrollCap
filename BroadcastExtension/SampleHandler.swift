@@ -6,7 +6,7 @@ class SampleHandler: RPBroadcastSampleHandler {
     private var frameCount = 0
 
     override func broadcastStarted(withSetupInfo setupInfo: [String: NSObject]?) {
-        frameCount = 0
+        self.frameCount = 0
         let defaults = UserDefaults(suiteName: appGroupID)
         defaults?.set(true, forKey: "isBroadcasting")
         defaults?.set(Date().timeIntervalSince1970, forKey: "broadcastStartTime")
@@ -28,14 +28,14 @@ class SampleHandler: RPBroadcastSampleHandler {
     override func broadcastFinished() {
         let defaults = UserDefaults(suiteName: appGroupID)
         defaults?.set(false, forKey: "isBroadcasting")
-        defaults?.set(frameCount, forKey: "totalFrameCount")
+        defaults?.set(self.frameCount, forKey: "totalFrameCount")
         defaults?.synchronize()
     }
 
     override func processSampleBuffer(_ sampleBuffer: CMSampleBuffer, with sampleBufferType: RPSampleBufferType) {
         switch sampleBufferType {
         case .video:
-            processVideoFrame(sampleBuffer)
+            self.processVideoFrame(sampleBuffer)
         case .audioApp, .audioMic:
             break
         @unknown default:
@@ -46,16 +46,16 @@ class SampleHandler: RPBroadcastSampleHandler {
     private func processVideoFrame(_ sampleBuffer: CMSampleBuffer) {
         guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
-        frameCount += 1
+        self.frameCount += 1
 
         // Write frame data to shared container for the main app to process
         // Using UserDefaults for frame count signaling; actual frame data
         // transfers via shared container directory for performance
         let defaults = UserDefaults(suiteName: appGroupID)
-        defaults?.set(frameCount, forKey: "currentFrameCount")
+        defaults?.set(self.frameCount, forKey: "currentFrameCount")
 
-        if frameCount % 3 == 0 { // Sample every 3rd frame to reduce processing load
-            writeFrameToSharedContainer(imageBuffer)
+        if self.frameCount % 3 == 0 { // Sample every 3rd frame to reduce processing load
+            self.writeFrameToSharedContainer(imageBuffer)
         }
     }
 
@@ -71,7 +71,7 @@ class SampleHandler: RPBroadcastSampleHandler {
         let context = CIContext()
         guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
 
-        let frameURL = framesDir.appendingPathComponent("frame_\(frameCount).jpg")
+        let frameURL = framesDir.appendingPathComponent("frame_\(self.frameCount).jpg")
         guard let destination = CGImageDestinationCreateWithURL(
             frameURL as CFURL,
             "public.jpeg" as CFString,

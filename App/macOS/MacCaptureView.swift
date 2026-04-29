@@ -11,10 +11,10 @@ struct MacCaptureView: View {
     var body: some View {
         VStack(spacing: SCTheme.Spacing.lg) {
             if let region = selectedRegion {
-                regionInfoCard(region)
+                self.regionInfoCard(region)
             }
 
-            captureActions
+            self.captureActions
         }
         .padding()
     }
@@ -37,7 +37,7 @@ struct MacCaptureView: View {
                 Spacer()
 
                 Button("mac.change") {
-                    showRegionSelector()
+                    self.showRegionSelector()
                 }
                 .buttonStyle(.bordered)
             }
@@ -47,7 +47,7 @@ struct MacCaptureView: View {
     private var captureActions: some View {
         HStack(spacing: SCTheme.Spacing.md) {
             Button {
-                showRegionSelector()
+                self.showRegionSelector()
             } label: {
                 Label("mac.selectRegion", systemImage: "rectangle.dashed")
             }
@@ -56,8 +56,8 @@ struct MacCaptureView: View {
     }
 
     private func showRegionSelector() {
-        overlayController.showRegionSelector { region in
-            selectedRegion = region
+        self.overlayController.showRegionSelector { region in
+            self.selectedRegion = region
         }
     }
 }

@@ -12,7 +12,7 @@ final class GlobalShortcutManager {
     private init() {}
 
     func register(onCapture: @escaping () -> Void) {
-        onCaptureTriggered = onCapture
+        self.onCaptureTriggered = onCapture
 
         var hotKeyRef: EventHotKeyRef?
         var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
@@ -50,7 +50,7 @@ final class GlobalShortcutManager {
             selfPtr,
             &handlerRef
         )
-        eventHandler = handlerRef
+        self.eventHandler = handlerRef
     }
 }
 #endif

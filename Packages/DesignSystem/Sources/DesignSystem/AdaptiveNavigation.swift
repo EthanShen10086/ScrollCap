@@ -21,13 +21,13 @@ public struct AdaptiveNavigationContainer<Sidebar: View, Detail: View>: View {
     public var body: some View {
         #if os(macOS)
         NavigationSplitView {
-            sidebar
+            self.sidebar
                 .navigationSplitViewColumnWidth(min: 200, ideal: 240, max: 300)
         } detail: {
-            detail
+            self.detail
         }
         #else
-        adaptiveIOSLayout
+        self.adaptiveIOSLayout
         #endif
     }
 
@@ -36,13 +36,13 @@ public struct AdaptiveNavigationContainer<Sidebar: View, Detail: View>: View {
     private var adaptiveIOSLayout: some View {
         if UIDevice.current.userInterfaceIdiom == .pad {
             NavigationSplitView {
-                sidebar
+                self.sidebar
             } detail: {
-                detail
+                self.detail
             }
         } else {
             TabView {
-                detail
+                self.detail
             }
         }
     }
@@ -63,6 +63,6 @@ public struct SidebarItem: View {
     }
 
     public var body: some View {
-        Label(title, systemImage: systemImage)
+        Label(self.title, systemImage: self.systemImage)
     }
 }

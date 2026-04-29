@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 enum PaymentMethod: String, CaseIterable {
     case applePurchase
     case applePay

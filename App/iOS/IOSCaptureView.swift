@@ -24,13 +24,13 @@ struct IOSCaptureView: View {
                 .padding()
                 .adaptiveGlass(cornerRadius: SCTheme.CornerRadius.lg)
 
-            if appState.isCapturing || frameReader.isBroadcasting {
-                captureProgressView
+            if self.appState.isCapturing || self.frameReader.isBroadcasting {
+                self.captureProgressView
             }
         }
         .padding()
-        .onAppear { frameReader.startMonitoring() }
-        .onDisappear { frameReader.stopMonitoring() }
+        .onAppear { self.frameReader.startMonitoring() }
+        .onDisappear { self.frameReader.stopMonitoring() }
     }
 
     private var captureProgressView: some View {
@@ -40,15 +40,18 @@ struct IOSCaptureView: View {
                     Circle()
                         .fill(SCTheme.Colors.captureActive)
                         .frame(width: 10, height: 10)
-                        .scaleEffect(reduceMotion ? 1.0 : 1.2)
-                        .animation(reduceMotion ? nil : .easeInOut(duration: 0.6).repeatForever(), value: reduceMotion)
+                        .scaleEffect(self.reduceMotion ? 1.0 : 1.2)
+                        .animation(
+                            self.reduceMotion ? nil : .easeInOut(duration: 0.6).repeatForever(),
+                            value: self.reduceMotion
+                        )
 
                     Text("ios.recording")
                         .font(SCTheme.Typography.headline)
                         .foregroundStyle(SCTheme.Colors.captureActive)
                 }
 
-                let frames = frameReader.currentFrameCount
+                let frames = self.frameReader.currentFrameCount
                 if frames > 0 {
                     Text("ios.framesCaptured \(frames)")
                         .font(SCTheme.Typography.monoCaption)

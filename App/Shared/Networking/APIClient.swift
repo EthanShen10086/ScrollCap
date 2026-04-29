@@ -37,20 +37,20 @@ actor APIClient {
         headers: [String: String]? = nil,
         config: RequestConfig = .default
     ) async throws -> T {
-        try await checkConnectivity()
+        try await self.checkConnectivity()
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = method.rawValue
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        urlRequest.setValue("ScrollCap/\(appVersion)", forHTTPHeaderField: "User-Agent")
+        urlRequest.setValue("ScrollCap/\(self.appVersion)", forHTTPHeaderField: "User-Agent")
 
         headers?.forEach { urlRequest.setValue($1, forHTTPHeaderField: $0) }
 
         if let body {
-            urlRequest.httpBody = try encoder.encode(AnyEncodable(body))
+            urlRequest.httpBody = try self.encoder.encode(AnyEncodable(body))
         }
 
-        return try await executeWithRetry(urlRequest, type: type, config: config)
+        return try await self.executeWithRetry(urlRequest, type: type, config: config)
     }
 
     func post<T: Decodable>(
@@ -59,7 +59,7 @@ actor APIClient {
         body: any Encodable,
         config: RequestConfig = .default
     ) async throws -> T {
-        try await request(type, url: url, method: .post, body: body, config: config)
+        try await self.request(type, url: url, method: .post, body: body, config: config)
     }
 
     // MARK: - Fire & Forget (for analytics uploads, etc.)
@@ -75,12 +75,12 @@ actor APIClient {
             urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
             if let body {
-                urlRequest.httpBody = try encoder.encode(AnyEncodable(body))
+                urlRequest.httpBody = try self.encoder.encode(AnyEncodable(body))
             }
 
-            _ = try await session.data(for: urlRequest)
+            _ = try await self.session.data(for: urlRequest)
         } catch {
-            logger.warning("Fire-and-forget request failed: \(error.localizedDescription)")
+            self.logger.warning("Fire-and-forget request failed: \(error.localizedDescription)")
         }
     }
 
@@ -94,7 +94,7 @@ actor APIClient {
     ) async throws -> T {
         do {
             let (data, response) = try await session.data(for: request)
-            return try processResponse(
+            return try await self.processResponse(
                 data: data,
                 response: response,
                 type: type,
@@ -126,7 +126,7 @@ actor APIClient {
         }
 
         if 200 ... 299 ~= httpResponse.statusCode {
-            return try decoder.decode(T.self, from: data)
+            return try self.decoder.decode(T.self, from: data)
         }
 
         if httpResponse.statusCode == 401 {
@@ -134,8 +134,8 @@ actor APIClient {
         }
 
         if config.retryableStatusCodes.contains(httpResponse.statusCode), attempt < config.maxRetries {
-            try await retryDelay(config: config, attempt: attempt)
-            return try await executeWithRetry(request, type: type, config: config, attempt: attempt + 1)
+            try await self.retryDelay(config: config, attempt: attempt)
+            return try await self.executeWithRetry(request, type: type, config: config, attempt: attempt + 1)
         }
 
         throw SCError.network(.serverError)
@@ -149,8 +149,8 @@ actor APIClient {
         attempt: Int
     ) async throws -> T {
         if error.code == .timedOut, attempt < config.maxRetries {
-            try await retryDelay(config: config, attempt: attempt)
-            return try await executeWithRetry(request, type: type, config: config, attempt: attempt + 1)
+            try await self.retryDelay(config: config, attempt: attempt)
+            return try await self.executeWithRetry(request, type: type, config: config, attempt: attempt + 1)
         }
         if error.code == .timedOut { throw SCError.network(.timeout) }
         if error.code == .notConnectedToInternet || error.code == .networkConnectionLost {
@@ -161,7 +161,7 @@ actor APIClient {
 
     private func retryDelay(config: RequestConfig, attempt: Int) async throws {
         let delay = config.retryDelay * pow(config.retryBackoffMultiplier, Double(attempt))
-        logger.info("Retry \(attempt + 1)/\(config.maxRetries) after \(delay)s")
+        self.logger.info("Retry \(attempt + 1)/\(config.maxRetries) after \(delay)s")
         try await Task.sleep(for: .seconds(delay))
     }
 
@@ -194,12 +194,12 @@ private struct AnyEncodable: Encodable {
     private let encodeClosure: (Encoder) throws -> Void
 
     init(_ value: any Encodable) {
-        encodeClosure = { encoder in
+        self.encodeClosure = { encoder in
             try value.encode(to: encoder)
         }
     }
 
     func encode(to encoder: Encoder) throws {
-        try encodeClosure(encoder)
+        try self.encodeClosure(encoder)
     }
 }

@@ -26,62 +26,62 @@ final class AppState {
     private var usageWarningDismissed = false
 
     var sessionMinutesUsed: Int {
-        Int(Date().timeIntervalSince(sessionStartTime) / 60)
+        Int(Date().timeIntervalSince(self.sessionStartTime) / 60)
     }
 
     var isMinorMode: Bool {
-        userMode == .minor
+        self.userMode == .minor
     }
 
     var isElderMode: Bool {
-        userMode == .elder
+        self.userMode == .elder
     }
 
     var shouldHidePayment: Bool {
-        userMode == .minor
+        self.userMode == .minor
     }
 
     func checkUsageTime() {
-        guard userMode == .minor, !usageWarningDismissed else { return }
-        if sessionMinutesUsed >= minorUsageLimitMinutes {
-            showUsageWarning = true
+        guard self.userMode == .minor, !self.usageWarningDismissed else { return }
+        if self.sessionMinutesUsed >= self.minorUsageLimitMinutes {
+            self.showUsageWarning = true
         }
     }
 
     func dismissUsageWarning() {
-        showUsageWarning = false
-        usageWarningDismissed = true
+        self.showUsageWarning = false
+        self.usageWarningDismissed = true
     }
 
     func resetSession() {
-        sessionStartTime = Date()
-        usageWarningDismissed = false
-        showUsageWarning = false
+        self.sessionStartTime = Date()
+        self.usageWarningDismissed = false
+        self.showUsageWarning = false
     }
 
     // MARK: - Core
 
     var isCapturing: Bool {
-        captureState.isActive
+        self.captureState.isActive
     }
 
     private static let appGroupID = "group.com.scrollcap.shared"
 
     func addScreenshot(_ screenshot: Screenshot) {
-        screenshots.insert(screenshot, at: 0)
-        selectedScreenshot = screenshot
-        updateWidgetData()
-        syncToCloudIfEnabled(screenshot)
+        self.screenshots.insert(screenshot, at: 0)
+        self.selectedScreenshot = screenshot
+        self.updateWidgetData()
+        self.syncToCloudIfEnabled(screenshot)
     }
 
     private func updateWidgetData() {
         let defaults = UserDefaults(suiteName: Self.appGroupID)
-        defaults?.set(screenshots.count, forKey: "captureCount")
+        defaults?.set(self.screenshots.count, forKey: "captureCount")
         WidgetCenter.shared.reloadAllTimelines()
     }
 
     private func syncToCloudIfEnabled(_ screenshot: Screenshot) {
-        guard iCloudSyncEnabled, ICloudSyncManager.shared.isAvailable else { return }
+        guard self.iCloudSyncEnabled, ICloudSyncManager.shared.isAvailable else { return }
         Task {
             guard let data = screenshot.pngData else { return }
             let record = ScreenshotSyncRecord(
@@ -99,9 +99,9 @@ final class AppState {
     }
 
     func removeScreenshot(_ screenshot: Screenshot) {
-        screenshots.removeAll { $0.id == screenshot.id }
-        if selectedScreenshot?.id == screenshot.id {
-            selectedScreenshot = screenshots.first
+        self.screenshots.removeAll { $0.id == screenshot.id }
+        if self.selectedScreenshot?.id == screenshot.id {
+            self.selectedScreenshot = self.screenshots.first
         }
         AnalyticsManager.shared.track(.screenshotDeleted)
     }

@@ -28,22 +28,22 @@ public final class ReplayKitCaptureService: NSObject, CaptureService {
     }
 
     public func prepare() async throws {
-        guard recorder.isAvailable else {
+        guard self.recorder.isAvailable else {
             throw ReplayKitError.notAvailable
         }
-        updateState(.preparing)
+        self.updateState(.preparing)
     }
 
     public func startCapture(region: CaptureRegion?) async throws {
-        guard !isRecording else {
+        guard !self.isRecording else {
             throw ReplayKitError.alreadyRecording
         }
 
-        await aligner.reset()
-        collectedFrames.removeAll()
-        session.markStarted()
+        await self.aligner.reset()
+        self.collectedFrames.removeAll()
+        self.session.markStarted()
 
-        let localRecorder = recorder
+        let localRecorder = self.recorder
         try await localRecorder.startCapture(handler: { @Sendable sampleBuffer, sampleBufferType, error in
             guard sampleBufferType == .video, error == nil else { return }
             guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
@@ -57,65 +57,65 @@ public final class ReplayKitCaptureService: NSObject, CaptureService {
             }
         })
 
-        isRecording = true
-        updateState(.capturing(progress: CaptureProgress()))
+        self.isRecording = true
+        self.updateState(.capturing(progress: CaptureProgress()))
     }
 
     public func stopCapture() async throws -> Screenshot? {
-        guard isRecording else { return nil }
+        guard self.isRecording else { return nil }
 
-        try await recorder.stopCapture()
-        isRecording = false
+        try await self.recorder.stopCapture()
+        self.isRecording = false
 
-        updateState(.stitching)
+        self.updateState(.stitching)
 
-        guard !collectedFrames.isEmpty else {
-            updateState(.failed(message: "No frames captured"))
+        guard !self.collectedFrames.isEmpty else {
+            self.updateState(.failed(message: "No frames captured"))
             return nil
         }
 
         do {
             let stitcher = ImageStitcher()
-            let stitchedImage = try await stitcher.stitch(frames: collectedFrames)
+            let stitchedImage = try await stitcher.stitch(frames: self.collectedFrames)
 
             let metadata = ScreenshotMetadata(
                 frameCount: collectedFrames.count,
                 totalHeight: CGFloat(stitchedImage.height),
                 captureMethod: .replayKit,
-                durationSeconds: session.elapsedTime
+                durationSeconds: self.session.elapsedTime
             )
 
             let screenshot = Screenshot(image: stitchedImage, metadata: metadata)
-            updateState(.completed(frameCount: collectedFrames.count))
+            self.updateState(.completed(frameCount: self.collectedFrames.count))
             return screenshot
         } catch {
-            updateState(.failed(message: error.localizedDescription))
+            self.updateState(.failed(message: error.localizedDescription))
             return nil
         }
     }
 
     public func cancelCapture() {
         Task {
-            try? await recorder.stopCapture()
-            isRecording = false
-            collectedFrames.removeAll()
-            updateState(.idle)
+            try? await self.recorder.stopCapture()
+            self.isRecording = false
+            self.collectedFrames.removeAll()
+            self.updateState(.idle)
         }
     }
 
     private func processFrame(_ image: CGImage) async {
         do {
             if let result = try await aligner.processFrame(image) {
-                collectedFrames.append(result.frame)
-                currentPreview = image
-                onPreviewUpdated?(image)
+                self.collectedFrames.append(result.frame)
+                self.currentPreview = image
+                self.onPreviewUpdated?(image)
 
                 let progress = CaptureProgress(
                     capturedFrames: collectedFrames.count,
                     estimatedHeight: result.frame.cumulativeOffset.y,
-                    elapsedTime: session.elapsedTime
+                    elapsedTime: self.session.elapsedTime
                 )
-                updateState(.capturing(progress: progress))
+                self.updateState(.capturing(progress: progress))
             }
         } catch {
             // Skip frames that fail alignment
@@ -123,9 +123,9 @@ public final class ReplayKitCaptureService: NSObject, CaptureService {
     }
 
     private func updateState(_ newState: CaptureState) {
-        state = newState
-        session.updateState(newState)
-        onStateChanged?(newState)
+        self.state = newState
+        self.session.updateState(newState)
+        self.onStateChanged?(newState)
     }
 }
 

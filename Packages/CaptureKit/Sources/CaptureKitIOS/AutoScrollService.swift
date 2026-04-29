@@ -10,8 +10,8 @@ public actor AutoScrollService {
     public init() {}
 
     public func startAutoScroll(in scrollView: UIScrollView) async {
-        guard !isScrolling else { return }
-        isScrolling = true
+        guard !self.isScrolling else { return }
+        self.isScrolling = true
 
         let metrics = await MainActor.run {
             (scrollView.bounds.height, scrollView.contentSize.height, scrollView.contentOffset.y)
@@ -22,8 +22,8 @@ public actor AutoScrollService {
         let maxOffsetY = contentHeight - viewportHeight
         var currentOffset = metrics.2
 
-        while isScrolling, currentOffset < maxOffsetY {
-            let nextOffset = min(currentOffset + viewportHeight * scrollFraction, maxOffsetY)
+        while self.isScrolling, currentOffset < maxOffsetY {
+            let nextOffset = min(currentOffset + viewportHeight * self.scrollFraction, maxOffsetY)
 
             await MainActor.run {
                 UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseInOut) {
@@ -31,7 +31,7 @@ public actor AutoScrollService {
                 }
             }
 
-            try? await Task.sleep(for: .milliseconds(Int(scrollDelay * 1000) + 400))
+            try? await Task.sleep(for: .milliseconds(Int(self.scrollDelay * 1000) + 400))
 
             currentOffset = nextOffset
 
@@ -40,15 +40,15 @@ public actor AutoScrollService {
             }
         }
 
-        isScrolling = false
+        self.isScrolling = false
     }
 
     public func stopAutoScroll() {
-        isScrolling = false
+        self.isScrolling = false
     }
 
     public var isActive: Bool {
-        isScrolling
+        self.isScrolling
     }
 }
 #endif

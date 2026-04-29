@@ -260,4 +260,5 @@
 "mac.pixels %lld %lld" = "%lld×%lld 像素";
 
 /* History Accessibility */
+"a11y.screenshot.label %@" = "截图拍摄于 %@";
 "a11y.screenshot.hint %lld %lld %lld" = "%lld 帧，%lld×%lld";

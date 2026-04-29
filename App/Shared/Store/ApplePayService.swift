@@ -43,7 +43,7 @@ final class ApplePayService: NSObject {
         request.paymentSummaryItems = [item, total]
 
         return await withCheckedContinuation { continuation in
-            paymentCompletion = { result in
+            self.paymentCompletion = { result in
                 continuation.resume(returning: result)
             }
 
@@ -60,7 +60,7 @@ final class ApplePayService: NSObject {
     }
 }
 
-extension ApplePayService: PKPaymentAuthorizationControllerDelegate {
+extension ApplePayService: @preconcurrency PKPaymentAuthorizationControllerDelegate {
     nonisolated func paymentAuthorizationControllerDidFinish(
         _ controller: PKPaymentAuthorizationController
     ) {
@@ -80,6 +80,7 @@ extension ApplePayService: PKPaymentAuthorizationControllerDelegate {
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
         let tokenData = payment.token.paymentData
+        nonisolated(unsafe) let completion = completion
 
         Task { @MainActor in
             do {
@@ -97,6 +98,12 @@ extension ApplePayService: PKPaymentAuthorizationControllerDelegate {
             }
         }
     }
+
+    #if os(macOS)
+    nonisolated func presentationWindow(for controller: PKPaymentAuthorizationController) -> NSWindow? {
+        nil
+    }
+    #endif
 
     @MainActor
     private func processPaymentOnServer(tokenData: Data) async throws -> String {

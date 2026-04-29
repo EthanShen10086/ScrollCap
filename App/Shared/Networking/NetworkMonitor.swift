@@ -22,11 +22,11 @@ final class NetworkMonitor {
     }
 
     private init() {
-        startMonitoring()
+        self.startMonitoring()
     }
 
     private func startMonitoring() {
-        monitor.pathUpdateHandler = { [weak self] path in
+        self.monitor.pathUpdateHandler = { [weak self] path in
             let connected = path.status == .satisfied
             let type: ConnectionType = if path.usesInterfaceType(.wifi) {
                 .wifi
@@ -40,18 +40,18 @@ final class NetworkMonitor {
 
             Task { @MainActor [weak self] in
                 guard let self else { return }
-                let wasConnected = isConnected
-                isConnected = connected
-                connectionType = type
+                let wasConnected = self.isConnected
+                self.isConnected = connected
+                self.connectionType = type
 
                 if wasConnected, !connected {
-                    logger.warning("Network disconnected")
+                    self.logger.warning("Network disconnected")
                 } else if !wasConnected, connected {
-                    logger.info("Network reconnected via \(type.rawValue)")
+                    self.logger.info("Network reconnected via \(type.rawValue)")
                 }
             }
         }
-        monitor.start(queue: queue)
+        self.monitor.start(queue: self.queue)
     }
 
     deinit {

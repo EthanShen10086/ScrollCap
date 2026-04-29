@@ -28,7 +28,7 @@ public struct Screenshot: Identifiable, Sendable {
         guard let dest = CGImageDestinationCreateWithData(
             mutableData as CFMutableData, "public.png" as CFString, 1, nil
         ) else { return nil }
-        CGImageDestinationAddImage(dest, image, nil)
+        CGImageDestinationAddImage(dest, self.image, nil)
         guard CGImageDestinationFinalize(dest) else { return nil }
         return mutableData as Data
     }

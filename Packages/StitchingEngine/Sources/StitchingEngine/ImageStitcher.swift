@@ -33,7 +33,7 @@ public actor ImageStitcher {
     }
 
     public func shouldAcceptFrame(offset: CGPoint) -> Bool {
-        abs(offset.y) > minScrollDelta
+        abs(offset.y) > self.minScrollDelta
     }
 
     public func stitch(frames: [StitchFrame]) throws -> CGImage {
@@ -46,7 +46,7 @@ public actor ImageStitcher {
         }
 
         let totalWidth = frames[0].image.width
-        let totalHeight = computeTotalHeight(frames: frames)
+        let totalHeight = self.computeTotalHeight(frames: frames)
 
         guard let context = CGContext(
             data: nil,

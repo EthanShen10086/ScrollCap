@@ -11,8 +11,8 @@ final class SharedFrameReader {
     var onNewFrame: ((CGImage) -> Void)?
 
     func startMonitoring() {
-        lastReadFrameCount = 0
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+        self.lastReadFrameCount = 0
+        self.timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 self?.checkForNewFrames()
             }
@@ -20,8 +20,8 @@ final class SharedFrameReader {
     }
 
     func stopMonitoring() {
-        timer?.invalidate()
-        timer = nil
+        self.timer?.invalidate()
+        self.timer = nil
     }
 
     var isBroadcasting: Bool {
@@ -35,8 +35,8 @@ final class SharedFrameReader {
     }
 
     private func checkForNewFrames() {
-        let current = currentFrameCount
-        guard current > lastReadFrameCount else { return }
+        let current = self.currentFrameCount
+        guard current > self.lastReadFrameCount else { return }
 
         guard let containerURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupID
@@ -44,17 +44,17 @@ final class SharedFrameReader {
 
         let framesDir = containerURL.appendingPathComponent("Frames", isDirectory: true)
 
-        for frameIndex in (lastReadFrameCount + 1) ... current {
+        for frameIndex in (self.lastReadFrameCount + 1) ... current {
             let frameURL = framesDir.appendingPathComponent("frame_\(frameIndex).jpg")
             guard FileManager.default.fileExists(atPath: frameURL.path) else { continue }
 
             if let image = loadImage(from: frameURL) {
-                onNewFrame?(image)
+                self.onNewFrame?(image)
                 try? FileManager.default.removeItem(at: frameURL)
             }
         }
 
-        lastReadFrameCount = current
+        self.lastReadFrameCount = current
     }
 
     private func loadImage(from url: URL) -> CGImage? {

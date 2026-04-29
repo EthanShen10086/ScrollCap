@@ -22,7 +22,7 @@ final class StripePaymentService {
         priceInCents: Int,
         currency: String = "usd"
     ) async throws -> PaymentResult {
-        isProcessing = true
+        self.isProcessing = true
         defer { isProcessing = false }
 
         let url = PaymentConfig.shared.serverBaseURL
@@ -40,7 +40,7 @@ final class StripePaymentService {
             StripeSessionResponse.self, url: url, body: body
         )
 
-        openCheckoutURL(session.checkoutURL)
+        self.openCheckoutURL(session.checkoutURL)
         return .success(transactionId: session.sessionId)
     }
 
@@ -55,7 +55,7 @@ final class StripePaymentService {
         )
 
         if result.status == "paid" {
-            logger.completed("Stripe payment verified: \(sessionId)")
+            self.logger.completed("Stripe payment verified: \(sessionId)")
             AnalyticsManager.shared.track(.purchaseCompleted(productId: "stripe_\(sessionId)"))
             return true
         }

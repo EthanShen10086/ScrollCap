@@ -27,47 +27,47 @@ enum PerformanceMonitor {
 
     static func beginCapture() -> OSSignpostID {
         let id = OSSignpostID(log: captureLog)
-        os_signpost(.begin, log: captureLog, name: "Capture Session", signpostID: id)
-        os_signpost(.event, log: pointsOfInterest, name: "Capture Started")
+        os_signpost(.begin, log: self.captureLog, name: "Capture Session", signpostID: id)
+        os_signpost(.event, log: self.pointsOfInterest, name: "Capture Started")
         return id
     }
 
     static func endCapture(_ id: OSSignpostID, frames: Int) {
-        os_signpost(.end, log: captureLog, name: "Capture Session", signpostID: id, "%d frames", frames)
-        os_signpost(.event, log: pointsOfInterest, name: "Capture Completed")
+        os_signpost(.end, log: self.captureLog, name: "Capture Session", signpostID: id, "%d frames", frames)
+        os_signpost(.event, log: self.pointsOfInterest, name: "Capture Completed")
     }
 
     // MARK: - Stitch
 
     static func beginStitch() -> OSSignpostID {
         let id = OSSignpostID(log: stitchLog)
-        os_signpost(.begin, log: stitchLog, name: "Image Stitch", signpostID: id)
+        os_signpost(.begin, log: self.stitchLog, name: "Image Stitch", signpostID: id)
         return id
     }
 
     static func endStitch(_ id: OSSignpostID, resultHeight: Int) {
-        os_signpost(.end, log: stitchLog, name: "Image Stitch", signpostID: id, "height=%d", resultHeight)
+        os_signpost(.end, log: self.stitchLog, name: "Image Stitch", signpostID: id, "height=%d", resultHeight)
     }
 
     // MARK: - Export
 
     static func beginExport(format: String) -> OSSignpostID {
         let id = OSSignpostID(log: exportLog)
-        os_signpost(.begin, log: exportLog, name: "Export", signpostID: id, "%{public}s", format)
+        os_signpost(.begin, log: self.exportLog, name: "Export", signpostID: id, "%{public}s", format)
         return id
     }
 
     static func endExport(_ id: OSSignpostID) {
-        os_signpost(.end, log: exportLog, name: "Export", signpostID: id)
+        os_signpost(.end, log: self.exportLog, name: "Export", signpostID: id)
     }
 
     // MARK: - Generic Measurement
 
     static func measure<T>(_ name: StaticString, _ operation: () async throws -> T) async rethrows -> T {
         let id = OSSignpostID(log: captureLog)
-        os_signpost(.begin, log: captureLog, name: name, signpostID: id)
+        os_signpost(.begin, log: self.captureLog, name: name, signpostID: id)
         let result = try await operation()
-        os_signpost(.end, log: captureLog, name: name, signpostID: id)
+        os_signpost(.end, log: self.captureLog, name: name, signpostID: id)
         return result
     }
 
@@ -89,9 +89,12 @@ enum PerformanceMonitor {
 
             if usedMB > 500 {
                 logger.warning("⚠️ High memory usage: \(String(format: "%.1f", usedMB)) MB")
-                AnalyticsManager.shared.track(
-                    .error(domain: "memory", code: "high_usage_\(Int(usedMB))MB")
-                )
+                let mbValue = Int(usedMB)
+                Task { @MainActor in
+                    AnalyticsManager.shared.track(
+                        .error(domain: "memory", code: "high_usage_\(mbValue)MB")
+                    )
+                }
             }
         }
     }

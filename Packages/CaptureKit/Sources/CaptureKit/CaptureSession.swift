@@ -13,26 +13,26 @@ public final class CaptureSession {
     public init() {}
 
     public func reset() {
-        state = .idle
-        capturedFrames.removeAll()
-        previewImage = nil
-        startTime = nil
+        self.state = .idle
+        self.capturedFrames.removeAll()
+        self.previewImage = nil
+        self.startTime = nil
     }
 
     public func updateState(_ newState: CaptureState) {
-        state = newState
+        self.state = newState
     }
 
     public func addFrame(_ frame: CaptureFrame) {
-        capturedFrames.append(frame)
+        self.capturedFrames.append(frame)
     }
 
     public func updatePreview(_ image: CGImage) {
-        previewImage = image
+        self.previewImage = image
     }
 
     public func markStarted() {
-        startTime = Date()
+        self.startTime = Date()
     }
 
     public var elapsedTime: TimeInterval {
@@ -42,9 +42,9 @@ public final class CaptureSession {
 
     public var progress: CaptureProgress {
         CaptureProgress(
-            capturedFrames: capturedFrames.count,
-            estimatedHeight: capturedFrames.reduce(0) { $0 + $1.offset.y },
-            elapsedTime: elapsedTime
+            capturedFrames: self.capturedFrames.count,
+            estimatedHeight: self.capturedFrames.reduce(0) { $0 + $1.offset.y },
+            elapsedTime: self.elapsedTime
         )
     }
 }

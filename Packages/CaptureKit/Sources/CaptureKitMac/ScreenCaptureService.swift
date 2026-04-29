@@ -37,7 +37,7 @@ public final class ScreenCaptureService: NSObject, CaptureService {
         guard content.displays.first != nil else {
             throw CaptureServiceError.noDisplayFound
         }
-        updateState(.selectingRegion)
+        self.updateState(.selectingRegion)
     }
 
     public func startCapture(region: CaptureRegion?) async throws {
@@ -67,10 +67,10 @@ public final class ScreenCaptureService: NSObject, CaptureService {
         try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: .global(qos: .userInitiated))
         try await stream.startCapture()
 
-        await aligner.reset()
-        collectedFrames.removeAll()
-        session.markStarted()
-        updateState(.capturing(progress: CaptureProgress()))
+        await self.aligner.reset()
+        self.collectedFrames.removeAll()
+        self.session.markStarted()
+        self.updateState(.capturing(progress: CaptureProgress()))
     }
 
     public func stopCapture() async throws -> Screenshot? {
@@ -79,25 +79,25 @@ public final class ScreenCaptureService: NSObject, CaptureService {
         try await stream.stopCapture()
         self.stream = nil
 
-        updateState(.stitching)
+        self.updateState(.stitching)
 
         let stitcher = ImageStitcher()
         let startTime = CFAbsoluteTimeGetCurrent()
 
-        guard !collectedFrames.isEmpty else {
-            updateState(.failed(message: "No frames captured"))
+        guard !self.collectedFrames.isEmpty else {
+            self.updateState(.failed(message: "No frames captured"))
             return nil
         }
 
         do {
-            let stitchedImage = try await stitcher.stitch(frames: collectedFrames)
+            let stitchedImage = try await stitcher.stitch(frames: self.collectedFrames)
             _ = CFAbsoluteTimeGetCurrent() - startTime
 
             let metadata = ScreenshotMetadata(
                 frameCount: collectedFrames.count,
                 totalHeight: CGFloat(stitchedImage.height),
                 captureMethod: .screenCaptureKit,
-                durationSeconds: session.elapsedTime
+                durationSeconds: self.session.elapsedTime
             )
 
             let screenshot = Screenshot(
@@ -105,27 +105,27 @@ public final class ScreenCaptureService: NSObject, CaptureService {
                 metadata: metadata
             )
 
-            updateState(.completed(frameCount: collectedFrames.count))
+            self.updateState(.completed(frameCount: self.collectedFrames.count))
             return screenshot
         } catch {
-            updateState(.failed(message: error.localizedDescription))
+            self.updateState(.failed(message: error.localizedDescription))
             return nil
         }
     }
 
     public func cancelCapture() {
         Task {
-            try? await stream?.stopCapture()
-            stream = nil
-            collectedFrames.removeAll()
-            updateState(.idle)
+            try? await self.stream?.stopCapture()
+            self.stream = nil
+            self.collectedFrames.removeAll()
+            self.updateState(.idle)
         }
     }
 
     private func updateState(_ newState: CaptureState) {
-        state = newState
-        session.updateState(newState)
-        onStateChanged?(newState)
+        self.state = newState
+        self.session.updateState(newState)
+        self.onStateChanged?(newState)
     }
 }
 
@@ -143,7 +143,7 @@ extension ScreenCaptureService: SCStreamOutput {
         guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
 
         Task { @MainActor in
-            await processFrame(cgImage)
+            await self.processFrame(cgImage)
         }
     }
 
@@ -151,16 +151,16 @@ extension ScreenCaptureService: SCStreamOutput {
     private func processFrame(_ image: CGImage) async {
         do {
             if let result = try await aligner.processFrame(image) {
-                collectedFrames.append(result.frame)
-                currentPreview = image
-                onPreviewUpdated?(image)
+                self.collectedFrames.append(result.frame)
+                self.currentPreview = image
+                self.onPreviewUpdated?(image)
 
                 let progress = CaptureProgress(
                     capturedFrames: collectedFrames.count,
                     estimatedHeight: result.frame.cumulativeOffset.y,
-                    elapsedTime: session.elapsedTime
+                    elapsedTime: self.session.elapsedTime
                 )
-                updateState(.capturing(progress: progress))
+                self.updateState(.capturing(progress: progress))
             }
         } catch {
             // Frame alignment failed for this frame, skip it

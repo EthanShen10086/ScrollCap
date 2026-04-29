@@ -11,8 +11,8 @@ final class AnalyticsManager {
 
     private init() {
         let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        eventsFileURL = documents.appendingPathComponent("analytics_events.jsonl")
-        encoder.dateEncodingStrategy = .iso8601
+        self.eventsFileURL = documents.appendingPathComponent("analytics_events.jsonl")
+        self.encoder.dateEncodingStrategy = .iso8601
     }
 
     func track(_ event: AnalyticsEvent) {
@@ -23,25 +23,25 @@ final class AnalyticsManager {
             deviceInfo: DeviceInfo.current
         )
 
-        logger.info("📊 Event: \(event.name)")
+        self.logger.info("📊 Event: \(event.name)")
 
         if let data = try? encoder.encode(entry),
            let line = String(data: data, encoding: .utf8) {
-            appendLine(line)
+            self.appendLine(line)
         }
     }
 
     private func appendLine(_ line: String) {
         let lineData = (line + "\n").data(using: .utf8) ?? Data()
 
-        if FileManager.default.fileExists(atPath: eventsFileURL.path) {
+        if FileManager.default.fileExists(atPath: self.eventsFileURL.path) {
             if let handle = try? FileHandle(forWritingTo: eventsFileURL) {
                 handle.seekToEndOfFile()
                 handle.write(lineData)
                 handle.closeFile()
             }
         } else {
-            try? lineData.write(to: eventsFileURL, options: .atomic)
+            try? lineData.write(to: self.eventsFileURL, options: .atomic)
         }
     }
 }

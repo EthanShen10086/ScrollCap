@@ -24,26 +24,26 @@ final class StoreManager {
     static let subscriptionGroupID = "A1B2C3D4-0001"
 
     var isPro: Bool {
-        !purchasedProductIDs.isEmpty
+        !self.purchasedProductIDs.isEmpty
     }
 
     private init() {
-        updateListenerTask = listenForTransactions()
-        Task { await refreshPurchaseState() }
+        self.updateListenerTask = self.listenForTransactions()
+        Task { await self.refreshPurchaseState() }
     }
 
     // MARK: - Load Products
 
     func loadProducts() async {
-        isLoading = true
+        self.isLoading = true
         defer { isLoading = false }
 
         do {
-            products = try await Product.products(for: Self.productIDs)
+            self.products = try await Product.products(for: Self.productIDs)
                 .sorted { $0.price < $1.price }
-            logger.info("Loaded \(products.count) products")
+            self.logger.info("Loaded \(self.products.count) products")
         } catch {
-            logger.failed("Failed to load products", error: error)
+            self.logger.failed("Failed to load products", error: error)
         }
     }
 
@@ -55,20 +55,20 @@ final class StoreManager {
         switch result {
         case let .success(verification):
             let transaction = try checkVerified(verification)
-            purchasedProductIDs.insert(transaction.productID)
+            self.purchasedProductIDs.insert(transaction.productID)
             await transaction.finish()
-            await refreshSubscriptionStatus()
-            logger.completed("Purchased \(product.id)")
+            await self.refreshSubscriptionStatus()
+            self.logger.completed("Purchased \(product.id)")
             AnalyticsManager.shared.track(.purchaseCompleted(productId: product.id))
             return true
 
         case .userCancelled:
-            logger.info("User cancelled purchase")
+            self.logger.info("User cancelled purchase")
             AnalyticsManager.shared.track(.purchaseCancelled(productId: product.id))
             return false
 
         case .pending:
-            logger.info("Purchase pending")
+            self.logger.info("Purchase pending")
             return false
 
         @unknown default:
@@ -82,12 +82,12 @@ final class StoreManager {
         var restored = 0
         for await result in Transaction.currentEntitlements {
             if let transaction = try? checkVerified(result) {
-                purchasedProductIDs.insert(transaction.productID)
+                self.purchasedProductIDs.insert(transaction.productID)
                 restored += 1
             }
         }
-        await refreshSubscriptionStatus()
-        logger.info("Restored \(restored) purchases")
+        await self.refreshSubscriptionStatus()
+        self.logger.info("Restored \(restored) purchases")
         AnalyticsManager.shared.track(.restoreCompleted(count: restored))
     }
 
@@ -96,10 +96,10 @@ final class StoreManager {
     func refreshPurchaseState() async {
         for await result in Transaction.currentEntitlements {
             if let transaction = try? checkVerified(result) {
-                purchasedProductIDs.insert(transaction.productID)
+                self.purchasedProductIDs.insert(transaction.productID)
             }
         }
-        await refreshSubscriptionStatus()
+        await self.refreshSubscriptionStatus()
     }
 
     func refreshSubscriptionStatus() async {
@@ -111,7 +111,7 @@ final class StoreManager {
             guard let transaction = try? checkVerified(status.transaction) else { continue }
 
             let renewalState = status.state
-            subscriptionStatus = SubscriptionInfo(
+            self.subscriptionStatus = SubscriptionInfo(
                 productID: transaction.productID,
                 expirationDate: transaction.expirationDate,
                 isAutoRenewing: renewalState == .subscribed,
@@ -119,9 +119,9 @@ final class StoreManager {
             )
 
             if renewalState == .subscribed || renewalState == .inGracePeriod {
-                purchasedProductIDs.insert(transaction.productID)
+                self.purchasedProductIDs.insert(transaction.productID)
             } else if renewalState == .expired || renewalState == .revoked {
-                purchasedProductIDs.remove(transaction.productID)
+                self.purchasedProductIDs.remove(transaction.productID)
             }
         }
     }

@@ -50,7 +50,7 @@ public struct UserModeAdaptiveModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        switch mode {
+        switch self.mode {
         case .standard:
             content
                 .environment(\.userMode, .standard)
@@ -87,8 +87,7 @@ public struct ElderButtonStyle: ButtonStyle {
                 RoundedRectangle(cornerRadius: SCTheme.CornerRadius.lg)
                     .fill(Color.accentColor.opacity(configuration.isPressed ? 0.2 : 0.1))
             )
-            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
     }
 }
 
@@ -104,12 +103,12 @@ public struct ElderCaptureButton: View {
     }
 
     public var body: some View {
-        Button(action: action) {
+        Button(action: self.action) {
             VStack(spacing: 8) {
                 ZStack {
                     Circle()
                         .fill(
-                            isCapturing
+                            self.isCapturing
                                 ? AnyShapeStyle(Color.red)
                                 : AnyShapeStyle(LinearGradient(
                                     colors: [SCTheme.Colors.brandBlue, SCTheme.Colors.brandPurple],
@@ -119,12 +118,12 @@ public struct ElderCaptureButton: View {
                         )
                         .frame(width: 88, height: 88)
                         .shadow(
-                            color: (isCapturing ? Color.red : SCTheme.Colors.brandBlue).opacity(0.4),
+                            color: (self.isCapturing ? Color.red : SCTheme.Colors.brandBlue).opacity(0.4),
                             radius: 12,
                             y: 4
                         )
 
-                    if isCapturing {
+                    if self.isCapturing {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(.white)
                             .frame(width: 30, height: 30)
@@ -135,13 +134,13 @@ public struct ElderCaptureButton: View {
                     }
                 }
 
-                Text(isCapturing ? "elder.stop" : "elder.capture")
+                Text(self.isCapturing ? "elder.stop" : "elder.capture")
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(.primary)
             }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(isCapturing ? Text("a11y.elder.stop") : Text("a11y.elder.capture"))
+        .accessibilityLabel(self.isCapturing ? Text("a11y.elder.stop") : Text("a11y.elder.capture"))
         .accessibilityHint(Text("a11y.elder.hint"))
         .accessibilityAddTraits(.isButton)
     }
@@ -169,14 +168,14 @@ public struct UsageTimerBanner: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("minor.timeWarning")
                     .font(.subheadline.weight(.semibold))
-                Text("minor.timeUsed \(minutesUsed) \(limitMinutes)")
+                Text("minor.timeUsed \(self.minutesUsed) \(self.limitMinutes)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
 
-            Button("minor.gotIt", action: onDismiss)
+            Button("minor.gotIt", action: self.onDismiss)
                 .font(.subheadline.weight(.medium))
                 .buttonStyle(.bordered)
                 .tint(.orange)

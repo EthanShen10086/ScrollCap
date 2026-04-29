@@ -20,7 +20,7 @@ public struct StitchResult: Sendable {
     }
 
     public var aspectRatio: CGFloat {
-        guard totalHeight > 0 else { return 1 }
-        return CGFloat(image.width) / CGFloat(totalHeight)
+        guard self.totalHeight > 0 else { return 1 }
+        return CGFloat(self.image.width) / CGFloat(self.totalHeight)
     }
 }

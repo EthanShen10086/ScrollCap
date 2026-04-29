@@ -8,12 +8,12 @@ final class PaymentConfig: Sendable {
     private init() {
         if let urlString = Bundle.main.object(forInfoDictionaryKey: "PaymentServerURL") as? String,
            let url = URL(string: urlString) {
-            serverBaseURL = url
+            self.serverBaseURL = url
         } else {
             #if DEBUG
-            serverBaseURL = URL(string: "https://localhost:8443")!
+            self.serverBaseURL = URL(string: "https://localhost:8443")!
             #else
-            serverBaseURL = URL(string: "https://api.scrollcap.app")!
+            self.serverBaseURL = URL(string: "https://api.scrollcap.app")!
             #endif
         }
     }

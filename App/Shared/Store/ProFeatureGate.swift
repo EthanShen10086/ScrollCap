@@ -45,17 +45,17 @@ struct ProFeatureGate: ViewModifier {
                                 .font(.title)
                                 .foregroundStyle(SCTheme.Gradients.brand)
 
-                            Text(feature.displayName)
+                            Text(self.feature.displayName)
                                 .font(SCTheme.Typography.headline)
 
                             BrandedButton("pro.upgrade", systemImage: "sparkles") {
-                                showPaywall = true
+                                self.showPaywall = true
                                 AnalyticsManager.shared.track(.proUpgradeTapped)
                             }
                         }
                     }
                 }
-                .sheet(isPresented: $showPaywall) {
+                .sheet(isPresented: self.$showPaywall) {
                     PaywallView()
                 }
         }

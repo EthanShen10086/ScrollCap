@@ -13,14 +13,14 @@ public struct CaptureRegion: Sendable, Codable, Equatable {
     }
 
     public var rect: CGRect {
-        CGRect(origin: origin, size: size)
+        CGRect(origin: self.origin, size: self.size)
     }
 
     public var pixelWidth: Int {
-        Int(size.width * scale)
+        Int(self.size.width * self.scale)
     }
 
     public var pixelHeight: Int {
-        Int(size.height * scale)
+        Int(self.size.height * self.scale)
     }
 }

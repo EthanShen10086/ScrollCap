@@ -8,9 +8,9 @@ actor ScreenshotStore {
 
     init() {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        storageDirectory = appSupport.appendingPathComponent("ScrollCap/Screenshots", isDirectory: true)
+        self.storageDirectory = appSupport.appendingPathComponent("ScrollCap/Screenshots", isDirectory: true)
 
-        try? FileManager.default.createDirectory(at: storageDirectory, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: self.storageDirectory, withIntermediateDirectories: true)
     }
 
     struct ScreenshotRecord: Codable, Identifiable {
@@ -25,12 +25,12 @@ actor ScreenshotStore {
     }
 
     private var manifestURL: URL {
-        storageDirectory.appendingPathComponent("manifest.json")
+        self.storageDirectory.appendingPathComponent("manifest.json")
     }
 
     func save(screenshot: Screenshot) throws {
         let filename = "\(screenshot.id.uuidString).png"
-        let fileURL = storageDirectory.appendingPathComponent(filename)
+        let fileURL = self.storageDirectory.appendingPathComponent(filename)
 
         guard let destination = CGImageDestinationCreateWithURL(
             fileURL as CFURL, "public.png" as CFString, 1, nil
@@ -50,13 +50,13 @@ actor ScreenshotStore {
             durationSeconds: screenshot.metadata.durationSeconds
         )
 
-        var records = (try? loadManifest()) ?? []
+        var records = (try? self.loadManifest()) ?? []
         records.insert(record, at: 0)
 
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         let data = try encoder.encode(records)
-        try data.write(to: manifestURL)
+        try data.write(to: self.manifestURL)
     }
 
     func loadAll() throws -> [(record: ScreenshotRecord, image: CGImage)] {
@@ -64,7 +64,7 @@ actor ScreenshotStore {
         var results: [(ScreenshotRecord, CGImage)] = []
 
         for record in records {
-            let fileURL = storageDirectory.appendingPathComponent(record.filename)
+            let fileURL = self.storageDirectory.appendingPathComponent(record.filename)
             guard let source = CGImageSourceCreateWithURL(fileURL as CFURL, nil),
                   let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
                 continue
@@ -76,11 +76,11 @@ actor ScreenshotStore {
     }
 
     func delete(id: UUID) throws {
-        var records = (try? loadManifest()) ?? []
+        var records = (try? self.loadManifest()) ?? []
         guard let index = records.firstIndex(where: { $0.id == id }) else { return }
 
         let record = records[index]
-        let fileURL = storageDirectory.appendingPathComponent(record.filename)
+        let fileURL = self.storageDirectory.appendingPathComponent(record.filename)
         try? FileManager.default.removeItem(at: fileURL)
 
         records.remove(at: index)
@@ -88,20 +88,20 @@ actor ScreenshotStore {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         let data = try encoder.encode(records)
-        try data.write(to: manifestURL)
+        try data.write(to: self.manifestURL)
     }
 
     func deleteAll() throws {
-        let records = (try? loadManifest()) ?? []
+        let records = (try? self.loadManifest()) ?? []
         for record in records {
-            let fileURL = storageDirectory.appendingPathComponent(record.filename)
+            let fileURL = self.storageDirectory.appendingPathComponent(record.filename)
             try? FileManager.default.removeItem(at: fileURL)
         }
-        try? FileManager.default.removeItem(at: manifestURL)
+        try? FileManager.default.removeItem(at: self.manifestURL)
     }
 
     private func loadManifest() throws -> [ScreenshotRecord] {
-        guard FileManager.default.fileExists(atPath: manifestURL.path) else {
+        guard FileManager.default.fileExists(atPath: self.manifestURL.path) else {
             return []
         }
 

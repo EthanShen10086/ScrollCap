@@ -7,24 +7,24 @@ struct SettingsView: View {
     @Environment(\.userMode) private var userMode
 
     var body: some View {
-        @Bindable var state = appState
+        @Bindable var state = self.appState
         Form {
             // MARK: - User Mode Selection
 
             Section {
-                userModePicker
+                self.userModePicker
             } header: {
                 Text("settings.mode")
             } footer: {
-                Text(appState.userMode.description)
+                Text(self.appState.userMode.description)
             }
 
             // MARK: - Minor Mode: Usage Limit
 
-            if appState.isMinorMode {
+            if self.appState.isMinorMode {
                 Section("settings.minor") {
                     Stepper(
-                        "settings.minor.limit \(appState.minorUsageLimitMinutes)",
+                        "settings.minor.limit \(self.appState.minorUsageLimitMinutes)",
                         value: $state.minorUsageLimitMinutes,
                         in: 15 ... 120,
                         step: 5
@@ -33,12 +33,12 @@ struct SettingsView: View {
                     HStack {
                         Image(systemName: "clock")
                             .foregroundStyle(.orange)
-                        Text("settings.minor.sessionTime \(appState.sessionMinutesUsed)")
+                        Text("settings.minor.sessionTime \(self.appState.sessionMinutesUsed)")
                             .font(SCTheme.Typography.body)
                     }
 
                     Button("settings.minor.resetSession") {
-                        appState.resetSession()
+                        self.appState.resetSession()
                     }
                 }
             }
@@ -50,9 +50,9 @@ struct SettingsView: View {
                     }
                 }
 
-                if appState.exportFormat.supportedCompressionQuality {
+                if self.appState.exportFormat.supportedCompressionQuality {
                     VStack(alignment: .leading) {
-                        Text("export.quality \(Int(appState.exportQuality * 100))")
+                        Text("export.quality \(Int(self.appState.exportQuality * 100))")
                         Slider(value: $state.exportQuality, in: 0.1 ... 1.0, step: 0.05)
                     }
                 }
@@ -60,47 +60,47 @@ struct SettingsView: View {
 
             Section("settings.capture") {
                 #if os(macOS)
-                macOSCaptureSettings
+                self.macOSCaptureSettings
                 #else
-                iOSCaptureSettings
+                self.iOSCaptureSettings
                 #endif
 
                 Toggle("settings.autoScroll", isOn: $state.autoScrollEnabled)
 
                 Text("settings.autoScroll.desc")
-                    .font(adaptiveCaption)
+                    .font(self.adaptiveCaption)
                     .foregroundStyle(.secondary)
             }
 
             Section("settings.sync") {
                 Toggle("settings.iCloudSync", isOn: $state.iCloudSyncEnabled)
-                    .onChange(of: appState.iCloudSyncEnabled) { _, enabled in
+                    .onChange(of: self.appState.iCloudSyncEnabled) { _, enabled in
                         if enabled {
                             ICloudSyncManager.shared.startMonitoring()
                         } else {
                             ICloudSyncManager.shared.stopMonitoring()
                         }
-                        AnalyticsManager.shared.track(.settingsChanged)
+                        AnalyticsManager.shared.track(.settingsChanged(key: "icloud_sync", value: "\(enabled)"))
                     }
 
                 if ICloudSyncManager.shared.isAvailable {
                     HStack {
                         Circle()
-                            .fill(syncStatusColor)
+                            .fill(self.syncStatusColor)
                             .frame(width: 8, height: 8)
-                        Text(syncStatusText)
-                            .font(adaptiveCaption)
+                        Text(self.syncStatusText)
+                            .font(self.adaptiveCaption)
                     }
                 }
 
                 Text("settings.iCloudSync.desc")
-                    .font(adaptiveCaption)
+                    .font(self.adaptiveCaption)
                     .foregroundStyle(.secondary)
             }
 
             // MARK: - Pro (hidden in Minor mode)
 
-            if !appState.shouldHidePayment {
+            if !self.appState.shouldHidePayment {
                 Section {
                     NavigationLink {
                         ProUpgradeTeaser()
@@ -127,7 +127,7 @@ struct SettingsView: View {
                 LabeledContent("settings.version", value: "1.0.0")
                 LabeledContent("settings.build", value: "1")
 
-                if !appState.isMinorMode {
+                if !self.appState.isMinorMode {
                     Link(destination: URL(string: "https://github.com/EthanShen10086/ScrollCap")!) {
                         Label("settings.sourceCode", systemImage: "curlybraces")
                     }
@@ -144,7 +144,7 @@ struct SettingsView: View {
     // MARK: - User Mode Picker
 
     private var userModePicker: some View {
-        @Bindable var state = appState
+        @Bindable var state = self.appState
         return Picker("settings.mode.select", selection: $state.userMode) {
             ForEach(UserMode.allCases) { mode in
                 Label(mode.displayName, systemImage: mode.icon)
@@ -157,7 +157,7 @@ struct SettingsView: View {
     }
 
     private var adaptiveCaption: Font {
-        appState.isElderMode ? .body : SCTheme.Typography.caption
+        self.appState.isElderMode ? .body : SCTheme.Typography.caption
     }
 
     #if os(macOS)
@@ -175,7 +175,7 @@ struct SettingsView: View {
         Group {
             LabeledContent("settings.captureMethod", value: String(localized: "method.replayKit"))
             Text("settings.ios.captureDesc")
-                .font(adaptiveCaption)
+                .font(self.adaptiveCaption)
                 .foregroundStyle(.secondary)
         }
     }
@@ -225,18 +225,22 @@ struct ProUpgradeTeaser: View {
                 }
 
                 VStack(alignment: .leading, spacing: SCTheme.Spacing.md) {
-                    proFeatureRow(
+                    self.proFeatureRow(
                         icon: "text.viewfinder",
                         title: "pro.feature.ocr",
                         description: "pro.feature.ocr.desc"
                     )
-                    proFeatureRow(
+                    self.proFeatureRow(
                         icon: "arrow.up.and.down.text.horizontal",
                         title: "pro.feature.autoScroll",
                         description: "pro.feature.autoScroll.desc"
                     )
-                    proFeatureRow(icon: "icloud", title: "pro.feature.iCloud", description: "pro.feature.iCloud.desc")
-                    proFeatureRow(
+                    self.proFeatureRow(
+                        icon: "icloud",
+                        title: "pro.feature.iCloud",
+                        description: "pro.feature.iCloud.desc"
+                    )
+                    self.proFeatureRow(
                         icon: "photo.badge.plus",
                         title: "pro.feature.formats",
                         description: "pro.feature.formats.desc"
@@ -245,7 +249,7 @@ struct ProUpgradeTeaser: View {
                 .padding(SCTheme.Spacing.lg)
                 .background {
                     RoundedRectangle(cornerRadius: SCTheme.CornerRadius.lg)
-                        .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.white.opacity(0.8))
+                        .fill(self.colorScheme == .dark ? Color.white.opacity(0.05) : Color.white.opacity(0.8))
                 }
 
                 BrandedButton("pro.upgrade", systemImage: "sparkles") {

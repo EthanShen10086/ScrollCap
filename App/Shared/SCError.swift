@@ -140,22 +140,22 @@ final class ErrorPresenter {
     private init() {}
 
     func present(_ error: SCError) {
-        currentError = error
-        isPresented = true
-        logger.error("\(error.localizedDescription)")
+        self.currentError = error
+        self.isPresented = true
+        self.logger.error("\(error.localizedDescription)")
         AnalyticsManager.shared.track(error.analyticsEvent)
     }
 
     func present(_ error: Error) {
         if let scError = error as? SCError {
-            present(scError)
+            self.present(scError)
         } else {
-            present(.generic(error.localizedDescription))
+            self.present(.generic(error.localizedDescription))
         }
     }
 
     func dismiss() {
-        isPresented = false
-        currentError = nil
+        self.isPresented = false
+        self.currentError = nil
     }
 }

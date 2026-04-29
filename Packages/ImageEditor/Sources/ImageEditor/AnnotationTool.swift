@@ -57,7 +57,7 @@ public actor AnnotationRenderer {
         context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
 
         for annotation in annotations {
-            renderAnnotation(annotation, in: context, imageHeight: height)
+            self.renderAnnotation(annotation, in: context, imageHeight: height)
         }
 
         return context.makeImage()

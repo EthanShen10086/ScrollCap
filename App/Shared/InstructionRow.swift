@@ -7,13 +7,13 @@ struct InstructionRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: SCTheme.Spacing.sm) {
-            Text("\(number)")
+            Text("\(self.number)")
                 .font(.system(.caption, design: .rounded).bold())
                 .foregroundStyle(.white)
                 .frame(width: 22, height: 22)
                 .background(SCTheme.Gradients.brand, in: Circle())
 
-            Text(text)
+            Text(self.text)
                 .font(SCTheme.Typography.body)
                 .foregroundStyle(.primary)
 

@@ -14,10 +14,10 @@ public struct AdaptiveGlassModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        if isEnabled {
+        if self.isEnabled {
             content
                 .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                .clipShape(RoundedRectangle(cornerRadius: self.cornerRadius))
                 .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
         } else {
             content
@@ -35,7 +35,7 @@ public struct ClearGlassModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .clipShape(RoundedRectangle(cornerRadius: self.cornerRadius))
             .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
 }

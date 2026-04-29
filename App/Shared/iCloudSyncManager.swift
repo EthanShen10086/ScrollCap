@@ -29,51 +29,51 @@ final class ICloudSyncManager {
     }
 
     var isAvailable: Bool {
-        iCloudContainerURL != nil
+        self.iCloudContainerURL != nil
     }
 
     var documentsURL: URL? {
-        iCloudContainerURL?.appendingPathComponent("Documents/Screenshots", isDirectory: true)
+        self.iCloudContainerURL?.appendingPathComponent("Documents/Screenshots", isDirectory: true)
     }
 
     var manifestURL: URL? {
-        iCloudContainerURL?.appendingPathComponent("Documents/manifest.json")
+        self.iCloudContainerURL?.appendingPathComponent("Documents/manifest.json")
     }
 
     func startMonitoring() {
-        guard isAvailable else {
-            syncState = .disabled
-            logger.info("iCloud not available")
+        guard self.isAvailable else {
+            self.syncState = .disabled
+            self.logger.info("iCloud not available")
             return
         }
 
-        ensureDirectoryExists()
-        startMetadataQuery()
-        logger.info("iCloud sync monitoring started")
+        self.ensureDirectoryExists()
+        self.startMetadataQuery()
+        self.logger.info("iCloud sync monitoring started")
     }
 
     func stopMonitoring() {
-        metadataQuery?.stop()
-        metadataQuery = nil
+        self.metadataQuery?.stop()
+        self.metadataQuery = nil
     }
 
     func syncScreenshot(imageData: Data, record: ScreenshotSyncRecord) async {
         guard let documentsURL else { return }
 
-        syncState = .syncing
+        self.syncState = .syncing
         AnalyticsManager.shared.track(.iCloudSyncStarted)
 
         let fileURL = documentsURL.appendingPathComponent(record.filename)
         do {
             try imageData.write(to: fileURL)
-            try await updateManifest(adding: record)
-            syncState = .synced
-            lastSyncDate = Date()
-            logger.completed("Synced \(record.filename)")
+            try await self.updateManifest(adding: record)
+            self.syncState = .synced
+            self.lastSyncDate = Date()
+            self.logger.completed("Synced \(record.filename)")
             AnalyticsManager.shared.track(.iCloudSyncCompleted(itemCount: 1))
         } catch {
-            syncState = .error(error.localizedDescription)
-            logger.failed("Sync failed", error: error)
+            self.syncState = .error(error.localizedDescription)
+            self.logger.failed("Sync failed", error: error)
             AnalyticsManager.shared.track(.iCloudSyncFailed(error: error.localizedDescription))
         }
     }
@@ -100,7 +100,7 @@ final class ICloudSyncManager {
             decoder.dateDecodingStrategy = .iso8601
             return try decoder.decode([ScreenshotSyncRecord].self, from: data)
         } catch {
-            logger.failed("Failed to fetch remote manifest", error: error)
+            self.logger.failed("Failed to fetch remote manifest", error: error)
             return []
         }
     }
@@ -138,14 +138,14 @@ final class ICloudSyncManager {
         }
 
         query.start()
-        metadataQuery = query
+        self.metadataQuery = query
     }
 
     private func processQueryResults() {
         guard let query = metadataQuery else { return }
         query.disableUpdates()
         let itemCount = query.resultCount
-        logger.info("iCloud query update: \(itemCount) items")
+        self.logger.info("iCloud query update: \(itemCount) items")
         query.enableUpdates()
     }
 

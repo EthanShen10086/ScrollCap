@@ -11,7 +11,7 @@
 --typeattributes prev-line
 --varattributes prev-line
 --maxwidth 120
---self remove
+--self insert
 --importgrouping testable-bottom
 --semicolons never
 --commas always

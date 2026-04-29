@@ -21,28 +21,28 @@ final class CaptureViewModel {
     private var captureSignpostID: OSSignpostID?
 
     var isCapturing: Bool {
-        captureState.isActive
+        self.captureState.isActive
     }
 
     init() {
         #if os(macOS)
-        captureService = ScreenCaptureService()
+        self.captureService = ScreenCaptureService()
         #elseif os(iOS)
-        captureService = ReplayKitCaptureService()
+        self.captureService = ReplayKitCaptureService()
         #endif
 
-        setupCallbacks()
+        self.setupCallbacks()
     }
 
     private func setupCallbacks() {
-        captureService.onStateChanged = { [weak self] state in
+        self.captureService.onStateChanged = { [weak self] state in
             Task { @MainActor in
                 self?.captureState = state
                 self?.syncToAppState()
             }
         }
 
-        captureService.onPreviewUpdated = { [weak self] image in
+        self.captureService.onPreviewUpdated = { [weak self] image in
             Task { @MainActor in
                 self?.currentPreview = image
             }
@@ -50,34 +50,34 @@ final class CaptureViewModel {
     }
 
     private func syncToAppState() {
-        appStateRef?.captureState = captureState
+        self.appStateRef?.captureState = self.captureState
     }
 
     private weak var appStateRef: AppState?
 
     func bind(to appState: AppState) {
-        appStateRef = appState
+        self.appStateRef = appState
     }
 
     // MARK: - Public Actions
 
     func requestPermission() async -> Bool {
-        await captureService.requestPermission()
+        await self.captureService.requestPermission()
     }
 
     func prepare() async {
         do {
-            try await captureService.prepare()
+            try await self.captureService.prepare()
         } catch {
-            let msg = localizedErrorMessage(error)
-            captureState = .failed(message: msg)
-            errorMessage = msg
+            let msg = self.localizedErrorMessage(error)
+            self.captureState = .failed(message: msg)
+            self.errorMessage = msg
         }
     }
 
     func startCapture(region: CaptureRegion? = nil) async {
-        errorMessage = nil
-        captureStartTime = CFAbsoluteTimeGetCurrent()
+        self.errorMessage = nil
+        self.captureStartTime = CFAbsoluteTimeGetCurrent()
 
         let method: String
         #if os(macOS)
@@ -85,17 +85,17 @@ final class CaptureViewModel {
         #else
         method = "ReplayKit"
         #endif
-        captureSignpostID = PerformanceMonitor.beginCapture()
+        self.captureSignpostID = PerformanceMonitor.beginCapture()
         SCLogger.capture.started("region: \(region.map { "\($0)" } ?? "full")")
         AnalyticsManager.shared.track(.captureStarted(method: method))
 
         do {
-            try await captureService.startCapture(region: region)
+            try await self.captureService.startCapture(region: region)
             HapticManager.captureStarted()
         } catch {
-            let msg = localizedErrorMessage(error)
-            captureState = .failed(message: msg)
-            errorMessage = msg
+            let msg = self.localizedErrorMessage(error)
+            self.captureState = .failed(message: msg)
+            self.errorMessage = msg
             SCLogger.capture.failed("startCapture", error: error)
             AnalyticsManager.shared.track(.captureFailed(error: error.localizedDescription))
             HapticManager.captureError()
@@ -105,8 +105,8 @@ final class CaptureViewModel {
     func stopCapture() async {
         do {
             if let screenshot = try await captureService.stopCapture() {
-                capturedScreenshot = screenshot
-                let duration = CFAbsoluteTimeGetCurrent() - captureStartTime
+                self.capturedScreenshot = screenshot
+                let duration = CFAbsoluteTimeGetCurrent() - self.captureStartTime
                 if let sid = captureSignpostID {
                     PerformanceMonitor.endCapture(sid, frames: screenshot.metadata.frameCount)
                 }
@@ -119,9 +119,9 @@ final class CaptureViewModel {
                 HapticManager.captureStopped()
             }
         } catch {
-            let msg = localizedErrorMessage(error)
-            captureState = .failed(message: msg)
-            errorMessage = msg
+            let msg = self.localizedErrorMessage(error)
+            self.captureState = .failed(message: msg)
+            self.errorMessage = msg
             SCLogger.capture.failed("stopCapture", error: error)
             AnalyticsManager.shared.track(.captureFailed(error: error.localizedDescription))
             HapticManager.captureError()
@@ -129,20 +129,20 @@ final class CaptureViewModel {
     }
 
     func cancelCapture() {
-        captureService.cancelCapture()
-        currentPreview = nil
-        captureState = .idle
-        syncToAppState()
+        self.captureService.cancelCapture()
+        self.currentPreview = nil
+        self.captureState = .idle
+        self.syncToAppState()
         SCLogger.capture.info("Capture cancelled by user")
         AnalyticsManager.shared.track(.captureCancelled)
     }
 
     func reset() {
-        capturedScreenshot = nil
-        currentPreview = nil
-        errorMessage = nil
-        captureState = .idle
-        syncToAppState()
+        self.capturedScreenshot = nil
+        self.currentPreview = nil
+        self.errorMessage = nil
+        self.captureState = .idle
+        self.syncToAppState()
     }
 
     private func localizedErrorMessage(_ error: Error) -> String {

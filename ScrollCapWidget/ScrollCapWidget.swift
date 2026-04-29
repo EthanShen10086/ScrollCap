@@ -52,15 +52,15 @@ struct ScrollCapWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        switch family {
+        switch self.family {
         case .systemSmall:
-            smallWidget
+            self.smallWidget
         case .accessoryRectangular:
-            lockScreenWidget
+            self.lockScreenWidget
         case .accessoryCircular:
-            circularWidget
+            self.circularWidget
         default:
-            smallWidget
+            self.smallWidget
         }
     }
 
@@ -79,8 +79,8 @@ struct ScrollCapWidgetEntryView: View {
             Text("widget.name")
                 .font(.system(.caption, design: .rounded).weight(.semibold))
 
-            if entry.captureCount > 0 {
-                Text("widget.captures \(entry.captureCount)")
+            if self.entry.captureCount > 0 {
+                Text("widget.captures \(self.entry.captureCount)")
                     .font(.system(.caption2))
                     .foregroundStyle(.secondary)
             }
@@ -142,7 +142,7 @@ struct ScrollCapQuickCaptureWidget: Widget {
     let kind: String = "ScrollCapWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: ScrollCapProvider()) { entry in
+        StaticConfiguration(kind: self.kind, provider: ScrollCapProvider()) { entry in
             ScrollCapWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("widget.configName")

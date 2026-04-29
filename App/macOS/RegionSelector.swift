@@ -15,8 +15,8 @@ struct RegionSelectorView: NSViewRepresentable {
                 size: rect.size,
                 scale: NSScreen.main?.backingScaleFactor ?? 2.0
             )
-            selectedRegion = region
-            onSelectionComplete(region)
+            self.selectedRegion = region
+            self.onSelectionComplete(region)
         }
         return view
     }
@@ -31,9 +31,9 @@ class RegionSelectionNSView: NSView {
     private var isSelecting = false
 
     override func mouseDown(with event: NSEvent) {
-        selectionStart = convert(event.locationInWindow, from: nil)
-        isSelecting = true
-        selectionRect = .zero
+        self.selectionStart = convert(event.locationInWindow, from: nil)
+        self.isSelecting = true
+        self.selectionRect = .zero
         needsDisplay = true
     }
 
@@ -41,7 +41,7 @@ class RegionSelectionNSView: NSView {
         guard let start = selectionStart else { return }
         let current = convert(event.locationInWindow, from: nil)
 
-        selectionRect = CGRect(
+        self.selectionRect = CGRect(
             x: min(start.x, current.x),
             y: min(start.y, current.y),
             width: abs(current.x - start.x),
@@ -51,11 +51,11 @@ class RegionSelectionNSView: NSView {
     }
 
     override func mouseUp(with event: NSEvent) {
-        isSelecting = false
-        if selectionRect.width > 10, selectionRect.height > 10 {
-            onSelectionComplete?(selectionRect)
+        self.isSelecting = false
+        if self.selectionRect.width > 10, self.selectionRect.height > 10 {
+            self.onSelectionComplete?(self.selectionRect)
         }
-        selectionStart = nil
+        self.selectionStart = nil
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -64,7 +64,7 @@ class RegionSelectionNSView: NSView {
         NSColor.clear.setFill()
         dirtyRect.fill()
 
-        if isSelecting, selectionRect != .zero {
+        if self.isSelecting, self.selectionRect != .zero {
             NSColor.systemBlue.withAlphaComponent(0.15).setFill()
             let path = NSBezierPath(roundedRect: selectionRect, xRadius: 4, yRadius: 4)
             path.fill()

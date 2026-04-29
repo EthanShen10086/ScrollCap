@@ -34,7 +34,7 @@ final class ThirdPartyPaymentService {
         amount: Decimal,
         currency: String = "CNY"
     ) async throws -> PaymentResult {
-        isProcessing = true
+        self.isProcessing = true
         defer { isProcessing = false }
 
         let order = try await createServerOrder(
@@ -44,16 +44,16 @@ final class ThirdPartyPaymentService {
             currency: currency
         )
 
-        pendingOrderId = order.orderId
+        self.pendingOrderId = order.orderId
 
         #if os(iOS)
         if let payURL = URL(string: order.paymentScheme) {
             let opened = await UIApplication.shared.open(payURL)
             if !opened {
-                logger.failed("Failed to open WeChat", error: StoreError.purchaseFailed)
+                self.logger.failed("Failed to open WeChat", error: StoreError.purchaseFailed)
                 return .failed(StoreError.purchaseFailed)
             }
-            logger.info("WeChat Pay initiated for order: \(order.orderId)")
+            self.logger.info("WeChat Pay initiated for order: \(order.orderId)")
             return .success(transactionId: order.orderId)
         }
         #endif
@@ -77,7 +77,7 @@ final class ThirdPartyPaymentService {
         amount: Decimal,
         currency: String = "CNY"
     ) async throws -> PaymentResult {
-        isProcessing = true
+        self.isProcessing = true
         defer { isProcessing = false }
 
         let order = try await createServerOrder(
@@ -87,7 +87,7 @@ final class ThirdPartyPaymentService {
             currency: currency
         )
 
-        pendingOrderId = order.orderId
+        self.pendingOrderId = order.orderId
 
         guard let payURL = URL(string: order.paymentScheme) else {
             return .failed(StoreError.purchaseFailed)
@@ -106,7 +106,7 @@ final class ThirdPartyPaymentService {
         }
         #endif
 
-        logger.info("Alipay initiated for order: \(order.orderId)")
+        self.logger.info("Alipay initiated for order: \(order.orderId)")
         return .success(transactionId: order.orderId)
     }
 
@@ -117,7 +117,7 @@ final class ThirdPartyPaymentService {
         amount: Decimal,
         currency: String = "USD"
     ) async throws -> PaymentResult {
-        isProcessing = true
+        self.isProcessing = true
         defer { isProcessing = false }
 
         let order = try await createServerOrder(
@@ -127,7 +127,7 @@ final class ThirdPartyPaymentService {
             currency: currency
         )
 
-        pendingOrderId = order.orderId
+        self.pendingOrderId = order.orderId
 
         guard let approvalURL = URL(string: order.webPaymentURL ?? order.paymentScheme) else {
             return .failed(StoreError.purchaseFailed)
@@ -139,7 +139,7 @@ final class ThirdPartyPaymentService {
         NSWorkspace.shared.open(approvalURL)
         #endif
 
-        logger.info("PayPal initiated for order: \(order.orderId)")
+        self.logger.info("PayPal initiated for order: \(order.orderId)")
         return .success(transactionId: order.orderId)
     }
 
@@ -150,10 +150,10 @@ final class ThirdPartyPaymentService {
 
         let verified = await verifyOrder(orderId: orderId)
         if verified {
-            logger.completed("Third-party payment verified: \(orderId)")
+            self.logger.completed("Third-party payment verified: \(orderId)")
             AnalyticsManager.shared.track(.purchaseCompleted(productId: orderId))
         }
-        pendingOrderId = nil
+        self.pendingOrderId = nil
         return verified
     }
 
@@ -192,7 +192,7 @@ final class ThirdPartyPaymentService {
             )
             return result.status == "paid"
         } catch {
-            logger.failed("Order verification failed", error: error)
+            self.logger.failed("Order verification failed", error: error)
             return false
         }
     }

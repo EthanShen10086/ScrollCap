@@ -14,33 +14,36 @@ struct ExportSheet: View {
         NavigationStack {
             Form {
                 Section("export.format") {
-                    Picker("export.format", selection: $selectedFormat) {
+                    Picker("export.format", selection: self.$selectedFormat) {
                         ForEach(ExportFormat.allCases) { format in
                             Text(format.displayName).tag(format)
                         }
                     }
                     .pickerStyle(.segmented)
 
-                    if selectedFormat.supportedCompressionQuality {
+                    if self.selectedFormat.supportedCompressionQuality {
                         VStack(alignment: .leading) {
-                            Text("export.quality \(Int(quality * 100))")
-                            Slider(value: $quality, in: 0.1 ... 1.0, step: 0.05)
+                            Text("export.quality \(Int(self.quality * 100))")
+                            Slider(value: self.$quality, in: 0.1 ... 1.0, step: 0.05)
                         }
                     }
                 }
 
                 Section("export.info") {
-                    LabeledContent("export.dimensions", value: "\(screenshot.image.width)×\(screenshot.image.height)")
-                    LabeledContent("export.frames", value: "\(screenshot.metadata.frameCount)")
+                    LabeledContent(
+                        "export.dimensions",
+                        value: "\(self.screenshot.image.width)×\(self.screenshot.image.height)"
+                    )
+                    LabeledContent("export.frames", value: "\(self.screenshot.metadata.frameCount)")
                 }
 
                 Section {
                     Button {
-                        Task { await saveImage() }
+                        Task { await self.saveImage() }
                     } label: {
                         HStack {
                             Spacer()
-                            if isSaving {
+                            if self.isSaving {
                                 ProgressView()
                                     .controlSize(.small)
                             } else {
@@ -49,11 +52,11 @@ struct ExportSheet: View {
                             Spacer()
                         }
                     }
-                    .disabled(isSaving)
+                    .disabled(self.isSaving)
 
                     #if os(iOS)
                     ShareLink(
-                        item: Image(decorative: screenshot.image, scale: 1.0),
+                        item: Image(decorative: self.screenshot.image, scale: 1.0),
                         preview: SharePreview(Text("export.sharePreview"))
                     ) {
                         HStack {
@@ -71,7 +74,7 @@ struct ExportSheet: View {
             #endif
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("capture.cancel") { dismiss() }
+                        Button("capture.cancel") { self.dismiss() }
                     }
                 }
         }
@@ -81,24 +84,24 @@ struct ExportSheet: View {
     }
 
     private func saveImage() async {
-        isSaving = true
+        self.isSaving = true
         defer { isSaving = false }
 
         let options = ExportOptions(format: selectedFormat, compressionQuality: quality)
 
         #if os(macOS)
         let panel = NSSavePanel()
-        panel.allowedContentTypes = [selectedFormat.utType]
-        panel.nameFieldStringValue = "ScrollCap_\(Int(Date().timeIntervalSince1970)).\(selectedFormat.fileExtension)"
+        panel.allowedContentTypes = [self.selectedFormat.utType]
+        panel.nameFieldStringValue = "ScrollCap_\(Int(Date().timeIntervalSince1970)).\(self.selectedFormat.fileExtension)"
 
         guard panel.runModal() == .OK, let url = panel.url else {
             return
         }
 
         do {
-            try await viewModel.exportScreenshot(options: options, to: url)
-            AnalyticsManager.shared.track(.exportSaved(format: selectedFormat.fileExtension))
-            dismiss()
+            try await self.viewModel.exportScreenshot(options: options, to: url)
+            AnalyticsManager.shared.track(.exportSaved(format: self.selectedFormat.fileExtension))
+            self.dismiss()
         } catch {
             ErrorPresenter.shared.present(.export(.fileWriteFailed))
         }
@@ -106,11 +109,11 @@ struct ExportSheet: View {
         do {
             if let data = try await viewModel.exportToData(options: options) {
                 let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(
-                    "ScrollCap_\(Int(Date().timeIntervalSince1970)).\(selectedFormat.fileExtension)"
+                    "ScrollCap_\(Int(Date().timeIntervalSince1970)).\(self.selectedFormat.fileExtension)"
                 )
                 try data.write(to: tempURL)
-                AnalyticsManager.shared.track(.exportSaved(format: selectedFormat.fileExtension))
-                dismiss()
+                AnalyticsManager.shared.track(.exportSaved(format: self.selectedFormat.fileExtension))
+                self.dismiss()
             }
         } catch {
             ErrorPresenter.shared.present(.export(.fileWriteFailed))

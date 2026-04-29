@@ -13,8 +13,8 @@ final class CrashReporter {
 
     private init() {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        crashLogDirectory = appSupport.appendingPathComponent("ScrollCap/CrashLogs", isDirectory: true)
-        try? FileManager.default.createDirectory(at: crashLogDirectory, withIntermediateDirectories: true)
+        self.crashLogDirectory = appSupport.appendingPathComponent("ScrollCap/CrashLogs", isDirectory: true)
+        try? FileManager.default.createDirectory(at: self.crashLogDirectory, withIntermediateDirectories: true)
     }
 
     func install() {
@@ -29,8 +29,8 @@ final class CrashReporter {
             CrashReporter.writeCrashLog(info)
         }
 
-        setupSignalHandlers()
-        checkForPreviousCrash()
+        self.setupSignalHandlers()
+        self.checkForPreviousCrash()
     }
 
     private func setupSignalHandlers() {
@@ -49,7 +49,7 @@ final class CrashReporter {
             timestamp: Date(),
             deviceInfo: DeviceInfo.current
         )
-        writeCrashLog(info)
+        self.writeCrashLog(info)
     }
 
     private static func writeCrashLog(_ info: CrashInfo) {
@@ -72,7 +72,7 @@ final class CrashReporter {
         for file in crashFiles {
             if let data = try? Data(contentsOf: file),
                let info = try? JSONDecoder().decode(CrashInfo.self, from: data) {
-                logger.error("📋 Previous crash detected: \(info.name) - \(info.reason)")
+                self.logger.error("📋 Previous crash detected: \(info.name) - \(info.reason)")
                 AnalyticsManager.shared.track(.crashDetected(name: info.name, reason: info.reason))
                 try? FileManager.default.removeItem(at: file)
             }

@@ -15,11 +15,11 @@ public struct AnimatedMeshBackground: View {
             MeshGradient(
                 width: 3,
                 height: 3,
-                points: meshPoints(time: time),
-                colors: meshColors
+                points: self.meshPoints(time: time),
+                colors: self.meshColors
             )
         }
-        .opacity(opacity)
+        .opacity(self.opacity)
         .ignoresSafeArea()
     }
 
@@ -55,19 +55,37 @@ public struct AnimatedMeshBackground: View {
 
 public struct BrandBackground: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.userMode) private var userMode
+
+    private var shouldReduceMotion: Bool {
+        self.reduceMotion || self.userMode == .elder
+    }
 
     public init() {}
 
     public var body: some View {
         Group {
-            if #available(iOS 18.0, macOS 15.0, *) {
+            if self.shouldReduceMotion {
                 ZStack {
-                    baseColor
-                    AnimatedMeshBackground(opacity: colorScheme == .dark ? 0.5 : 0.3)
+                    self.baseColor
+                    LinearGradient(
+                        colors: [
+                            SCTheme.Colors.brandBlue.opacity(0.1),
+                            SCTheme.Colors.brandPurple.opacity(0.08),
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                }
+            } else if #available(iOS 18.0, macOS 15.0, *) {
+                ZStack {
+                    self.baseColor
+                    AnimatedMeshBackground(opacity: self.colorScheme == .dark ? 0.5 : 0.3)
                 }
             } else {
                 ZStack {
-                    baseColor
+                    self.baseColor
                     LinearGradient(
                         colors: [
                             SCTheme.Colors.brandBlue.opacity(0.1),

@@ -11,26 +11,26 @@ struct ScrollCapApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(appState)
-                .environment(\.userMode, appState.userMode)
-                .applyUserMode(appState.userMode)
+                .environment(self.appState)
+                .environment(\.userMode, self.appState.userMode)
+                .applyUserMode(self.appState.userMode)
                 .onAppear {
                     CrashReporter.shared.install()
                     AnalyticsManager.shared.track(.appLaunched)
-                    if appState.iCloudSyncEnabled {
+                    if self.appState.iCloudSyncEnabled {
                         ICloudSyncManager.shared.startMonitoring()
                     }
                     #if os(macOS)
-                    setupMacOS()
+                    self.setupMacOS()
                     #endif
                 }
                 .onOpenURL { url in
-                    handleDeepLink(url)
+                    self.handleDeepLink(url)
                 }
                 .task {
                     while !Task.isCancelled {
                         try? await Task.sleep(for: .seconds(60))
-                        appState.checkUsageTime()
+                        self.appState.checkUsageTime()
                     }
                 }
         }
@@ -40,7 +40,7 @@ struct ScrollCapApp: App {
         .commands {
             CommandGroup(after: .newItem) {
                 Button(String(localized: "capture.newScroll")) {
-                    startQuickCapture()
+                    self.startQuickCapture()
                 }
                 .keyboardShortcut("6", modifiers: [.command, .shift])
             }
@@ -50,13 +50,17 @@ struct ScrollCapApp: App {
         #if os(macOS)
         MenuBarExtra("ScrollCap", systemImage: "camera.viewfinder") {
             MenuBarView()
-                .environment(appState)
+                .environment(self.appState)
+                .environment(\.userMode, self.appState.userMode)
+                .applyUserMode(self.appState.userMode)
         }
         .menuBarExtraStyle(.window)
 
         Settings {
             SettingsView()
-                .environment(appState)
+                .environment(self.appState)
+                .environment(\.userMode, self.appState.userMode)
+                .applyUserMode(self.appState.userMode)
         }
         #endif
     }
@@ -65,11 +69,12 @@ struct ScrollCapApp: App {
         guard url.scheme == "scrollcap" else { return }
         switch url.host {
         case "capture":
-            appState.selectedDestination = .capture
+            self.appState.selectedDestination = .capture
             #if os(macOS)
-            startQuickCapture()
+            self.startQuickCapture()
             #endif
         case "payment":
+            guard !self.appState.shouldHidePayment else { return }
             Task {
                 _ = await ThirdPartyPaymentService.shared.handlePaymentCallback(url: url)
             }
@@ -81,12 +86,12 @@ struct ScrollCapApp: App {
     #if os(macOS)
     private func setupMacOS() {
         GlobalShortcutManager.shared.register {
-            startQuickCapture()
+            self.startQuickCapture()
         }
     }
 
     private func startQuickCapture() {
-        appState.captureState = .selectingRegion
+        self.appState.captureState = .selectingRegion
     }
     #endif
 }
