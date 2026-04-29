@@ -8,6 +8,7 @@ import CaptureKitMac
 import CaptureKitIOS
 #endif
 import CaptureKit
+import os.signpost
 
 @Observable
 @MainActor
@@ -23,6 +24,7 @@ final class CaptureViewModel {
     private let aligner = FrameAligner()
     private let stitcher = ImageStitcher()
     private var captureStartTime: CFAbsoluteTime = 0
+    private var captureSignpostID: OSSignpostID?
 
     var isCapturing: Bool {
         captureState.isActive
@@ -79,6 +81,7 @@ final class CaptureViewModel {
         #else
         method = "ReplayKit"
         #endif
+        captureSignpostID = PerformanceMonitor.beginCapture()
         SCLogger.capture.started("region: \(region.map { "\($0)" } ?? "full")")
         AnalyticsManager.shared.track(.captureStarted(method: method))
 
@@ -99,6 +102,10 @@ final class CaptureViewModel {
             if let screenshot = try await captureService.stopCapture() {
                 capturedScreenshot = screenshot
                 let duration = CFAbsoluteTimeGetCurrent() - captureStartTime
+                if let sid = captureSignpostID {
+                    PerformanceMonitor.endCapture(sid, frames: screenshot.metadata.frameCount)
+                }
+                PerformanceMonitor.reportMemoryUsage()
                 SCLogger.capture.completed("frames: \(screenshot.metadata.frameCount)", duration: duration)
                 AnalyticsManager.shared.track(.captureCompleted(
                     frames: screenshot.metadata.frameCount,

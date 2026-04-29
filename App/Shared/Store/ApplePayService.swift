@@ -100,27 +100,22 @@ extension ApplePayService: PKPaymentAuthorizationControllerDelegate {
 
     @MainActor
     private func processPaymentOnServer(tokenData: Data) async throws -> String {
-        let serverURL = PaymentConfig.shared.serverBaseURL
+        let url = PaymentConfig.shared.serverBaseURL
             .appendingPathComponent("/api/payments/apple-pay/process")
 
-        var request = URLRequest(url: serverURL)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let body = ApplePayTokenRequest(
+            paymentToken: tokenData.base64EncodedString(),
+            bundleId: Bundle.main.bundleIdentifier ?? ""
+        )
 
-        let body: [String: Any] = [
-            "paymentToken": tokenData.base64EncodedString(),
-            "bundleId": Bundle.main.bundleIdentifier ?? "",
-        ]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse,
-              200 ... 299 ~= httpResponse.statusCode
-        else {
-            throw StoreError.networkError("Server returned an error")
-        }
-
-        let result = try JSONDecoder().decode(PaymentServerResponse.self, from: data)
+        let result = try await APIClient.shared.post(
+            PaymentServerResponse.self, url: url, body: body
+        )
         return result.transactionId
     }
+}
+
+private struct ApplePayTokenRequest: Codable {
+    let paymentToken: String
+    let bundleId: String
 }

@@ -185,3 +185,29 @@
 /* Elder Mode */
 "elder.capture" = "截图";
 "elder.stop" = "停止";
+
+/* Errors */
+"error.title" = "错误";
+"error.capture.permission" = "屏幕录制权限被拒绝，请在系统设置 > 隐私中开启。";
+"error.capture.recording" = "录制失败，请重试。";
+"error.capture.noFrames" = "未捕获到任何帧。";
+"error.capture.region" = "无效的捕获区域。";
+"error.stitch.alignment" = "图像对齐失败，请尝试更缓慢地滚动。";
+"error.stitch.frames" = "帧数不足，无法拼接。";
+"error.stitch.tooLarge" = "图像过大，无法处理。";
+"error.export.encoding" = "图像编码失败。";
+"error.export.cancelled" = "导出已取消。";
+"error.export.write" = "文件保存失败。";
+"error.export.format" = "不支持的导出格式。";
+"error.store.generic" = "支付错误，请重试。";
+"error.network.offline" = "无网络连接。";
+"error.network.timeout" = "请求超时，请重试。";
+"error.network.server" = "服务器错误，请稍后重试。";
+"error.network.decode" = "服务器响应异常。";
+"error.network.auth" = "认证失败。";
+"error.ocr.generic" = "文字识别失败。";
+"error.sync.generic" = "iCloud 同步失败。";
+
+/* Restore */
+"paywall.restoreSuccess" = "购买已成功恢复！";
+"paywall.restoreEmpty" = "未找到之前的购买记录。";

@@ -185,3 +185,29 @@
 /* Elder Mode */
 "elder.capture" = "Capture";
 "elder.stop" = "Stop";
+
+/* Errors */
+"error.title" = "Error";
+"error.capture.permission" = "Screen capture permission denied. Please enable in System Settings > Privacy.";
+"error.capture.recording" = "Recording failed. Please try again.";
+"error.capture.noFrames" = "No frames captured.";
+"error.capture.region" = "Invalid capture region.";
+"error.stitch.alignment" = "Image alignment failed. Try scrolling more slowly.";
+"error.stitch.frames" = "Not enough frames to stitch.";
+"error.stitch.tooLarge" = "Image too large to process.";
+"error.export.encoding" = "Image encoding failed.";
+"error.export.cancelled" = "Export cancelled.";
+"error.export.write" = "Failed to save file.";
+"error.export.format" = "Unsupported export format.";
+"error.store.generic" = "Payment error. Please try again.";
+"error.network.offline" = "No internet connection.";
+"error.network.timeout" = "Request timed out. Please try again.";
+"error.network.server" = "Server error. Please try again later.";
+"error.network.decode" = "Invalid server response.";
+"error.network.auth" = "Authentication failed.";
+"error.ocr.generic" = "Text recognition failed.";
+"error.sync.generic" = "iCloud sync failed.";
+
+/* Restore */
+"paywall.restoreSuccess" = "Purchases restored successfully!";
+"paywall.restoreEmpty" = "No previous purchases found.";

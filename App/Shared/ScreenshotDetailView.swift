@@ -25,6 +25,7 @@ struct ScreenshotDetailView: View {
             .padding(SCTheme.Spacing.md)
         }
         .background { BrandBackground() }
+        .onAppear { AnalyticsManager.shared.track(.screenshotOpened) }
         .navigationTitle("detail.title")
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)

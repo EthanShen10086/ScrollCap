@@ -365,12 +365,30 @@ struct PaywallView: View {
 
     // MARK: - Restore
 
+    @State private var restoreMessage: String?
+    @State private var showRestoreAlert = false
+
     private var restoreButton: some View {
         Button("paywall.restore") {
-            Task { await StoreManager.shared.restorePurchases() }
+            Task {
+                await StoreManager.shared.restorePurchases()
+                if StoreManager.shared.isPro {
+                    restoreMessage = String(localized: "paywall.restoreSuccess")
+                } else {
+                    restoreMessage = String(localized: "paywall.restoreEmpty")
+                }
+                showRestoreAlert = true
+            }
         }
         .font(SCTheme.Typography.caption)
         .foregroundStyle(.secondary)
+        .alert("paywall.restore", isPresented: $showRestoreAlert) {
+            Button("permission.ok") {
+                if StoreManager.shared.isPro { dismiss() }
+            }
+        } message: {
+            if let msg = restoreMessage { Text(msg) }
+        }
     }
 
     // MARK: - Purchase Flows

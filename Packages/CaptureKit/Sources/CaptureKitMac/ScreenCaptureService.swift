@@ -130,7 +130,7 @@ public final class ScreenCaptureService: NSObject, CaptureService {
 }
 
 extension ScreenCaptureService: SCStreamOutput {
-    nonisolated public func stream(
+    public nonisolated func stream(
         _ stream: SCStream,
         didOutputSampleBuffer sampleBuffer: CMSampleBuffer,
         of type: SCStreamOutputType

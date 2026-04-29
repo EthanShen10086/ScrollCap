@@ -165,12 +165,8 @@ final class ThirdPartyPaymentService {
         amount: Decimal,
         currency: String
     ) async throws -> ServerOrderResponse {
-        let serverURL = PaymentConfig.shared.serverBaseURL
+        let url = PaymentConfig.shared.serverBaseURL
             .appendingPathComponent("/api/payments/\(provider)/create-order")
-
-        var request = URLRequest(url: serverURL)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let body = OrderRequest(
             productId: productId,
@@ -178,35 +174,22 @@ final class ThirdPartyPaymentService {
             currency: currency,
             callbackURL: "scrollcap://payment/\(provider)/callback"
         )
-        request.httpBody = try JSONEncoder().encode(body)
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse,
-              200 ... 299 ~= httpResponse.statusCode
-        else {
-            throw StoreError.networkError("\(provider) order creation failed")
-        }
-
-        return try JSONDecoder().decode(ServerOrderResponse.self, from: data)
+        return try await APIClient.shared.post(
+            ServerOrderResponse.self, url: url, body: body
+        )
     }
 
     private func verifyOrder(orderId: String) async -> Bool {
-        let serverURL = PaymentConfig.shared.serverBaseURL
+        let url = PaymentConfig.shared.serverBaseURL
             .appendingPathComponent("/api/payments/verify")
 
-        var request = URLRequest(url: serverURL)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONEncoder().encode(["orderId": orderId])
-
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            guard let httpResponse = response as? HTTPURLResponse,
-                  200 ... 299 ~= httpResponse.statusCode
-            else {
-                return false
-            }
-            let result = try JSONDecoder().decode(PaymentServerResponse.self, from: data)
+            let result = try await APIClient.shared.post(
+                PaymentServerResponse.self,
+                url: url,
+                body: ["orderId": orderId]
+            )
             return result.status == "paid"
         } catch {
             logger.failed("Order verification failed", error: error)

@@ -25,12 +25,8 @@ final class StripePaymentService {
         isProcessing = true
         defer { isProcessing = false }
 
-        let serverURL = PaymentConfig.shared.serverBaseURL
+        let url = PaymentConfig.shared.serverBaseURL
             .appendingPathComponent("/api/payments/stripe/create-session")
-
-        var request = URLRequest(url: serverURL)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         let body = StripeSessionRequest(
             productId: productId,
@@ -39,39 +35,25 @@ final class StripePaymentService {
             successURL: "scrollcap://payment/success",
             cancelURL: "scrollcap://payment/cancel"
         )
-        request.httpBody = try JSONEncoder().encode(body)
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse,
-              200 ... 299 ~= httpResponse.statusCode
-        else {
-            throw StoreError.networkError("Stripe session creation failed")
-        }
-
-        let session = try JSONDecoder().decode(StripeSessionResponse.self, from: data)
+        let session = try await APIClient.shared.post(
+            StripeSessionResponse.self, url: url, body: body
+        )
 
         openCheckoutURL(session.checkoutURL)
-
         return .success(transactionId: session.sessionId)
     }
 
     func verifyPayment(sessionId: String) async throws -> Bool {
-        let serverURL = PaymentConfig.shared.serverBaseURL
+        let url = PaymentConfig.shared.serverBaseURL
             .appendingPathComponent("/api/payments/stripe/verify")
 
-        var request = URLRequest(url: serverURL)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONEncoder().encode(["sessionId": sessionId])
+        let result = try await APIClient.shared.post(
+            PaymentServerResponse.self,
+            url: url,
+            body: ["sessionId": sessionId]
+        )
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse,
-              200 ... 299 ~= httpResponse.statusCode
-        else {
-            return false
-        }
-
-        let result = try JSONDecoder().decode(PaymentServerResponse.self, from: data)
         if result.status == "paid" {
             logger.completed("Stripe payment verified: \(sessionId)")
             AnalyticsManager.shared.track(.purchaseCompleted(productId: "stripe_\(sessionId)"))

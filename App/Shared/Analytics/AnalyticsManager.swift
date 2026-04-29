@@ -86,6 +86,16 @@ enum AnalyticsEvent {
     case screenViewed(name: String)
     case proUpgradeTapped
     case purchaseCompleted(productId: String)
+    case purchaseFailed(productId: String, error: String)
+    case purchaseCancelled(productId: String)
+    case restoreCompleted(count: Int)
+    case restoreFailed(error: String)
+
+    case error(domain: String, code: String)
+
+    case settingsChanged(key: String, value: String)
+    case screenshotDeleted
+    case screenshotOpened
 
     var name: String {
         switch self {
@@ -110,6 +120,14 @@ enum AnalyticsEvent {
         case .screenViewed: "screen_viewed"
         case .proUpgradeTapped: "pro_upgrade_tapped"
         case .purchaseCompleted: "purchase_completed"
+        case .purchaseFailed: "purchase_failed"
+        case .purchaseCancelled: "purchase_cancelled"
+        case .restoreCompleted: "restore_completed"
+        case .restoreFailed: "restore_failed"
+        case .error: "error"
+        case .settingsChanged: "settings_changed"
+        case .screenshotDeleted: "screenshot_deleted"
+        case .screenshotOpened: "screenshot_opened"
         }
     }
 
@@ -157,6 +175,22 @@ enum AnalyticsEvent {
             [:]
         case let .purchaseCompleted(productId):
             ["product_id": productId]
+        case let .purchaseFailed(productId, error):
+            ["product_id": productId, "error": error]
+        case let .purchaseCancelled(productId):
+            ["product_id": productId]
+        case let .restoreCompleted(count):
+            ["count": "\(count)"]
+        case let .restoreFailed(error):
+            ["error": error]
+        case let .error(domain, code):
+            ["domain": domain, "code": code]
+        case let .settingsChanged(key, value):
+            ["key": key, "value": value]
+        case .screenshotDeleted:
+            [:]
+        case .screenshotOpened:
+            [:]
         }
     }
 }

@@ -87,10 +87,13 @@ struct ContentView: View {
         switch appState.selectedDestination ?? .capture {
         case .capture:
             CaptureView()
+                .onAppear { AnalyticsManager.shared.track(.screenViewed(name: "capture")) }
         case .history:
             HistoryView()
+                .onAppear { AnalyticsManager.shared.track(.screenViewed(name: "history")) }
         case .settings:
             SettingsView()
+                .onAppear { AnalyticsManager.shared.track(.screenViewed(name: "settings")) }
         }
     }
 }

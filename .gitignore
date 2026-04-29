@@ -46,3 +46,4 @@ playground.xcworkspace
 # App signing
 *.mobileprovision
 *.provisionprofile
+.ftp

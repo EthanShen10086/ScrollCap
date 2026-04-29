@@ -74,6 +74,7 @@ final class AppState {
         if selectedScreenshot?.id == screenshot.id {
             selectedScreenshot = screenshots.first
         }
+        AnalyticsManager.shared.track(.screenshotDeleted)
     }
 }
 

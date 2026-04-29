@@ -64,6 +64,7 @@ final class StoreManager {
 
         case .userCancelled:
             logger.info("User cancelled purchase")
+            AnalyticsManager.shared.track(.purchaseCancelled(productId: product.id))
             return false
 
         case .pending:
@@ -87,6 +88,7 @@ final class StoreManager {
         }
         await refreshSubscriptionStatus()
         logger.info("Restored \(restored) purchases")
+        AnalyticsManager.shared.track(.restoreCompleted(count: restored))
     }
 
     // MARK: - Subscription Management

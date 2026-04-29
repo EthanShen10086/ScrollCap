@@ -25,7 +25,6 @@ opt_in_rules:
   - empty_string
   - first_where
   - last_where
-  - modifier_order
   - overridden_super_call
   - private_action
   - private_outlet
@@ -47,6 +46,10 @@ identifier_name:
     - y
     - i
     - t
+
+function_parameter_count:
+  warning: 7
+  error: 10
 
 nesting:
   type_level: 3

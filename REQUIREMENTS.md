@@ -95,13 +95,61 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 ## 可观测性 / 分析埋点
 
+### 日志与崩溃
+
 | 功能 | 状态 | 技术实现 |
 |------|------|----------|
 | 结构化日志 | ✅ 已完成 | `SCLogger` - OSLog 分类日志 (capture/stitch/export/sync/payment/ocr) |
 | 崩溃报告 | ✅ 已完成 | `CrashReporter` - NSSetUncaughtExceptionHandler + signal handler |
-| 事件埋点 | ✅ 已完成 | `AnalyticsManager` - JSONL 持久化事件流 |
 | 设备信息采集 | ✅ 已完成 | `DeviceInfo` - OS 版本/应用版本/设备型号 |
-| CaptureViewModel 集成 | ✅ 已完成 | startCapture/stopCapture/cancelCapture 事件追踪 |
+
+### 事件埋点 (AnalyticsManager)
+
+| 事件分类 | 覆盖事件 | 状态 |
+|----------|----------|------|
+| 截图 | captureStarted / captureCompleted / captureFailed / captureCancelled | ✅ 已完成 |
+| 拼接 | stitchStarted / stitchCompleted / stitchFailed | ✅ 已完成 |
+| 导出 | exportSaved / exportShared | ✅ 已完成 |
+| OCR | ocrPerformed / ocrFailed | ✅ 已完成 |
+| 自动滚动 | autoScrollStarted / autoScrollCompleted | ✅ 已完成 |
+| iCloud | iCloudSyncStarted / iCloudSyncCompleted / iCloudSyncFailed | ✅ 已完成 |
+| 支付 | purchaseCompleted / purchaseFailed / purchaseCancelled | ✅ 已完成 |
+| 恢复购买 | restoreCompleted / restoreFailed | ✅ 已完成 |
+| 页面浏览 | screenViewed (capture / history / settings) | ✅ 已完成 |
+| 截图操作 | screenshotOpened / screenshotDeleted | ✅ 已完成 |
+| 设置变更 | settingsChanged | ✅ 已完成 |
+| 错误上报 | error(domain, code) 统一结构化错误事件 | ✅ 已完成 |
+| 应用生命 | appLaunched / crashDetected | ✅ 已完成 |
+
+### 性能监控
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| Signpost 追踪 | ✅ 已完成 | `PerformanceMonitor` - Capture/Stitch/Export 分类 Signpost |
+| 内存监控 | ✅ 已完成 | `reportMemoryUsage()` - `mach_task_basic_info` 实时采集 + 高内存告警 |
+| Instruments 集成 | ✅ 已完成 | `os.signpost` + `.pointsOfInterest` 分类，可在 Instruments 查看 |
+
+### 统一错误处理
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 结构化错误类型 | ✅ 已完成 | `SCError` 枚举: capture/stitch/export/store/network/ocr/sync 7 大域 |
+| 用户友好消息 | ✅ 已完成 | `userMessage` 属性 + 中英文 i18n |
+| 全局错误展示 | ✅ 已完成 | `ErrorPresenter` 单例 + SwiftUI Alert 绑定 |
+| 自动埋点 | ✅ 已完成 | `analyticsEvent` 属性，present 时自动上报 |
+| 导出失败提示 | ✅ 已完成 | 原静默 `catch` 改为 `ErrorPresenter.present()` |
+| 恢复购买反馈 | ✅ 已完成 | 成功/无记录 Alert 提示 |
+
+### 网络层
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 中心化客户端 | ✅ 已完成 | `APIClient` actor - 统一 request/post/send |
+| 重试机制 | ✅ 已完成 | 指数退避 (1s → 2s → 4s)，可配重试次数和 status code |
+| 超时配置 | ✅ 已完成 | 请求 30s / 资源 60s / `waitsForConnectivity` |
+| 离线检测 | ✅ 已完成 | `NetworkMonitor` (NWPathMonitor) + WiFi/Cellular/Ethernet 类型 |
+| 自动 User-Agent | ✅ 已完成 | `ScrollCap/{version}` |
+| 结构化错误 | ✅ 已完成 | 网络错误统一转为 `SCError.network(...)` |
 
 ---
 
@@ -355,7 +403,10 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 日志系统 | OSLog |
 | 项目生成 | XcodeGen |
 | CI/CD | GitHub Actions |
-| 代码检查 | SwiftLint + SwiftFormat |
+| 代码检查 | SwiftLint + SwiftFormat + Git Hooks |
+| 网络层 | APIClient (URLSession) + NetworkMonitor (NWPathMonitor) |
+| 性能追踪 | os.signpost + mach_task_basic_info |
+| 错误处理 | SCError + ErrorPresenter |
 | 第三方依赖 | **零** |
 
 ---

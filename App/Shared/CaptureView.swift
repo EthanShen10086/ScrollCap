@@ -91,6 +91,19 @@ struct CaptureView: View {
                 appState.addScreenshot(screenshot)
             }
         }
+        .alert(
+            "error.title",
+            isPresented: .init(
+                get: { ErrorPresenter.shared.isPresented },
+                set: { if !$0 { ErrorPresenter.shared.dismiss() } }
+            )
+        ) {
+            Button("permission.ok") { ErrorPresenter.shared.dismiss() }
+        } message: {
+            if let error = ErrorPresenter.shared.currentError {
+                Text(error.userMessage)
+            }
+        }
     }
 
     // MARK: - Content Area
@@ -443,13 +456,16 @@ struct ExportSheet: View {
         panel.allowedContentTypes = [selectedFormat.utType]
         panel.nameFieldStringValue = "ScrollCap_\(Int(Date().timeIntervalSince1970)).\(selectedFormat.fileExtension)"
 
-        guard panel.runModal() == .OK, let url = panel.url else { return }
+        guard panel.runModal() == .OK, let url = panel.url else {
+            return
+        }
 
         do {
             try await viewModel.exportScreenshot(options: options, to: url)
+            AnalyticsManager.shared.track(.exportSaved(format: selectedFormat.fileExtension))
             dismiss()
         } catch {
-            // Export failed
+            ErrorPresenter.shared.present(.export(.fileWriteFailed))
         }
         #elseif os(iOS)
         do {
@@ -458,10 +474,11 @@ struct ExportSheet: View {
                     "ScrollCap_\(Int(Date().timeIntervalSince1970)).\(selectedFormat.fileExtension)"
                 )
                 try data.write(to: tempURL)
+                AnalyticsManager.shared.track(.exportSaved(format: selectedFormat.fileExtension))
                 dismiss()
             }
         } catch {
-            // Export failed
+            ErrorPresenter.shared.present(.export(.fileWriteFailed))
         }
         #endif
     }
