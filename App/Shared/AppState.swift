@@ -1,6 +1,7 @@
 import DesignSystem
 import SharedModels
 import SwiftUI
+import WidgetKit
 
 @Observable
 @MainActor
@@ -64,9 +65,37 @@ final class AppState {
         captureState.isActive
     }
 
+    private static let appGroupID = "group.com.scrollcap.shared"
+
     func addScreenshot(_ screenshot: Screenshot) {
         screenshots.insert(screenshot, at: 0)
         selectedScreenshot = screenshot
+        updateWidgetData()
+        syncToCloudIfEnabled(screenshot)
+    }
+
+    private func updateWidgetData() {
+        let defaults = UserDefaults(suiteName: Self.appGroupID)
+        defaults?.set(screenshots.count, forKey: "captureCount")
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    private func syncToCloudIfEnabled(_ screenshot: Screenshot) {
+        guard iCloudSyncEnabled, ICloudSyncManager.shared.isAvailable else { return }
+        Task {
+            guard let data = screenshot.pngData else { return }
+            let record = ScreenshotSyncRecord(
+                id: screenshot.id,
+                filename: "\(screenshot.id.uuidString).png",
+                createdAt: screenshot.createdAt,
+                width: screenshot.image.width,
+                height: screenshot.image.height,
+                frameCount: screenshot.metadata.frameCount,
+                captureMethod: screenshot.metadata.captureMethod.rawValue,
+                durationSeconds: screenshot.metadata.durationSeconds
+            )
+            await ICloudSyncManager.shared.syncScreenshot(imageData: data, record: record)
+        }
     }
 
     func removeScreenshot(_ screenshot: Screenshot) {

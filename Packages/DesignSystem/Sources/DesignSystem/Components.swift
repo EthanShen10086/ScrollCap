@@ -73,9 +73,8 @@ public struct CaptureButton: View {
             }
         }
         .buttonStyle(ScaleButtonStyle())
-        .accessibilityLabel(isCapturing ? "Stop capture" : "Start capture")
-        .accessibilityHint(isCapturing ? "Stops the current screen recording" :
-            "Begins a new scrolling screenshot capture")
+        .accessibilityLabel(isCapturing ? Text("a11y.capture.stop") : Text("a11y.capture.start"))
+        .accessibilityHint(isCapturing ? Text("a11y.capture.stop.hint") : Text("a11y.capture.hint"))
         .accessibilityAddTraits(.isButton)
         .animation(SCTheme.Animation.spring, value: isCapturing)
     }

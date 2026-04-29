@@ -211,3 +211,41 @@
 /* Restore */
 "paywall.restoreSuccess" = "Purchases restored successfully!";
 "paywall.restoreEmpty" = "No previous purchases found.";
+
+/* Payment Methods */
+"payment.appStore" = "App Store";
+"payment.applePay" = "Apple Pay";
+"payment.stripe" = "Stripe";
+"payment.wechatPay" = "WeChat Pay";
+"payment.alipay" = "Alipay";
+"payment.payPal" = "PayPal";
+
+/* iCloud Status */
+"icloud.status.idle" = "Ready";
+"icloud.status.syncing" = "Syncing...";
+"icloud.status.synced" = "Synced";
+"icloud.status.error" = "Sync Error";
+"icloud.status.disabled" = "iCloud Unavailable";
+
+/* Accessibility */
+"a11y.capture.start" = "Start capture";
+"a11y.capture.stop" = "Stop capture";
+"a11y.capture.hint" = "Double tap to start scrolling screenshot capture";
+"a11y.capture.stop.hint" = "Double tap to stop capture and stitch screenshots";
+"a11y.elder.capture" = "Start Capture";
+"a11y.elder.stop" = "Stop Capture";
+"a11y.elder.hint" = "Double tap to start capturing a scrolling screenshot";
+"a11y.color.red" = "Red";
+"a11y.color.blue" = "Blue";
+"a11y.color.green" = "Green";
+"a11y.color.yellow" = "Yellow";
+"a11y.color.white" = "White";
+"a11y.color.black" = "Black";
+
+/* Widget */
+"widget.name" = "ScrollCap";
+"widget.captures %lld" = "%lld captures";
+"widget.capture" = "Capture";
+"widget.quickCapture" = "Quick Capture";
+"widget.configName" = "ScrollCap";
+"widget.configDesc" = "Quick access to scrolling screenshot capture.";

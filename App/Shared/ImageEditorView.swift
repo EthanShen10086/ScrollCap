@@ -114,12 +114,12 @@ struct ImageEditorView: View {
 
     private var annotationColors: [(name: String, color: AnnotationColor)] {
         [
-            ("Red", .red),
-            ("Blue", .blue),
-            ("Green", .green),
-            ("Yellow", .yellow),
-            ("White", .white),
-            ("Black", .black),
+            (String(localized: "a11y.color.red"), .red),
+            (String(localized: "a11y.color.blue"), .blue),
+            (String(localized: "a11y.color.green"), .green),
+            (String(localized: "a11y.color.yellow"), .yellow),
+            (String(localized: "a11y.color.white"), .white),
+            (String(localized: "a11y.color.black"), .black),
         ]
     }
 

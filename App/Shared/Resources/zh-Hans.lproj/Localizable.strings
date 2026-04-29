@@ -211,3 +211,41 @@
 /* Restore */
 "paywall.restoreSuccess" = "购买已成功恢复！";
 "paywall.restoreEmpty" = "未找到之前的购买记录。";
+
+/* Payment Methods */
+"payment.appStore" = "App Store";
+"payment.applePay" = "Apple Pay";
+"payment.stripe" = "Stripe";
+"payment.wechatPay" = "微信支付";
+"payment.alipay" = "支付宝";
+"payment.payPal" = "PayPal";
+
+/* iCloud Status */
+"icloud.status.idle" = "就绪";
+"icloud.status.syncing" = "同步中…";
+"icloud.status.synced" = "已同步";
+"icloud.status.error" = "同步错误";
+"icloud.status.disabled" = "iCloud 不可用";
+
+/* Accessibility */
+"a11y.capture.start" = "开始截图";
+"a11y.capture.stop" = "停止截图";
+"a11y.capture.hint" = "双击以开始滚动截图";
+"a11y.capture.stop.hint" = "双击以停止截图并拼接";
+"a11y.elder.capture" = "开始截图";
+"a11y.elder.stop" = "停止截图";
+"a11y.elder.hint" = "双击以开始滚动长截图";
+"a11y.color.red" = "红色";
+"a11y.color.blue" = "蓝色";
+"a11y.color.green" = "绿色";
+"a11y.color.yellow" = "黄色";
+"a11y.color.white" = "白色";
+"a11y.color.black" = "黑色";
+
+/* Widget */
+"widget.name" = "ScrollCap";
+"widget.captures %lld" = "%lld 张截图";
+"widget.capture" = "截图";
+"widget.quickCapture" = "快速截图";
+"widget.configName" = "ScrollCap";
+"widget.configDesc" = "快速访问滚动截图功能。";

@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import ImageIO
 
 public struct Screenshot: Identifiable, Sendable {
     public let id: UUID
@@ -20,6 +21,16 @@ public struct Screenshot: Identifiable, Sendable {
         self.createdAt = createdAt
         self.sourceRegion = sourceRegion
         self.metadata = metadata
+    }
+
+    public var pngData: Data? {
+        let mutableData = NSMutableData()
+        guard let dest = CGImageDestinationCreateWithData(
+            mutableData as CFMutableData, "public.png" as CFString, 1, nil
+        ) else { return nil }
+        CGImageDestinationAddImage(dest, image, nil)
+        guard CGImageDestinationFinalize(dest) else { return nil }
+        return mutableData as Data
     }
 }
 

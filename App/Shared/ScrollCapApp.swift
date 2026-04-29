@@ -17,6 +17,9 @@ struct ScrollCapApp: App {
                 .onAppear {
                     CrashReporter.shared.install()
                     AnalyticsManager.shared.track(.appLaunched)
+                    if appState.iCloudSyncEnabled {
+                        ICloudSyncManager.shared.startMonitoring()
+                    }
                     #if os(macOS)
                     setupMacOS()
                     #endif

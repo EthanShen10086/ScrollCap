@@ -7,6 +7,7 @@ import SwiftUI
 struct IOSCaptureView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var frameReader = SharedFrameReader()
 
     var body: some View {
         VStack(spacing: SCTheme.Spacing.lg) {
@@ -23,11 +24,13 @@ struct IOSCaptureView: View {
                 .padding()
                 .adaptiveGlass(cornerRadius: SCTheme.CornerRadius.lg)
 
-            if appState.isCapturing {
+            if appState.isCapturing || frameReader.isBroadcasting {
                 captureProgressView
             }
         }
         .padding()
+        .onAppear { frameReader.startMonitoring() }
+        .onDisappear { frameReader.stopMonitoring() }
     }
 
     private var captureProgressView: some View {
@@ -45,7 +48,12 @@ struct IOSCaptureView: View {
                         .foregroundStyle(SCTheme.Colors.captureActive)
                 }
 
-                if case let .capturing(progress) = appState.captureState {
+                let frames = frameReader.currentFrameCount
+                if frames > 0 {
+                    Text("ios.framesCaptured \(frames)")
+                        .font(SCTheme.Typography.monoCaption)
+                        .foregroundStyle(.secondary)
+                } else if case let .capturing(progress) = appState.captureState {
                     Text("ios.framesCaptured \(progress.capturedFrames)")
                         .font(SCTheme.Typography.monoCaption)
                         .foregroundStyle(.secondary)

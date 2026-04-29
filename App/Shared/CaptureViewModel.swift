@@ -1,6 +1,4 @@
-import ImageEditor
 import SharedModels
-import StitchingEngine
 import SwiftUI
 #if os(macOS)
 import CaptureKitMac
@@ -15,14 +13,10 @@ import os.signpost
 final class CaptureViewModel {
     private(set) var captureState: CaptureState = .idle
     private(set) var currentPreview: CGImage?
-    private(set) var liveStitchPreview: CGImage?
     private(set) var capturedScreenshot: Screenshot?
     private(set) var errorMessage: String?
 
     private let captureService: any CaptureService
-    private var collectedFrames: [StitchFrame] = []
-    private let aligner = FrameAligner()
-    private let stitcher = ImageStitcher()
     private var captureStartTime: CFAbsoluteTime = 0
     private var captureSignpostID: OSSignpostID?
 
@@ -44,6 +38,7 @@ final class CaptureViewModel {
         captureService.onStateChanged = { [weak self] state in
             Task { @MainActor in
                 self?.captureState = state
+                self?.syncToAppState()
             }
         }
 
@@ -52,6 +47,16 @@ final class CaptureViewModel {
                 self?.currentPreview = image
             }
         }
+    }
+
+    private func syncToAppState() {
+        appStateRef?.captureState = captureState
+    }
+
+    private weak var appStateRef: AppState?
+
+    func bind(to appState: AppState) {
+        appStateRef = appState
     }
 
     // MARK: - Public Actions
@@ -71,8 +76,6 @@ final class CaptureViewModel {
 
     func startCapture(region: CaptureRegion? = nil) async {
         errorMessage = nil
-        collectedFrames.removeAll()
-        await aligner.reset()
         captureStartTime = CFAbsoluteTimeGetCurrent()
 
         let method: String
@@ -124,10 +127,9 @@ final class CaptureViewModel {
 
     func cancelCapture() {
         captureService.cancelCapture()
-        collectedFrames.removeAll()
         currentPreview = nil
-        liveStitchPreview = nil
         captureState = .idle
+        syncToAppState()
         SCLogger.capture.info("Capture cancelled by user")
         AnalyticsManager.shared.track(.captureCancelled)
     }
@@ -135,9 +137,9 @@ final class CaptureViewModel {
     func reset() {
         capturedScreenshot = nil
         currentPreview = nil
-        liveStitchPreview = nil
         errorMessage = nil
         captureState = .idle
+        syncToAppState()
     }
 
     // MARK: - Export

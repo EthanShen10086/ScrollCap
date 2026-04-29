@@ -12,53 +12,6 @@ struct PaywallView: View {
     @State private var selectedPaymentMethod: PaymentMethod = .applePurchase
     @State private var showSuccessAlert = false
 
-    enum PaymentMethod: String, CaseIterable {
-        case applePurchase
-        case applePay
-        case stripe
-        case wechatPay
-        case alipay
-        case paypal
-
-        var displayName: String {
-            switch self {
-            case .applePurchase: "App Store"
-            case .applePay: "Apple Pay"
-            case .stripe: "Stripe"
-            case .wechatPay: "微信支付"
-            case .alipay: "支付宝"
-            case .paypal: "PayPal"
-            }
-        }
-
-        var icon: String {
-            switch self {
-            case .applePurchase: "apple.logo"
-            case .applePay: "apple.logo"
-            case .stripe: "creditcard.fill"
-            case .wechatPay: "message.fill"
-            case .alipay: "dollarsign.circle.fill"
-            case .paypal: "p.circle.fill"
-            }
-        }
-
-        var isAvailable: Bool {
-            switch self {
-            case .applePurchase: true
-            case .applePay: ApplePayService.isAvailable
-            case .stripe: true
-            case .wechatPay:
-                #if os(iOS)
-                ThirdPartyPaymentService.shared.isWeChatPayAvailable
-                #else
-                false
-                #endif
-            case .alipay: ThirdPartyPaymentService.shared.isAlipayAvailable
-            case .paypal: true
-            }
-        }
-    }
-
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -456,15 +409,5 @@ struct PaywallView: View {
 
     private var cardFill: some ShapeStyle {
         colorScheme == .dark ? AnyShapeStyle(Color.white.opacity(0.05)) : AnyShapeStyle(Color.white.opacity(0.8))
-    }
-}
-
-private extension PaywallView.PaymentMethod {
-    var localizedPrice: String {
-        switch self {
-        case .applePurchase, .applePay: "¥198"
-        case .wechatPay, .alipay: "¥198"
-        case .stripe, .paypal: "$29.99"
-        }
     }
 }

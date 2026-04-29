@@ -1,6 +1,6 @@
 # ScrollCap 需求与功能追踪文档
 
-> 最后更新：2026-04-29
+> 最后更新：2026-04-29 (第 6 轮迭代)
 
 ## 项目概述
 
@@ -14,7 +14,7 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 |---|------|------|------|
 | 1 | 滚动长截图功能 | ✅ 已完成 | macOS 使用 ScreenCaptureKit 区域截屏，iOS 使用 ReplayKit Broadcast Extension |
 | 2 | 多平台支持（iOS/iPadOS/macOS） | ✅ 已完成 | 通过 XcodeGen + 共享代码层实现，iOS 17+ / macOS 14+ |
-| 3 | Apple Liquid Glass 设计适配 | ✅ 已完成 | Xcode 26+ SDK 自动启用 `.glassEffect()`，当前使用 `.ultraThinMaterial` 优雅降级 |
+| 3 | Apple Liquid Glass 设计适配 | ⚠️ 降级中 | 当前使用 `.ultraThinMaterial` 降级方案；Xcode 26+ SDK 发布后需添加 `#if` 条件编译启用原生 `.glassEffect()` |
 | 4 | 最新 SwiftUI 技术 | ✅ 已完成 | Swift 6、`@Observable`、`NavigationSplitView`、`async/await` Actor 模型 |
 | 5 | 世界级架构设计 | ✅ 已完成 | Clean Architecture + MVVM、Protocol-Oriented、零第三方依赖、5 个模块化 SPM 包 |
 | 6 | Monorepo 结构 | ✅ 已完成 | Local Swift Packages：SharedModels、DesignSystem、StitchingEngine、CaptureKit、ImageEditor |
@@ -33,7 +33,7 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 全屏录制捕获 | iOS/iPadOS | ✅ 已完成 | ReplayKit + Broadcast Upload Extension |
 | 实时帧预览 | 全平台 | ✅ 已完成 | `onPreviewUpdated` 回调 + SwiftUI Image |
 | Vision 图像对齐拼接 | 全平台 | ✅ 已完成 | `VNTranslationalImageRegistrationRequest` |
-| App Group 帧传递 | iOS | ✅ 已完成 | `SharedFrameReader` + UserDefaults 状态同步 |
+| App Group 帧传递 | iOS | ✅ 已完成 | `SharedFrameReader` + UserDefaults 状态同步 + `IOSCaptureView` 实时读取 |
 | 全局快捷键 (⌘⇧6) | macOS | ✅ 已完成 | Carbon `RegisterEventHotKey` |
 | 菜单栏快捷操作 | macOS | ✅ 已完成 | `MenuBarExtra` + `.menuBarExtraStyle(.window)` |
 | 自动滚动捕获 | iOS | ✅ 已完成 | `AutoScrollService` actor + `UIScrollView.setContentOffset` |
@@ -77,7 +77,7 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 本地持久化存储 | ✅ 已完成 | `ScreenshotStore` Actor - 文件系统 + JSON Manifest |
 | 截图详情查看 | ✅ 已完成 | `ScreenshotDetailView` + 元数据展示 |
 | 截图删除 | ✅ 已完成 | Context Menu + `AppState.removeScreenshot` |
-| iCloud 云同步 | ✅ 已完成 | `ICloudSyncManager` + `NSMetadataQuery` + `NSFileCoordinator` |
+| iCloud 云同步 | ✅ 已完成 | `ICloudSyncManager` + `NSMetadataQuery` + `NSFileCoordinator`；设置开关联动 start/stopMonitoring + 截图保存自动同步 |
 
 ---
 
@@ -241,10 +241,10 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 脉冲动画按钮 | ✅ 已完成 | `CaptureButton` idle 呼吸光环 + 捕获态红色波纹 |
 | Glass Card 增强 | ✅ 已完成 | 双层材质 + 渐变描边 + 深浅适配 |
 | 品牌化空态 | ✅ 已完成 | `symbolEffect(.bounce)` + 渐变色图标 |
-| Floating Action Bar | ✅ 已完成 | `FloatingActionBar` 胶囊形底部控制栏 |
+| Floating Action Bar | ⚠️ 组件就绪 | `FloatingActionBar` 胶囊形底部控制栏 - DesignSystem 包中已实现，尚未接入产品 UI |
 | Hover 交互反馈 | ✅ 已完成 | `ScreenshotCard` scale + shadow 变化 |
 | Scale Button Style | ✅ 已完成 | 全局按钮按压缩放效果 |
-| Liquid Glass (iOS 26+) | ✅ 已完成 | 编译时降级，Xcode 26 后自动启用 |
+| Liquid Glass (iOS 26+) | ⚠️ 降级中 | 仅 `.ultraThinMaterial` 降级方案，需 Xcode 26 SDK 后添加条件编译路径 |
 | Material 背景 | ✅ 已完成 | `.ultraThinMaterial` / `.thinMaterial` |
 
 ---
@@ -253,8 +253,8 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 | 语言 | 状态 | 覆盖范围 |
 |------|------|----------|
-| English (en) | ✅ 已完成 | 全部 UI 文案（150+ 条） |
-| 简体中文 (zh-Hans) | ✅ 已完成 | 全部 UI 文案（150+ 条） |
+| English (en) | ✅ 已完成 | 全部 UI 文案（190+ 条），含 Widget / 支付方式 / iCloud 状态 / 无障碍标签 |
+| 简体中文 (zh-Hans) | ✅ 已完成 | 全部 UI 文案（190+ 条），含 Widget / 支付方式 / iCloud 状态 / 无障碍标签 |
 
 ---
 
@@ -275,8 +275,8 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 | 特性 | 状态 | 说明 |
 |------|------|------|
-| VoiceOver 标签 | ✅ 已完成 | CaptureButton、StatusPill、截图卡片、编辑器工具、颜色选择器、元数据项 |
-| VoiceOver 提示 | ✅ 已完成 | 按钮功能描述、截图尺寸信息 |
+| VoiceOver 标签 | ✅ 已完成 | CaptureButton、ElderCaptureButton、StatusPill、截图卡片、编辑器工具、颜色选择器、元数据项 - 全部本地化 |
+| VoiceOver 提示 | ✅ 已完成 | 按钮功能描述、截图尺寸信息 - 全部本地化 (en + zh-Hans) |
 | 元素组合 | ✅ 已完成 | EmptyStateView、ScreenshotCard、元数据项使用 `.accessibilityElement(children: .combine)` |
 | 装饰性图标隐藏 | ✅ 已完成 | `.accessibilityHidden(true)` 用于纯装饰图标 |
 | 选中状态标注 | ✅ 已完成 | 编辑器工具和颜色选择器使用 `.isSelected` trait |
@@ -343,6 +343,20 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | Git pre-commit Hook | ✅ 已完成 | 提交前自动检查暂存的 `.swift` 文件，不通过则阻断提交 |
 | Git commit-msg Hook | ✅ 已完成 | Conventional Commits 格式校验 (feat/fix/docs/refactor/...) |
 | Hook 自动安装 | ✅ 已完成 | `scripts/install-hooks.sh` + `setup.sh` 集成，clone 后一键生效 |
+
+---
+
+## 协作与开发规范
+
+| 特性 | 状态 | 说明 |
+|------|------|------|
+| Cursor Rules | ✅ 已完成 | `.cursor/rules/architecture.md` + `.cursor/rules/swiftui.md` |
+| AGENTS.md | ✅ 已完成 | 项目入门指南、架构说明、开发约定 |
+| 状态管理统一 | ✅ 已完成 | `CaptureViewModel.bind(to:)` 同步 → `AppState` 为全局单一真相来源 |
+| Widget 数据联动 | ✅ 已完成 | 截图保存后自动更新 `captureCount` + `WidgetCenter.reloadAllTimelines` |
+| 文件拆分 | ✅ 已完成 | `ExportSheet` / `InstructionRow` / `OCRResultView` / `PaymentMethod` 独立文件 |
+| 死代码清理 | ✅ 已完成 | CaptureViewModel 移除未使用的 stitching 字段 (aligner/stitcher/collectedFrames) |
+| import 精简 | ✅ 已完成 | CaptureViewModel 移除不必要的 StitchingEngine / ImageEditor import |
 
 ---
 
@@ -415,9 +429,12 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 | 功能 | 优先级 | 说明 |
 |------|--------|------|
-| 原生 Liquid Glass | 高 | 升级到 Xcode 26 后自动启用 |
-| 更多语言支持 | 中 | 日语、韩语、法语等 |
-| Live Activity | 中 | 实时活动显示捕获进度 |
+| 原生 Liquid Glass | 高 | Xcode 26 SDK 发布后添加 `#if swift(>=6.1)` 条件编译路径 |
+| Live Activity | 高 | ActivityKit 显示捕获进度（帧数/阶段），需新 Extension |
+| 更多语言支持 | 中 | 日语、韩语、法语等 (结构已具备) |
+| FloatingActionBar 接入 | 中 | 组件已在 DesignSystem 中，需接入截图操作 UI |
+| ProFeatureGate 接入 | 中 | `requiresPro(_:)` ViewModifier 已就绪，需接入具体功能限制 |
+| 第三方支付后端 | 中 | 客户端已完成，需部署服务端预下单 / 验证接口 |
 | 视频录制模式 | 低 | 滚动过程录制为视频 |
 | TestFlight 分发 | 低 | 需要 Apple Developer 账号 |
-| 第三方支付 SDK 集成 | 中 | WeChat Pay / Alipay 服务端对接，Stripe SDK 嵌入 |
+| macOS iCloud Entitlement | 中 | macOS 构建需添加 iCloud 容器能力才能实际同步 |

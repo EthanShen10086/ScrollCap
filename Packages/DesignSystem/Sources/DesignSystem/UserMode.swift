@@ -141,9 +141,8 @@ public struct ElderCaptureButton: View {
             }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(isCapturing ? "Stop capture" : "Start capture")
-        .accessibilityHint(isCapturing ? "Stops the current screen recording" :
-            "Begins a new scrolling screenshot capture")
+        .accessibilityLabel(isCapturing ? Text("a11y.elder.stop") : Text("a11y.elder.capture"))
+        .accessibilityHint(Text("a11y.elder.hint"))
         .accessibilityAddTraits(.isButton)
     }
 }

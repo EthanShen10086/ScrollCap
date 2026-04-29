@@ -74,6 +74,24 @@ struct SettingsView: View {
 
             Section("settings.sync") {
                 Toggle("settings.iCloudSync", isOn: $state.iCloudSyncEnabled)
+                    .onChange(of: appState.iCloudSyncEnabled) { _, enabled in
+                        if enabled {
+                            ICloudSyncManager.shared.startMonitoring()
+                        } else {
+                            ICloudSyncManager.shared.stopMonitoring()
+                        }
+                        AnalyticsManager.shared.track(.settingsChanged)
+                    }
+
+                if ICloudSyncManager.shared.isAvailable {
+                    HStack {
+                        Circle()
+                            .fill(syncStatusColor)
+                            .frame(width: 8, height: 8)
+                        Text(syncStatusText)
+                            .font(adaptiveCaption)
+                    }
+                }
 
                 Text("settings.iCloudSync.desc")
                     .font(adaptiveCaption)
@@ -162,6 +180,26 @@ struct SettingsView: View {
         }
     }
     #endif
+
+    private var syncStatusColor: Color {
+        switch ICloudSyncManager.shared.syncState {
+        case .idle: .secondary
+        case .syncing: .orange
+        case .synced: .green
+        case .error: .red
+        case .disabled: .gray
+        }
+    }
+
+    private var syncStatusText: LocalizedStringKey {
+        switch ICloudSyncManager.shared.syncState {
+        case .idle: "icloud.status.idle"
+        case .syncing: "icloud.status.syncing"
+        case .synced: "icloud.status.synced"
+        case .error: "icloud.status.error"
+        case .disabled: "icloud.status.disabled"
+        }
+    }
 }
 
 // MARK: - Pro Upgrade Teaser

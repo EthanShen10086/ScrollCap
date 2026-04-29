@@ -21,7 +21,7 @@ struct ScrollCapProvider: TimelineProvider {
     }
 
     private func getCaptureCount() -> Int {
-        let defaults = UserDefaults(suiteName: "group.com.ethanshen.scrollcap")
+        let defaults = UserDefaults(suiteName: "group.com.scrollcap.shared")
         return defaults?.integer(forKey: "captureCount") ?? 0
     }
 }
@@ -36,8 +36,8 @@ struct ScrollCapEntry: TimelineEntry {
 // MARK: - Quick Capture Intent
 
 struct QuickCaptureIntent: AppIntent {
-    static let title: LocalizedStringResource = "Quick Capture"
-    static let description = IntentDescription("Start a new scrolling screenshot capture")
+    static let title: LocalizedStringResource = "widget.quickCapture"
+    static let description = IntentDescription("widget.configDesc")
     static let openAppWhenRun = true
 
     func perform() async throws -> some IntentResult {
@@ -76,11 +76,11 @@ struct ScrollCapWidgetEntryView: View {
                     )
                 )
 
-            Text("ScrollCap")
+            Text("widget.name")
                 .font(.system(.caption, design: .rounded).weight(.semibold))
 
             if entry.captureCount > 0 {
-                Text("\(entry.captureCount) captures")
+                Text("widget.captures \(entry.captureCount)")
                     .font(.system(.caption2))
                     .foregroundStyle(.secondary)
             }
@@ -88,7 +88,7 @@ struct ScrollCapWidgetEntryView: View {
             Spacer()
 
             Button(intent: QuickCaptureIntent()) {
-                Text("Capture")
+                Text("widget.capture")
                     .font(.system(.caption, design: .rounded).weight(.medium))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 12)
@@ -117,9 +117,9 @@ struct ScrollCapWidgetEntryView: View {
                 .font(.system(size: 20, weight: .medium))
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("ScrollCap")
+                Text("widget.name")
                     .font(.system(.caption, design: .rounded).weight(.semibold))
-                Text("Quick Capture")
+                Text("widget.quickCapture")
                     .font(.system(.caption2))
                     .foregroundStyle(.secondary)
             }
@@ -145,8 +145,8 @@ struct ScrollCapQuickCaptureWidget: Widget {
         StaticConfiguration(kind: kind, provider: ScrollCapProvider()) { entry in
             ScrollCapWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("ScrollCap")
-        .description("Quick access to scrolling screenshot capture.")
+        .configurationDisplayName("widget.configName")
+        .description("widget.configDesc")
         .supportedFamilies([.systemSmall, .accessoryRectangular, .accessoryCircular])
     }
 }
