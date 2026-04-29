@@ -12,6 +12,8 @@ final class AppState {
 
     var exportFormat: ExportFormat = .png
     var exportQuality: Double = 0.9
+    var autoScrollEnabled: Bool = false
+    var iCloudSyncEnabled: Bool = false
 
     var isCapturing: Bool {
         captureState.isActive

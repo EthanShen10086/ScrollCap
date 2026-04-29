@@ -11,9 +11,16 @@ struct ScrollCapApp: App {
         WindowGroup {
             ContentView()
                 .environment(appState)
-                #if os(macOS)
-                .onAppear { setupMacOS() }
-                #endif
+                .onAppear {
+                    CrashReporter.shared.install()
+                    AnalyticsManager.shared.track(.appLaunched)
+                    #if os(macOS)
+                    setupMacOS()
+                    #endif
+                }
+                .onOpenURL { url in
+                    handleDeepLink(url)
+                }
         }
         #if os(macOS)
         .windowStyle(.titleBar)
@@ -40,6 +47,19 @@ struct ScrollCapApp: App {
                 .environment(appState)
         }
         #endif
+    }
+
+    private func handleDeepLink(_ url: URL) {
+        guard url.scheme == "scrollcap" else { return }
+        switch url.host {
+        case "capture":
+            appState.selectedDestination = .capture
+            #if os(macOS)
+            startQuickCapture()
+            #endif
+        default:
+            break
+        }
     }
 
     #if os(macOS)

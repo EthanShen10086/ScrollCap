@@ -86,6 +86,26 @@
 "settings.showCursor" = "截图时显示光标";
 "settings.frameRate" = "帧率";
 "settings.ios.captureDesc" = "点击截图按钮，然后切换到目标应用并滚动。ScrollCap 将自动录制并拼接画面。";
+"settings.autoScroll" = "自动滚动截图";
+"settings.autoScroll.desc" = "截图时自动滚动页面。仅在应用内置预览中有效。";
+"settings.sync" = "同步";
+"settings.iCloudSync" = "iCloud 同步";
+"settings.iCloudSync.desc" = "通过 iCloud 在所有设备间同步截图历史。";
+"settings.pro" = "ScrollCap Pro";
+"settings.pro.badge" = "PRO";
+
+/* Pro Features */
+"pro.title" = "ScrollCap Pro";
+"pro.subtitle" = "解锁 ScrollCap 的全部高级功能。";
+"pro.upgrade" = "升级到 Pro";
+"pro.feature.ocr" = "OCR 文字识别";
+"pro.feature.ocr.desc" = "使用 AI 驱动的识别功能从截图中提取文字。";
+"pro.feature.autoScroll" = "自动滚动截图";
+"pro.feature.autoScroll.desc" = "截图时自动滚动页面，无需手动操作。";
+"pro.feature.iCloud" = "iCloud 同步";
+"pro.feature.iCloud.desc" = "在所有 Apple 设备间同步截图历史。";
+"pro.feature.formats" = "高级导出";
+"pro.feature.formats.desc" = "导出为 PDF、HEIC 等专业格式。";
 
 /* macOS Capture */
 "mac.selectedRegion" = "已选区域";
@@ -120,3 +140,17 @@
 "method.screenCaptureKit" = "ScreenCaptureKit";
 "method.replayKit" = "ReplayKit";
 "method.unknown" = "未知";
+
+/* OCR */
+"ocr.title" = "文字识别";
+"ocr.processing" = "正在识别文字…";
+"ocr.noText" = "未在此截图中检测到文字。";
+"ocr.copy" = "复制全部";
+"ocr.copied" = "已复制！";
+
+/* Paywall */
+"paywall.subscribe" = "订阅";
+"paywall.restore" = "恢复购买";
+"paywall.productsUnavailable" = "产品暂时不可用。";
+"paywall.productsUnavailable.desc" = "这是开发版本。StoreKit 产品将在配置 App Store Connect 后可用。";
+"paywall.externalPayments" = "更多支付方式即将推出：";

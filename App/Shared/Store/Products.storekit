@@ -1,0 +1,112 @@
+{
+  "identifier" : "ECBE3C25-7A85-4C41-9485-1C1D02ED1F24",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "29.99",
+      "familyShareable" : false,
+      "internalID" : "C0C90B66-0001",
+      "localizations" : [
+        {
+          "description" : "Lifetime access to all Pro features",
+          "displayName" : "ScrollCap Pro Lifetime",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "终身享有所有 Pro 功能",
+          "displayName" : "ScrollCap Pro 终身版",
+          "locale" : "zh_CN"
+        }
+      ],
+      "productID" : "scrollcap_pro_lifetime",
+      "referenceName" : "ScrollCap Pro Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "A1B2C3D4-0001",
+      "localizations" : [
+
+      ],
+      "name" : "ScrollCap Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "2.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "D0E1F2A3-0001",
+          "introductoryOffer" : {
+            "displayPrice" : "0.99",
+            "internalID" : "F0A1B2C3-0001",
+            "paymentMode" : "payAsYouGo",
+            "numberOfPeriods" : 1,
+            "subscriptionPeriod" : "P1M"
+          },
+          "localizations" : [
+            {
+              "description" : "Monthly access to all Pro features",
+              "displayName" : "ScrollCap Pro Monthly",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "按月享有所有 Pro 功能",
+              "displayName" : "ScrollCap Pro 月度版",
+              "locale" : "zh_CN"
+            }
+          ],
+          "productID" : "scrollcap_pro_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "ScrollCap Pro Monthly",
+          "subscriptionGroupID" : "A1B2C3D4-0001",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "19.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "D0E1F2A3-0002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Yearly access to all Pro features — save 44%",
+              "displayName" : "ScrollCap Pro Yearly",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "按年享有所有 Pro 功能 — 节省 44%",
+              "displayName" : "ScrollCap Pro 年度版",
+              "locale" : "zh_CN"
+            }
+          ],
+          "productID" : "scrollcap_pro_yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "ScrollCap Pro Yearly",
+          "subscriptionGroupID" : "A1B2C3D4-0001",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

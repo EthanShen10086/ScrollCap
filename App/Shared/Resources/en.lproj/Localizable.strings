@@ -86,6 +86,26 @@
 "settings.showCursor" = "Show cursor in capture";
 "settings.frameRate" = "Frame Rate";
 "settings.ios.captureDesc" = "Tap the capture button, then switch to the target app and scroll. ScrollCap will record and stitch the frames automatically.";
+"settings.autoScroll" = "Auto Scroll Capture";
+"settings.autoScroll.desc" = "Automatically scroll the page during capture. Only works within the app's built-in preview.";
+"settings.sync" = "Sync";
+"settings.iCloudSync" = "iCloud Sync";
+"settings.iCloudSync.desc" = "Sync screenshot history across all your devices via iCloud.";
+"settings.pro" = "ScrollCap Pro";
+"settings.pro.badge" = "PRO";
+
+/* Pro Features */
+"pro.title" = "ScrollCap Pro";
+"pro.subtitle" = "Unlock the full power of ScrollCap with advanced features.";
+"pro.upgrade" = "Upgrade to Pro";
+"pro.feature.ocr" = "OCR Text Recognition";
+"pro.feature.ocr.desc" = "Extract text from screenshots using AI-powered recognition.";
+"pro.feature.autoScroll" = "Auto Scroll Capture";
+"pro.feature.autoScroll.desc" = "Automatically scroll pages during capture without manual scrolling.";
+"pro.feature.iCloud" = "iCloud Sync";
+"pro.feature.iCloud.desc" = "Sync your capture history across all Apple devices.";
+"pro.feature.formats" = "Advanced Export";
+"pro.feature.formats.desc" = "Export in PDF, HEIC, and other professional formats.";
 
 /* macOS Capture */
 "mac.selectedRegion" = "Selected Region";
@@ -120,3 +140,17 @@
 "method.screenCaptureKit" = "ScreenCaptureKit";
 "method.replayKit" = "ReplayKit";
 "method.unknown" = "Unknown";
+
+/* OCR */
+"ocr.title" = "Text Recognition";
+"ocr.processing" = "Recognizing text...";
+"ocr.noText" = "No text detected in this screenshot.";
+"ocr.copy" = "Copy All";
+"ocr.copied" = "Copied!";
+
+/* Paywall */
+"paywall.subscribe" = "Subscribe";
+"paywall.restore" = "Restore Purchases";
+"paywall.productsUnavailable" = "Products are currently unavailable.";
+"paywall.productsUnavailable.desc" = "This is a development build. StoreKit products will be available when configured in App Store Connect.";
+"paywall.externalPayments" = "More payment options coming soon:";

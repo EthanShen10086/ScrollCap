@@ -18,6 +18,23 @@ public enum CaptureState: Sendable, Equatable {
             return false
         }
     }
+
+    public var isCapturing: Bool {
+        if case .capturing = self { return true }
+        return false
+    }
+
+    public var statusKey: String {
+        switch self {
+        case .idle: "idle"
+        case .selectingRegion: "selecting"
+        case .preparing: "preparing"
+        case .capturing: "capturing"
+        case .stitching: "stitching"
+        case .completed: "completed"
+        case .failed: "failed"
+        }
+    }
 }
 
 public struct CaptureProgress: Sendable, Equatable {

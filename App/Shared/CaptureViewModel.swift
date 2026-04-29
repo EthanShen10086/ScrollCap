@@ -22,6 +22,7 @@ final class CaptureViewModel {
     private var collectedFrames: [StitchFrame] = []
     private let aligner = FrameAligner()
     private let stitcher = ImageStitcher()
+    private var captureStartTime: CFAbsoluteTime = 0
 
     var isCapturing: Bool { captureState.isActive }
 
@@ -68,6 +69,16 @@ final class CaptureViewModel {
         errorMessage = nil
         collectedFrames.removeAll()
         await aligner.reset()
+        captureStartTime = CFAbsoluteTimeGetCurrent()
+
+        let method: String
+        #if os(macOS)
+        method = "ScreenCaptureKit"
+        #else
+        method = "ReplayKit"
+        #endif
+        SCLogger.capture.started("region: \(region.map { "\($0)" } ?? "full")")
+        AnalyticsManager.shared.track(.captureStarted(method: method))
 
         do {
             try await captureService.startCapture(region: region)
@@ -75,6 +86,8 @@ final class CaptureViewModel {
         } catch {
             captureState = .failed(message: error.localizedDescription)
             errorMessage = error.localizedDescription
+            SCLogger.capture.failed("startCapture", error: error)
+            AnalyticsManager.shared.track(.captureFailed(error: error.localizedDescription))
             HapticManager.captureError()
         }
     }
@@ -83,11 +96,16 @@ final class CaptureViewModel {
         do {
             if let screenshot = try await captureService.stopCapture() {
                 capturedScreenshot = screenshot
+                let duration = CFAbsoluteTimeGetCurrent() - captureStartTime
+                SCLogger.capture.completed("frames: \(screenshot.metadata.frameCount)", duration: duration)
+                AnalyticsManager.shared.track(.captureCompleted(frames: screenshot.metadata.frameCount, duration: duration))
                 HapticManager.captureStopped()
             }
         } catch {
             captureState = .failed(message: error.localizedDescription)
             errorMessage = error.localizedDescription
+            SCLogger.capture.failed("stopCapture", error: error)
+            AnalyticsManager.shared.track(.captureFailed(error: error.localizedDescription))
             HapticManager.captureError()
         }
     }
@@ -98,6 +116,8 @@ final class CaptureViewModel {
         currentPreview = nil
         liveStitchPreview = nil
         captureState = .idle
+        SCLogger.capture.info("Capture cancelled by user")
+        AnalyticsManager.shared.track(.captureCancelled)
     }
 
     func reset() {

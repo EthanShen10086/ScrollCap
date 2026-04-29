@@ -4,6 +4,7 @@ import SharedModels
 
 struct CaptureView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.platformMetrics) private var metrics
     @State private var viewModel = CaptureViewModel()
     @State private var showPermissionAlert = false
     @State private var showExportSheet = false
@@ -12,25 +13,25 @@ struct CaptureView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                backgroundGradient
+                BrandBackground()
 
-                VStack(spacing: SCTheme.Spacing.lg) {
+                VStack(spacing: 0) {
                     Spacer()
 
-                    if let screenshot = viewModel.capturedScreenshot {
-                        resultSection(screenshot, in: geometry)
-                    } else if let preview = viewModel.currentPreview {
-                        previewSection(preview, in: geometry)
-                    } else {
-                        idleSection
-                    }
+                    contentArea(in: geometry)
+                        .transition(.asymmetric(
+                            insertion: .scale(scale: 0.95).combined(with: .opacity),
+                            removal: .scale(scale: 1.05).combined(with: .opacity)
+                        ))
+                        .animation(SCTheme.Animation.gentle, value: viewModel.captureState.isCapturing)
+                        .animation(SCTheme.Animation.gentle, value: viewModel.capturedScreenshot?.id)
 
                     Spacer()
 
-                    captureControls
-                    statusBar
+                    controlBar(in: geometry)
+                        .padding(.bottom, SCTheme.Spacing.lg)
                 }
-                .padding(SCTheme.Spacing.lg)
+                .padding(.horizontal, metrics.defaultPadding)
             }
         }
         .navigationTitle("capture.title")
@@ -44,7 +45,9 @@ struct CaptureView: View {
                     }
 
                     Button {
-                        viewModel.reset()
+                        withAnimation(SCTheme.Animation.spring) {
+                            viewModel.reset()
+                        }
                     } label: {
                         Label("capture.new", systemImage: "plus")
                     }
@@ -67,31 +70,32 @@ struct CaptureView: View {
                 showPermissionAlert = true
             }
         }
-        .onChange(of: viewModel.capturedScreenshot?.id) { _, newValue in
+        .onChange(of: viewModel.capturedScreenshot?.id) { _, _ in
             if let screenshot = viewModel.capturedScreenshot {
                 appState.addScreenshot(screenshot)
             }
         }
     }
 
-    // MARK: - Background
+    // MARK: - Content Area
 
-    private var backgroundGradient: some View {
-        #if os(macOS)
-        Color(NSColor.windowBackgroundColor)
-            .ignoresSafeArea()
-        #else
-        Color(UIColor.systemBackground)
-            .ignoresSafeArea()
-        #endif
+    @ViewBuilder
+    private func contentArea(in geometry: GeometryProxy) -> some View {
+        if let screenshot = viewModel.capturedScreenshot {
+            resultSection(screenshot, in: geometry)
+        } else if let preview = viewModel.currentPreview {
+            previewSection(preview, in: geometry)
+        } else {
+            idleSection
+        }
     }
 
     // MARK: - Idle State
 
     private var idleSection: some View {
-        VStack(spacing: SCTheme.Spacing.lg) {
+        VStack(spacing: SCTheme.Spacing.xl) {
             EmptyStateView(
-                systemImage: "scroll",
+                systemImage: "camera.viewfinder",
                 title: String(localized: "capture.ready"),
                 description: platformDescription
             )
@@ -116,40 +120,41 @@ struct CaptureView: View {
     #if os(macOS)
     private var macOSInstructions: some View {
         GlassCard {
-            VStack(alignment: .leading, spacing: SCTheme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: SCTheme.Spacing.md) {
                 Label("capture.howItWorks", systemImage: "questionmark.circle")
                     .font(SCTheme.Typography.headline)
+                    .foregroundStyle(SCTheme.Gradients.brand)
 
-                VStack(alignment: .leading, spacing: SCTheme.Spacing.xs) {
-                    Text("capture.step.mac.1")
-                    Text("capture.step.mac.2")
-                    Text("capture.step.mac.3")
-                    Text("capture.step.mac.4")
+                VStack(alignment: .leading, spacing: SCTheme.Spacing.sm) {
+                    InstructionRow(number: 1, text: String(localized: "capture.step.mac.1"))
+                    InstructionRow(number: 2, text: String(localized: "capture.step.mac.2"))
+                    InstructionRow(number: 3, text: String(localized: "capture.step.mac.3"))
+                    InstructionRow(number: 4, text: String(localized: "capture.step.mac.4"))
                 }
-                .font(SCTheme.Typography.body)
-                .foregroundStyle(.secondary)
 
-                HStack {
+                HStack(spacing: SCTheme.Spacing.sm) {
                     Image(systemName: "keyboard")
                         .foregroundStyle(.tertiary)
                     Text("capture.shortcut")
                         .font(SCTheme.Typography.monoCaption)
                         .foregroundStyle(.tertiary)
                 }
+                .padding(.top, SCTheme.Spacing.xs)
             }
         }
-        .frame(maxWidth: 400)
+        .frame(maxWidth: 420)
     }
     #endif
 
     #if os(iOS)
     private var iOSInstructions: some View {
         GlassCard {
-            VStack(alignment: .leading, spacing: SCTheme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: SCTheme.Spacing.md) {
                 Label("capture.howItWorks", systemImage: "questionmark.circle")
                     .font(SCTheme.Typography.headline)
+                    .foregroundStyle(SCTheme.Gradients.brand)
 
-                VStack(alignment: .leading, spacing: SCTheme.Spacing.xs) {
+                VStack(alignment: .leading, spacing: SCTheme.Spacing.sm) {
                     InstructionRow(number: 1, text: String(localized: "capture.step.ios.1"))
                     InstructionRow(number: 2, text: String(localized: "capture.step.ios.2"))
                     InstructionRow(number: 3, text: String(localized: "capture.step.ios.3"))
@@ -164,104 +169,151 @@ struct CaptureView: View {
     // MARK: - Preview
 
     private func previewSection(_ image: CGImage, in geometry: GeometryProxy) -> some View {
-        VStack(spacing: SCTheme.Spacing.sm) {
-            Text("capture.livePreview")
-                .font(SCTheme.Typography.caption)
-                .foregroundStyle(.secondary)
+        VStack(spacing: SCTheme.Spacing.md) {
+            HStack {
+                Circle()
+                    .fill(SCTheme.Colors.captureActive)
+                    .frame(width: 8, height: 8)
+
+                Text("capture.livePreview")
+                    .font(SCTheme.Typography.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+            }
 
             ScrollView {
                 Image(decorative: image, scale: 1.0)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: min(geometry.size.width * 0.7, 500))
+                    .frame(maxWidth: min(geometry.size.width * 0.7, metrics.capturePreviewMaxWidth))
                     .clipShape(RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md))
+                    .shadow(color: .black.opacity(0.15), radius: 20, y: 10)
                     .accessibilityLabel(String(localized: "capture.livePreview"))
             }
             .frame(maxHeight: geometry.size.height * 0.55)
-            .adaptiveGlass(cornerRadius: SCTheme.CornerRadius.lg)
+        }
+        .padding(SCTheme.Spacing.md)
+        .background {
+            RoundedRectangle(cornerRadius: SCTheme.CornerRadius.xl)
+                .fill(.ultraThinMaterial)
         }
     }
 
     // MARK: - Result
 
     private func resultSection(_ screenshot: Screenshot, in geometry: GeometryProxy) -> some View {
-        VStack(spacing: SCTheme.Spacing.sm) {
-            Text("capture.complete")
-                .font(SCTheme.Typography.headline)
+        VStack(spacing: SCTheme.Spacing.md) {
+            HStack {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(SCTheme.Colors.captureDone)
+                Text("capture.complete")
+                    .font(SCTheme.Typography.headline)
+            }
 
             ScrollView {
                 Image(decorative: screenshot.image, scale: 1.0)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: min(geometry.size.width * 0.7, 500))
+                    .frame(maxWidth: min(geometry.size.width * 0.7, metrics.capturePreviewMaxWidth))
                     .clipShape(RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md))
+                    .shadow(color: .black.opacity(0.12), radius: 16, y: 8)
                     .accessibilityLabel(String(localized: "capture.complete"))
                     .accessibilityHint("\(screenshot.image.width)×\(screenshot.image.height)")
             }
-            .frame(maxHeight: geometry.size.height * 0.55)
+            .frame(maxHeight: geometry.size.height * 0.5)
 
-            HStack(spacing: SCTheme.Spacing.md) {
-                Label("\(screenshot.image.width)×\(screenshot.image.height)", systemImage: "ruler")
-                Label("capture.frames \(screenshot.metadata.frameCount)", systemImage: "square.stack.3d.up")
-                Label(String(format: "%.1fs", screenshot.metadata.durationSeconds), systemImage: "clock")
+            HStack(spacing: SCTheme.Spacing.lg) {
+                metadataBadge(icon: "ruler", value: "\(screenshot.image.width)×\(screenshot.image.height)")
+                metadataBadge(icon: "square.stack.3d.up", value: "\(screenshot.metadata.frameCount)")
+                metadataBadge(icon: "clock", value: String(format: "%.1fs", screenshot.metadata.durationSeconds))
             }
-            .font(SCTheme.Typography.monoCaption)
-            .foregroundStyle(.secondary)
+        }
+        .padding(SCTheme.Spacing.md)
+        .background {
+            RoundedRectangle(cornerRadius: SCTheme.CornerRadius.xl)
+                .fill(.ultraThinMaterial)
         }
     }
 
-    // MARK: - Controls
-
-    private var captureControls: some View {
-        HStack(spacing: SCTheme.Spacing.lg) {
-            if viewModel.isCapturing {
-                CaptureButton(isCapturing: true) {
-                    Task { await viewModel.stopCapture() }
-                }
-
-                Button("capture.cancel", role: .destructive) {
-                    viewModel.cancelCapture()
-                }
-                .buttonStyle(.bordered)
-            } else if viewModel.capturedScreenshot == nil {
-                CaptureButton(isCapturing: false) {
-                    Task { await viewModel.startCapture(region: selectedRegion) }
-                }
-            }
+    private func metadataBadge(icon: String, value: String) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 10))
+            Text(value)
+                .font(SCTheme.Typography.monoCaption)
         }
-        .padding()
-        .adaptiveGlass(cornerRadius: SCTheme.CornerRadius.xl)
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(.quaternary.opacity(0.5), in: Capsule())
     }
 
-    // MARK: - Status Bar
+    // MARK: - Control Bar
+
+    private func controlBar(in geometry: GeometryProxy) -> some View {
+        VStack(spacing: SCTheme.Spacing.md) {
+            HStack(spacing: SCTheme.Spacing.xl) {
+                if viewModel.isCapturing {
+                    Button {
+                        viewModel.cancelCapture()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                            .frame(width: 44, height: 44)
+                            .background(.ultraThinMaterial, in: Circle())
+                    }
+                    .buttonStyle(ScaleButtonStyle())
+                    .transition(.scale.combined(with: .opacity))
+
+                    CaptureButton(isCapturing: true) {
+                        Task { await viewModel.stopCapture() }
+                    }
+                } else if viewModel.capturedScreenshot == nil {
+                    CaptureButton(isCapturing: false) {
+                        Task { await viewModel.startCapture(region: selectedRegion) }
+                    }
+                }
+            }
+            .animation(SCTheme.Animation.spring, value: viewModel.isCapturing)
+
+            statusIndicator
+        }
+    }
+
+    // MARK: - Status
 
     @ViewBuilder
-    private var statusBar: some View {
-        switch viewModel.captureState {
-        case .idle:
-            StatusPill(String(localized: "status.ready"), color: SCTheme.Colors.captureReady)
-        case .selectingRegion:
-            StatusPill(String(localized: "status.selectRegion"), color: .orange)
-        case .preparing:
-            StatusPill(String(localized: "status.preparing"), color: .orange)
-        case .capturing(let progress):
-            HStack(spacing: SCTheme.Spacing.sm) {
-                StatusPill(String(localized: "status.recording"), color: SCTheme.Colors.captureActive)
-                Text("capture.frames \(progress.capturedFrames)")
-                    .font(SCTheme.Typography.monoCaption)
-                    .foregroundStyle(.secondary)
+    private var statusIndicator: some View {
+        Group {
+            switch viewModel.captureState {
+            case .idle:
+                StatusPill(String(localized: "status.ready"), color: SCTheme.Colors.captureReady)
+            case .selectingRegion:
+                StatusPill(String(localized: "status.selectRegion"), color: .orange)
+            case .preparing:
+                StatusPill(String(localized: "status.preparing"), color: .orange)
+            case .capturing(let progress):
+                HStack(spacing: SCTheme.Spacing.sm) {
+                    StatusPill(String(localized: "status.recording"), color: SCTheme.Colors.captureActive)
+                    Text("capture.frames \(progress.capturedFrames)")
+                        .font(SCTheme.Typography.monoCaption)
+                        .foregroundStyle(.secondary)
+                }
+            case .stitching:
+                HStack(spacing: SCTheme.Spacing.sm) {
+                    ProgressView()
+                        .controlSize(.small)
+                    StatusPill(String(localized: "status.stitching"), color: .purple)
+                }
+            case .completed(let count):
+                StatusPill(String(localized: "status.done \(count)"), color: SCTheme.Colors.captureDone)
+            case .failed(let message):
+                StatusPill(message, color: SCTheme.Colors.destructive)
             }
-        case .stitching:
-            HStack(spacing: SCTheme.Spacing.sm) {
-                ProgressView()
-                    .controlSize(.small)
-                StatusPill(String(localized: "status.stitching"), color: .purple)
-            }
-        case .completed(let count):
-            StatusPill(String(localized: "status.done \(count)"), color: SCTheme.Colors.captureDone)
-        case .failed(let message):
-            StatusPill(message, color: SCTheme.Colors.destructive)
         }
+        .transition(.opacity)
+        .animation(SCTheme.Animation.standard, value: viewModel.captureState.statusKey)
     }
 }
 
@@ -377,7 +429,8 @@ struct ExportSheet: View {
     }
 }
 
-#if os(iOS)
+// MARK: - Instruction Row
+
 struct InstructionRow: View {
     let number: Int
     let text: String
@@ -388,7 +441,7 @@ struct InstructionRow: View {
                 .font(.system(.caption, design: .rounded).bold())
                 .foregroundStyle(.white)
                 .frame(width: 22, height: 22)
-                .background(Circle().fill(Color.accentColor))
+                .background(SCTheme.Gradients.brand, in: Circle())
 
             Text(text)
                 .font(SCTheme.Typography.body)
@@ -398,4 +451,3 @@ struct InstructionRow: View {
         }
     }
 }
-#endif

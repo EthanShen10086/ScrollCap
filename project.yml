@@ -60,6 +60,7 @@ targets:
         product: CaptureKitIOS
       - package: ImageEditor
       - target: BroadcastExtension
+      - target: ScrollCapWidget
     entitlements:
       path: App/iOS/ScrollCapiOS.entitlements
       properties:
@@ -117,12 +118,39 @@ targets:
         com.apple.security.application-groups:
           - group.com.scrollcap.shared
 
+  ScrollCapWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: ScrollCapWidget
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ethanshen.scrollcap.widget
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: "1,2"
+    info:
+      path: ScrollCapWidget/Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    dependencies:
+      - package: SharedModels
+      - package: DesignSystem
+    entitlements:
+      path: App/iOS/ScrollCapiOS.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.scrollcap.shared
+
 schemes:
   ScrollCap-iOS:
     build:
       targets:
         ScrollCap-iOS: all
         BroadcastExtension: all
+        ScrollCapWidget: all
     run:
       config: Debug
     test:

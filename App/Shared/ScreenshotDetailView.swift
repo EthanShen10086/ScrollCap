@@ -1,12 +1,14 @@
 import SwiftUI
 import DesignSystem
 import SharedModels
+import ImageEditor
 
 struct ScreenshotDetailView: View {
     let screenshot: Screenshot
     @Environment(AppState.self) private var appState
     @State private var showEditor = false
     @State private var showExport = false
+    @State private var showOCR = false
     @State private var viewModel = CaptureViewModel()
 
     var body: some View {
@@ -17,12 +19,19 @@ struct ScreenshotDetailView: View {
             }
             .padding(SCTheme.Spacing.md)
         }
+        .background { BrandBackground() }
         .navigationTitle("detail.title")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
             ToolbarItemGroup {
+                Button {
+                    showOCR = true
+                } label: {
+                    Label("OCR", systemImage: "text.viewfinder")
+                }
+
                 Button {
                     showEditor = true
                 } label: {
@@ -58,6 +67,9 @@ struct ScreenshotDetailView: View {
         .sheet(isPresented: $showExport) {
             ExportSheet(screenshot: screenshot, viewModel: viewModel)
         }
+        .sheet(isPresented: $showOCR) {
+            OCRResultView(image: screenshot.image)
+        }
     }
 
     private func imagePreview(in geometry: GeometryProxy) -> some View {
@@ -67,7 +79,7 @@ struct ScreenshotDetailView: View {
                 .scaledToFit()
                 .frame(maxWidth: geometry.size.width - SCTheme.Spacing.md * 2)
                 .clipShape(RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md))
-                .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+                .shadow(color: .black.opacity(0.1), radius: 12, y: 6)
         }
     }
 
@@ -78,8 +90,8 @@ struct ScreenshotDetailView: View {
             metadataItem(icon: "clock", label: String(localized: "detail.duration"), value: String(format: "%.1fs", screenshot.metadata.durationSeconds))
             metadataItem(icon: "gearshape", label: String(localized: "detail.method"), value: screenshot.metadata.captureMethod.rawValue)
         }
-        .padding(SCTheme.Spacing.sm)
-        .adaptiveGlass(cornerRadius: SCTheme.CornerRadius.md)
+        .padding(SCTheme.Spacing.md)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: SCTheme.CornerRadius.lg))
     }
 
     private func metadataItem(icon: String, label: String, value: String) -> some View {
@@ -96,5 +108,99 @@ struct ScreenshotDetailView: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(label): \(value)")
+    }
+}
+
+// MARK: - OCR Result View
+
+struct OCRResultView: View {
+    let image: CGImage
+    @Environment(\.dismiss) private var dismiss
+    @State private var recognizedText = ""
+    @State private var isLoading = true
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationStack {
+            VStack {
+                if isLoading {
+                    VStack(spacing: SCTheme.Spacing.md) {
+                        ProgressView()
+                            .controlSize(.large)
+                        Text("ocr.processing")
+                            .font(SCTheme.Typography.body)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if let error = errorMessage {
+                    VStack(spacing: SCTheme.Spacing.md) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.largeTitle)
+                            .foregroundStyle(.orange)
+                        Text(error)
+                            .font(SCTheme.Typography.body)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        Text(recognizedText)
+                            .font(SCTheme.Typography.body)
+                            .textSelection(.enabled)
+                            .padding(SCTheme.Spacing.md)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+            }
+            .navigationTitle("ocr.title")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("detail.done") { dismiss() }
+                }
+
+                if !recognizedText.isEmpty {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button {
+                            copyToClipboard()
+                        } label: {
+                            Label("ocr.copy", systemImage: "doc.on.doc")
+                        }
+                    }
+                }
+            }
+        }
+        .task {
+            await performOCR()
+        }
+        #if os(macOS)
+        .frame(minWidth: 400, minHeight: 300)
+        #endif
+    }
+
+    private func performOCR() async {
+        let ocrService = OCRService()
+        do {
+            let text = try await ocrService.recognizeFullText(in: image)
+            recognizedText = text.isEmpty ? String(localized: "ocr.noText") : text
+            if !text.isEmpty {
+                AnalyticsManager.shared.track(.ocrPerformed(characterCount: text.count))
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+            AnalyticsManager.shared.track(.ocrFailed(error: error.localizedDescription))
+        }
+        isLoading = false
+    }
+
+    private func copyToClipboard() {
+        #if os(macOS)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(recognizedText, forType: .string)
+        #elseif os(iOS)
+        UIPasteboard.general.string = recognizedText
+        #endif
     }
 }

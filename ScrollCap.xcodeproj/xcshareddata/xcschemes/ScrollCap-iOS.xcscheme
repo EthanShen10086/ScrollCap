@@ -36,6 +36,20 @@
                ReferencedContainer = "container:ScrollCap.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "0DD7870E24D81F47AE9817F1"
+               BuildableName = "ScrollCapWidget.appex"
+               BlueprintName = "ScrollCapWidget"
+               ReferencedContainer = "container:ScrollCap.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

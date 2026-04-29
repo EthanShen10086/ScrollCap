@@ -36,6 +36,7 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | App Group 帧传递 | iOS | ✅ 已完成 | `SharedFrameReader` + UserDefaults 状态同步 |
 | 全局快捷键 (⌘⇧6) | macOS | ✅ 已完成 | Carbon `RegisterEventHotKey` |
 | 菜单栏快捷操作 | macOS | ✅ 已完成 | `MenuBarExtra` + `.menuBarExtraStyle(.window)` |
+| 自动滚动捕获 | iOS | ✅ 已完成 | `AutoScrollService` actor + `UIScrollView.setContentOffset` |
 
 ### 图像编辑
 
@@ -46,6 +47,16 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 箭头标注 | ✅ 已完成 | `AnnotationRenderer` - CGContext 绘制 |
 | 高亮标注 | ✅ 已完成 | `AnnotationRenderer` - 半透明矩形填充 |
 | 多颜色选择 | ✅ 已完成 | 红/蓝/绿/黄/白/黑 6 色 |
+
+### OCR 文字识别
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 文字识别 | ✅ 已完成 | Vision `VNRecognizeTextRequest` + `.accurate` 级别 |
+| 中英文支持 | ✅ 已完成 | `recognitionLanguages = ["zh-Hans", "en-US"]` |
+| 全文提取 | ✅ 已完成 | `OCRService.recognizeFullText` |
+| 一键复制 | ✅ 已完成 | NSPasteboard (macOS) / UIPasteboard (iOS) |
+| UI 集成 | ✅ 已完成 | ScreenshotDetailView toolbar OCR 按钮 + 全屏 sheet |
 
 ### 导出与分享
 
@@ -62,10 +73,50 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 | 功能 | 状态 | 技术实现 |
 |------|------|----------|
-| 截图历史列表 | ✅ 已完成 | LazyVGrid + `ScreenshotCard` |
+| 截图历史列表 | ✅ 已完成 | LazyVGrid + `HistoryScreenshotCard` |
 | 本地持久化存储 | ✅ 已完成 | `ScreenshotStore` Actor - 文件系统 + JSON Manifest |
 | 截图详情查看 | ✅ 已完成 | `ScreenshotDetailView` + 元数据展示 |
 | 截图删除 | ✅ 已完成 | Context Menu + `AppState.removeScreenshot` |
+| iCloud 云同步 | ✅ 已完成 | `iCloudSyncManager` + `NSMetadataQuery` + `NSFileCoordinator` |
+
+---
+
+## Widget 快捷操作
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 桌面 Widget | ✅ 已完成 | `.systemSmall` - 品牌图标 + Quick Capture 按钮 |
+| 锁屏 Widget | ✅ 已完成 | `.accessoryRectangular` - 一键截图 |
+| 圆形 Widget | ✅ 已完成 | `.accessoryCircular` - 图标快捷方式 |
+| Deep Link | ✅ 已完成 | `scrollcap://capture` + `onOpenURL` 处理 |
+| App Intent | ✅ 已完成 | `QuickCaptureIntent` 打开应用并触发截图 |
+
+---
+
+## 可观测性 / 分析埋点
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 结构化日志 | ✅ 已完成 | `SCLogger` - OSLog 分类日志 (capture/stitch/export/sync/payment/ocr) |
+| 崩溃报告 | ✅ 已完成 | `CrashReporter` - NSSetUncaughtExceptionHandler + signal handler |
+| 事件埋点 | ✅ 已完成 | `AnalyticsManager` - JSONL 持久化事件流 |
+| 设备信息采集 | ✅ 已完成 | `DeviceInfo` - OS 版本/应用版本/设备型号 |
+| CaptureViewModel 集成 | ✅ 已完成 | startCapture/stopCapture/cancelCapture 事件追踪 |
+
+---
+
+## 支付系统 (Freemium)
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| StoreKit 2 产品加载 | ✅ 已完成 | `StoreManager` - Product.products / Transaction.updates |
+| 月度/年度/终身订阅 | ✅ 已完成 | 3 个产品 ID 预定义 |
+| 购买流程 | ✅ 已完成 | `StoreManager.purchase` + 交易验证 |
+| 恢复购买 | ✅ 已完成 | `Transaction.currentEntitlements` |
+| Pro 功能门控 | ✅ 已完成 | `ProFeatureGate` ViewModifier |
+| 付费墙 UI | ✅ 已完成 | `PaywallView` - 功能对比 + 价格卡片 |
+| StoreKit 测试配置 | ✅ 已完成 | `Products.storekit` 本地测试文件 |
+| 第三方支付预留 | ✅ 已完成 | `ExternalPaymentProvider` protocol (WeChat/Alipay/PayPal/Stripe) |
 
 ---
 
@@ -83,11 +134,18 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 | 特性 | 状态 | 说明 |
 |------|------|------|
-| Liquid Glass (iOS 26+/macOS 26+) | ✅ 已完成 | 编译时降级，Xcode 26 后自动启用 |
+| App Icon | ✅ 已完成 | 蓝紫渐变抽象几何风格，全平台适配 (16px-1024px) |
+| MeshGradient 动画背景 | ✅ 已完成 | `AnimatedMeshBackground` (iOS 18+/macOS 15+) + LinearGradient 降级 |
+| 品牌色渐变 | ✅ 已完成 | `SCTheme.Gradients.brand` 蓝紫渐变 |
+| 三级阴影系统 | ✅ 已完成 | `SCTheme.Shadows.card/elevated/floating` |
+| 脉冲动画按钮 | ✅ 已完成 | `CaptureButton` idle 呼吸光环 + 捕获态红色波纹 |
+| Glass Card 增强 | ✅ 已完成 | 双层材质 + 渐变描边 + 深浅适配 |
+| 品牌化空态 | ✅ 已完成 | `symbolEffect(.bounce)` + 渐变色图标 |
+| Floating Action Bar | ✅ 已完成 | `FloatingActionBar` 胶囊形底部控制栏 |
+| Hover 交互反馈 | ✅ 已完成 | `ScreenshotCard` scale + shadow 变化 |
+| Scale Button Style | ✅ 已完成 | 全局按钮按压缩放效果 |
+| Liquid Glass (iOS 26+) | ✅ 已完成 | 编译时降级，Xcode 26 后自动启用 |
 | Material 背景 | ✅ 已完成 | `.ultraThinMaterial` / `.thinMaterial` |
-| 语义化颜色 | ✅ 已完成 | `.primary` / `.secondary` / `.tertiary` |
-| 自适应调色板 | ✅ 已完成 | AccentColor / CardBackground / SurfaceElevated 均含深色变体 |
-| 统一间距/圆角/排版系统 | ✅ 已完成 | `SCTheme` 枚举封装 |
 
 ---
 
@@ -95,10 +153,8 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 | 语言 | 状态 | 覆盖范围 |
 |------|------|----------|
-| English (en) | ✅ 已完成 | 全部 UI 文案（120+ 条） |
-| 简体中文 (zh-Hans) | ✅ 已完成 | 全部 UI 文案（120+ 条） |
-
-**覆盖文件**：CaptureView、HistoryView、SettingsView、ContentView、ImageEditorView、ScreenshotDetailView、MenuBarView、MacCaptureView、IOSCaptureView、BroadcastSetupView、ScrollCapApp、AppState
+| English (en) | ✅ 已完成 | 全部 UI 文案（150+ 条） |
+| 简体中文 (zh-Hans) | ✅ 已完成 | 全部 UI 文案（150+ 条） |
 
 ---
 
@@ -108,8 +164,9 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 |------|------|------|
 | AccentColor 双模式 | ✅ 已完成 | Light: (0, 0.47, 0.98) / Dark: (0.26, 0.58, 1.0) |
 | CardBackground 双模式 | ✅ 已完成 | Light: 黑色 6% / Dark: 白色 12% |
-| SurfaceElevated 双模式 | ✅ 已完成 | 浅色/深色对应色值 |
-| 语义色全覆盖 | ✅ 已完成 | 所有 UI 组件使用 SwiftUI 语义色 |
+| MeshGradient 适配 | ✅ 已完成 | Dark 模式透明度 0.5 / Light 模式 0.3 |
+| 卡片背景适配 | ✅ 已完成 | Dark: white.opacity(0.05) / Light: white |
+| 阴影适配 | ✅ 已完成 | Dark: 更深阴影 / Light: 柔和阴影 |
 | Material 自适应 | ✅ 已完成 | `.ultraThinMaterial` 自动跟随系统外观 |
 
 ---
@@ -160,16 +217,19 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 │  ScrollCapApp → ContentView            │
 │  CaptureView ←→ CaptureViewModel       │
 │  HistoryView / SettingsView / Editor    │
+│  Analytics / Store / iCloudSync         │
+│  ScrollCapWidget (WidgetKit)            │
 ├─────────────────────────────────────────┤
 │          Platform Layer                 │
 │  macOS: ScreenCaptureService            │
 │  iOS:   ReplayKitCaptureService         │
+│         AutoScrollService               │
 │         BroadcastExtension              │
 ├─────────────────────────────────────────┤
 │          Core Packages (SPM)            │
 │  SharedModels │ DesignSystem            │
 │  StitchingEngine │ CaptureKit           │
-│  ImageEditor                            │
+│  ImageEditor (+ OCRService)             │
 └─────────────────────────────────────────┘
 ```
 
@@ -186,7 +246,12 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | macOS 截图 | ScreenCaptureKit |
 | iOS 截图 | ReplayKit + Broadcast Extension |
 | 图像对齐 | Vision Framework (`VNTranslationalImageRegistrationRequest`) |
+| 文字识别 | Vision Framework (`VNRecognizeTextRequest`) |
 | 图像导出 | ImageIO |
+| 内购系统 | StoreKit 2 |
+| 云同步 | iCloud Documents + NSMetadataQuery |
+| Widget | WidgetKit + AppIntents |
+| 日志系统 | OSLog |
 | 项目生成 | XcodeGen |
 | CI/CD | GitHub Actions |
 | 第三方依赖 | **零** |
@@ -198,11 +263,8 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 功能 | 优先级 | 说明 |
 |------|--------|------|
 | 原生 Liquid Glass | 高 | 升级到 Xcode 26 后自动启用 |
-| 自动滚动捕获 | 高 | 使用 Accessibility API 自动滚动页面 |
 | 更多语言支持 | 中 | 日语、韩语、法语等 |
-| Widget 支持 | 中 | 快捷操作 Widget + Live Activity |
-| iCloud 同步 | 中 | 跨设备截图历史同步 |
-| 文字识别 (OCR) | 低 | Vision Framework 文字提取 |
+| Live Activity | 中 | 实时活动显示捕获进度 |
 | 视频录制模式 | 低 | 滚动过程录制为视频 |
-| App Icon 定制 | 低 | 当前使用默认图标，可设计专属 App Icon |
 | TestFlight 分发 | 低 | 需要 Apple Developer 账号 |
+| 第三方支付对接 | 低 | WeChat Pay / Alipay / PayPal / Stripe 实际集成 |
