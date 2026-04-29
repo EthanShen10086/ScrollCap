@@ -6,6 +6,7 @@ import SharedModels
 
 struct IOSCaptureView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: SCTheme.Spacing.lg) {
@@ -36,8 +37,8 @@ struct IOSCaptureView: View {
                     Circle()
                         .fill(SCTheme.Colors.captureActive)
                         .frame(width: 10, height: 10)
-                        .scaleEffect(1.2)
-                        .animation(.easeInOut(duration: 0.6).repeatForever(), value: true)
+                        .scaleEffect(reduceMotion ? 1.0 : 1.2)
+                        .animation(reduceMotion ? nil : .easeInOut(duration: 0.6).repeatForever(), value: reduceMotion)
 
                     Text("ios.recording")
                         .font(SCTheme.Typography.headline)

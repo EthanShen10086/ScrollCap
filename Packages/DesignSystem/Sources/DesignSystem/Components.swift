@@ -30,6 +30,9 @@ public struct CaptureButton: View {
             }
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(isCapturing ? "Stop capture" : "Start capture")
+        .accessibilityHint(isCapturing ? "Stops the current screen recording" : "Begins a new scrolling screenshot capture")
+        .accessibilityAddTraits(.isButton)
         .animation(SCTheme.Animation.spring, value: isCapturing)
     }
 }
@@ -52,6 +55,8 @@ public struct StatusPill: View {
             .padding(.horizontal, SCTheme.Spacing.sm)
             .padding(.vertical, SCTheme.Spacing.xs)
             .background(color, in: Capsule())
+            .accessibilityLabel(text)
+            .accessibilityAddTraits(.isStaticText)
     }
 }
 
@@ -89,6 +94,7 @@ public struct EmptyStateView: View {
             Image(systemName: systemImage)
                 .font(.system(size: 48))
                 .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
 
             Text(title)
                 .font(SCTheme.Typography.title)
@@ -99,5 +105,6 @@ public struct EmptyStateView: View {
                 .multilineTextAlignment(.center)
         }
         .padding(SCTheme.Spacing.xl)
+        .accessibilityElement(children: .combine)
     }
 }

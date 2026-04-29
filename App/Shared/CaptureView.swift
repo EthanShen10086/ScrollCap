@@ -175,6 +175,7 @@ struct CaptureView: View {
                     .scaledToFit()
                     .frame(maxWidth: min(geometry.size.width * 0.7, 500))
                     .clipShape(RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md))
+                    .accessibilityLabel(String(localized: "capture.livePreview"))
             }
             .frame(maxHeight: geometry.size.height * 0.55)
             .adaptiveGlass(cornerRadius: SCTheme.CornerRadius.lg)
@@ -194,6 +195,8 @@ struct CaptureView: View {
                     .scaledToFit()
                     .frame(maxWidth: min(geometry.size.width * 0.7, 500))
                     .clipShape(RoundedRectangle(cornerRadius: SCTheme.CornerRadius.md))
+                    .accessibilityLabel(String(localized: "capture.complete"))
+                    .accessibilityHint("\(screenshot.image.width)×\(screenshot.image.height)")
             }
             .frame(maxHeight: geometry.size.height * 0.55)
 

@@ -87,11 +87,14 @@ struct ScreenshotDetailView: View {
             Image(systemName: icon)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
             Text(value)
                 .font(SCTheme.Typography.monoCaption)
             Text(label)
                 .font(.system(size: 9))
                 .foregroundStyle(.tertiary)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 }

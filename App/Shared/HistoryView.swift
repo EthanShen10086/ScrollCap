@@ -74,5 +74,9 @@ struct ScreenshotCard: View {
         }
         .padding(SCTheme.Spacing.sm)
         .adaptiveGlass(cornerRadius: SCTheme.CornerRadius.lg)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(String(localized: "detail.title"))
+        .accessibilityHint("\(screenshot.metadata.frameCount) frames, \(screenshot.image.width)×\(screenshot.image.height)")
+        .accessibilityAddTraits(.isButton)
     }
 }

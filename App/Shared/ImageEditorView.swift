@@ -85,6 +85,8 @@ struct ImageEditorView: View {
             .frame(width: 48, height: 42)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(label)
+        .accessibilityAddTraits(selectedTool == tool ? [.isButton, .isSelected] : .isButton)
     }
 
     private var colorPicker: some View {
@@ -103,6 +105,8 @@ struct ImageEditorView: View {
                     .onTapGesture {
                         selectedColor = item.color
                     }
+                    .accessibilityLabel(item.name)
+                    .accessibilityAddTraits(selectedColor.cgColor == item.color.cgColor ? [.isButton, .isSelected] : .isButton)
             }
         }
     }
