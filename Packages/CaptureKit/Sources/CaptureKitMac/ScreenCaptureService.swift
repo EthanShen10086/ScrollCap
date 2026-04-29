@@ -34,7 +34,7 @@ public final class ScreenCaptureService: NSObject, CaptureService {
 
     public func prepare() async throws {
         let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
-        guard let display = content.displays.first else {
+        guard content.displays.first != nil else {
             throw CaptureServiceError.noDisplayFound
         }
         updateState(.selectingRegion)
@@ -91,7 +91,7 @@ public final class ScreenCaptureService: NSObject, CaptureService {
 
         do {
             let stitchedImage = try await stitcher.stitch(frames: collectedFrames)
-            let processingTime = CFAbsoluteTimeGetCurrent() - startTime
+            _ = CFAbsoluteTimeGetCurrent() - startTime
 
             let metadata = ScreenshotMetadata(
                 frameCount: collectedFrames.count,

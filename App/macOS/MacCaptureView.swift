@@ -5,37 +5,18 @@ import SharedModels
 
 struct MacCaptureView: View {
     @Environment(AppState.self) private var appState
-    @State private var isSelectingRegion = false
     @State private var selectedRegion: CaptureRegion?
+    @State private var overlayController = OverlayWindowController()
 
     var body: some View {
         VStack(spacing: SCTheme.Spacing.lg) {
-            if isSelectingRegion {
-                regionSelectionPrompt
-            } else if let region = selectedRegion {
+            if let region = selectedRegion {
                 regionInfoCard(region)
             }
 
             captureActions
         }
         .padding()
-    }
-
-    private var regionSelectionPrompt: some View {
-        GlassCard {
-            VStack(spacing: SCTheme.Spacing.md) {
-                Image(systemName: "rectangle.dashed")
-                    .font(.system(size: 40))
-                    .foregroundStyle(.secondary)
-
-                Text("Drag to select capture area")
-                    .font(SCTheme.Typography.headline)
-
-                Text("The selected region will be captured during scrolling")
-                    .font(SCTheme.Typography.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
     }
 
     private func regionInfoCard(_ region: CaptureRegion) -> some View {
@@ -45,15 +26,18 @@ struct MacCaptureView: View {
                     Text("Selected Region")
                         .font(SCTheme.Typography.headline)
 
-                    Text("\(Int(region.size.width))×\(Int(region.size.height)) points")
-                        .font(SCTheme.Typography.monoCaption)
-                        .foregroundStyle(.secondary)
+                    HStack(spacing: SCTheme.Spacing.md) {
+                        Label("\(Int(region.size.width))×\(Int(region.size.height))", systemImage: "rectangle.dashed")
+                        Label("\(region.pixelWidth)×\(region.pixelHeight) px", systemImage: "square.resize")
+                    }
+                    .font(SCTheme.Typography.monoCaption)
+                    .foregroundStyle(.secondary)
                 }
 
                 Spacer()
 
                 Button("Change") {
-                    isSelectingRegion = true
+                    showRegionSelector()
                 }
                 .buttonStyle(.bordered)
             }
@@ -63,27 +47,18 @@ struct MacCaptureView: View {
     private var captureActions: some View {
         HStack(spacing: SCTheme.Spacing.md) {
             Button {
-                isSelectingRegion = true
+                showRegionSelector()
             } label: {
                 Label("Select Region", systemImage: "rectangle.dashed")
             }
             .buttonStyle(.bordered)
-
-            if selectedRegion != nil {
-                Button {
-                    startMacCapture()
-                } label: {
-                    Label("Start Capture", systemImage: "record.circle")
-                        .foregroundStyle(.white)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(SCTheme.Colors.captureReady)
-            }
         }
     }
 
-    private func startMacCapture() {
-        appState.captureState = .preparing
+    private func showRegionSelector() {
+        overlayController.showRegionSelector { region in
+            selectedRegion = region
+        }
     }
 }
 #endif

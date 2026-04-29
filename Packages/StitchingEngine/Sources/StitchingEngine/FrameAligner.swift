@@ -22,7 +22,7 @@ public actor FrameAligner {
         public let isNewContent: Bool
     }
 
-    public func processFrame(_ image: CGImage) throws -> AlignmentResult? {
+    public func processFrame(_ image: CGImage) async throws -> AlignmentResult? {
         guard let previous = lastFrame else {
             lastFrame = image
             cumulativeOffset = .zero
@@ -33,9 +33,9 @@ public actor FrameAligner {
             )
         }
 
-        let delta = try stitcher.computeAlignment(reference: previous, floating: image)
+        let delta = try await stitcher.computeAlignment(reference: previous, floating: image)
 
-        guard stitcher.shouldAcceptFrame(offset: delta) else {
+        guard await stitcher.shouldAcceptFrame(offset: delta) else {
             return nil
         }
 

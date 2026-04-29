@@ -1,0 +1,79 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build-packages:
+    name: Build Swift Packages
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
+
+      - name: Build SharedModels
+        run: cd Packages/SharedModels && swift build
+
+      - name: Build DesignSystem
+        run: cd Packages/DesignSystem && swift build
+
+      - name: Build StitchingEngine
+        run: cd Packages/StitchingEngine && swift build
+
+      - name: Build CaptureKit
+        run: cd Packages/CaptureKit && swift build
+
+      - name: Build ImageEditor
+        run: cd Packages/ImageEditor && swift build
+
+  test-packages:
+    name: Test Swift Packages
+    runs-on: macos-15
+    needs: build-packages
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
+
+      - name: Test SharedModels
+        run: cd Packages/SharedModels && swift test
+
+      - name: Test StitchingEngine
+        run: cd Packages/StitchingEngine && swift test
+
+      - name: Test ImageEditor
+        run: cd Packages/ImageEditor && swift test
+
+  build-xcode:
+    name: Build Xcode Project
+    runs-on: macos-15
+    needs: build-packages
+    strategy:
+      matrix:
+        scheme: [ScrollCap-macOS]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode Project
+        run: xcodegen generate
+
+      - name: Build ${{ matrix.scheme }}
+        run: |
+          xcodebuild build \
+            -project ScrollCap.xcodeproj \
+            -scheme ${{ matrix.scheme }} \
+            -destination "platform=macOS" \
+            CODE_SIGNING_ALLOWED=NO \
+            | tail -20

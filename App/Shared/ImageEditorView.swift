@@ -1,0 +1,173 @@
+import SwiftUI
+import DesignSystem
+import SharedModels
+import ImageEditor
+
+struct ImageEditorView: View {
+    let screenshot: Screenshot
+    @State private var editedImage: CGImage
+    @State private var selectedTool: EditorTool = .none
+    @State private var cropRect: CGRect = .zero
+    @State private var isCropping = false
+    @State private var annotations: [Annotation] = []
+    @State private var selectedColor: AnnotationColor = .red
+    @State private var lineWidth: CGFloat = 3
+
+    init(screenshot: Screenshot) {
+        self.screenshot = screenshot
+        self._editedImage = State(initialValue: screenshot.image)
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            toolbar
+
+            Divider()
+
+            GeometryReader { geometry in
+                ScrollView([.horizontal, .vertical]) {
+                    Image(decorative: editedImage, scale: 1.0)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: geometry.size.width)
+                        .overlay {
+                            if isCropping {
+                                cropOverlay
+                            }
+                        }
+                }
+            }
+        }
+        .navigationTitle("Edit")
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
+    }
+
+    // MARK: - Toolbar
+
+    private var toolbar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: SCTheme.Spacing.sm) {
+                toolButton(.none, "hand.raised", "Select")
+                toolButton(.crop, "crop", "Crop")
+                toolButton(.rectangle, "rectangle", "Rectangle")
+                toolButton(.arrow, "arrow.up.right", "Arrow")
+                toolButton(.highlight, "highlighter", "Highlight")
+
+                Divider()
+                    .frame(height: 24)
+
+                colorPicker
+            }
+            .padding(.horizontal, SCTheme.Spacing.md)
+            .padding(.vertical, SCTheme.Spacing.sm)
+        }
+        .adaptiveGlass(cornerRadius: 0)
+    }
+
+    private func toolButton(_ tool: EditorTool, _ icon: String, _ label: String) -> some View {
+        Button {
+            selectedTool = tool
+            if tool == .crop {
+                isCropping = true
+            } else {
+                isCropping = false
+            }
+        } label: {
+            VStack(spacing: 2) {
+                Image(systemName: icon)
+                    .font(.system(size: 18))
+                Text(label)
+                    .font(.system(size: 10))
+            }
+            .foregroundStyle(selectedTool == tool ? Color.accentColor : .secondary)
+            .frame(width: 48, height: 42)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var colorPicker: some View {
+        HStack(spacing: SCTheme.Spacing.xs) {
+            ForEach(annotationColors, id: \.name) { item in
+                Circle()
+                    .fill(Color(cgColor: item.color.cgColor))
+                    .frame(width: 20, height: 20)
+                    .overlay {
+                        if selectedColor.cgColor == item.color.cgColor {
+                            Circle()
+                                .stroke(.white, lineWidth: 2)
+                                .frame(width: 24, height: 24)
+                        }
+                    }
+                    .onTapGesture {
+                        selectedColor = item.color
+                    }
+            }
+        }
+    }
+
+    private var annotationColors: [(name: String, color: AnnotationColor)] {
+        [
+            ("Red", .red),
+            ("Blue", .blue),
+            ("Green", .green),
+            ("Yellow", .yellow),
+            ("White", .white),
+            ("Black", .black)
+        ]
+    }
+
+    // MARK: - Crop Overlay
+
+    private var cropOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.4)
+
+            VStack(spacing: SCTheme.Spacing.md) {
+                Text("Drag to select crop area")
+                    .font(SCTheme.Typography.caption)
+                    .foregroundStyle(.white)
+
+                HStack {
+                    Button("Cancel") {
+                        isCropping = false
+                        selectedTool = .none
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.white)
+
+                    Button("Apply Crop") {
+                        applyCrop()
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+        }
+    }
+
+    // MARK: - Actions
+
+    private func applyCrop() {
+        guard cropRect != .zero else {
+            isCropping = false
+            return
+        }
+
+        let tool = CropTool()
+        if let cropped = tool.crop(image: editedImage, to: cropRect) {
+            editedImage = cropped
+        }
+
+        isCropping = false
+        selectedTool = .none
+    }
+}
+
+enum EditorTool {
+    case none
+    case crop
+    case rectangle
+    case arrow
+    case highlight
+}

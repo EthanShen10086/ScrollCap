@@ -73,7 +73,6 @@ public actor ImageStitcher {
             if index > 0 {
                 let overlapHeight = CGFloat(frame.image.height) - abs(frame.cumulativeOffset.y - frames[index - 1].cumulativeOffset.y)
                 if overlapHeight > 0 {
-                    let clipY = drawY + overlapHeight
                     context.saveGState()
                     context.clip(to: CGRect(x: 0, y: drawY, width: CGFloat(totalWidth), height: CGFloat(frame.image.height) - overlapHeight))
                     context.draw(frame.image, in: drawRect)
