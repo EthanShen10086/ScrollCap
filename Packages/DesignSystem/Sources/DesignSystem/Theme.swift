@@ -12,6 +12,10 @@ public enum SCTheme {
         public static let captureActive = Color.red
         public static let captureReady = Color.blue
         public static let captureDone = Color.green
+
+        public static let cardBackground = Color.secondary.opacity(0.12)
+        public static let overlayBackground = Color.black.opacity(0.4)
+        public static let subtleSeparator = Color.primary.opacity(0.15)
     }
 
     public enum Spacing {

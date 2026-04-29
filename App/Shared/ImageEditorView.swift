@@ -122,7 +122,7 @@ struct ImageEditorView: View {
 
     private var cropOverlay: some View {
         ZStack {
-            Color.black.opacity(0.4)
+            SCTheme.Colors.overlayBackground
 
             VStack(spacing: SCTheme.Spacing.md) {
                 Text("editor.cropHint")
