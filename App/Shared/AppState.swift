@@ -1,5 +1,6 @@
 import SwiftUI
 import SharedModels
+import DesignSystem
 
 @Observable
 @MainActor
@@ -14,6 +15,42 @@ final class AppState {
     var exportQuality: Double = 0.9
     var autoScrollEnabled: Bool = false
     var iCloudSyncEnabled: Bool = false
+
+    // MARK: - User Mode
+
+    var userMode: UserMode = .standard
+    var minorUsageLimitMinutes: Int = 40
+    private(set) var sessionStartTime = Date()
+    private(set) var showUsageWarning = false
+    private var usageWarningDismissed = false
+
+    var sessionMinutesUsed: Int {
+        Int(Date().timeIntervalSince(sessionStartTime) / 60)
+    }
+
+    var isMinorMode: Bool { userMode == .minor }
+    var isElderMode: Bool { userMode == .elder }
+    var shouldHidePayment: Bool { userMode == .minor }
+
+    func checkUsageTime() {
+        guard userMode == .minor, !usageWarningDismissed else { return }
+        if sessionMinutesUsed >= minorUsageLimitMinutes {
+            showUsageWarning = true
+        }
+    }
+
+    func dismissUsageWarning() {
+        showUsageWarning = false
+        usageWarningDismissed = true
+    }
+
+    func resetSession() {
+        sessionStartTime = Date()
+        usageWarningDismissed = false
+        showUsageWarning = false
+    }
+
+    // MARK: - Core
 
     var isCapturing: Bool {
         captureState.isActive

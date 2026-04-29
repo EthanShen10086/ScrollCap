@@ -1,4 +1,5 @@
 import SwiftUI
+import DesignSystem
 
 @main
 struct ScrollCapApp: App {
@@ -11,6 +12,8 @@ struct ScrollCapApp: App {
         WindowGroup {
             ContentView()
                 .environment(appState)
+                .environment(\.userMode, appState.userMode)
+                .applyUserMode(appState.userMode)
                 .onAppear {
                     CrashReporter.shared.install()
                     AnalyticsManager.shared.track(.appLaunched)
@@ -20,6 +23,12 @@ struct ScrollCapApp: App {
                 }
                 .onOpenURL { url in
                     handleDeepLink(url)
+                }
+                .task {
+                    while !Task.isCancelled {
+                        try? await Task.sleep(for: .seconds(60))
+                        appState.checkUsageTime()
+                    }
                 }
         }
         #if os(macOS)

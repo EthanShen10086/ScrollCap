@@ -5,6 +5,7 @@ import SharedModels
 struct CaptureView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.platformMetrics) private var metrics
+    @Environment(\.userMode) private var userMode
     @State private var viewModel = CaptureViewModel()
     @State private var showPermissionAlert = false
     @State private var showExportSheet = false
@@ -16,6 +17,15 @@ struct CaptureView: View {
                 BrandBackground()
 
                 VStack(spacing: 0) {
+                    if appState.showUsageWarning {
+                        UsageTimerBanner(
+                            minutesUsed: appState.sessionMinutesUsed,
+                            limitMinutes: appState.minorUsageLimitMinutes,
+                            onDismiss: { appState.dismissUsageWarning() }
+                        )
+                        .padding(.top, SCTheme.Spacing.sm)
+                    }
+
                     Spacer()
 
                     contentArea(in: geometry)
@@ -23,8 +33,8 @@ struct CaptureView: View {
                             insertion: .scale(scale: 0.95).combined(with: .opacity),
                             removal: .scale(scale: 1.05).combined(with: .opacity)
                         ))
-                        .animation(SCTheme.Animation.gentle, value: viewModel.captureState.isCapturing)
-                        .animation(SCTheme.Animation.gentle, value: viewModel.capturedScreenshot?.id)
+                        .animation(userMode == .elder ? nil : SCTheme.Animation.gentle, value: viewModel.captureState.isCapturing)
+                        .animation(userMode == .elder ? nil : SCTheme.Animation.gentle, value: viewModel.capturedScreenshot?.id)
 
                     Spacer()
 
@@ -257,27 +267,44 @@ struct CaptureView: View {
                     Button {
                         viewModel.cancelCapture()
                     } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(width: 44, height: 44)
-                            .background(.ultraThinMaterial, in: Circle())
+                        if userMode == .elder {
+                            Label("capture.cancel", systemImage: "xmark")
+                                .font(.title3.weight(.medium))
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                                .background(.ultraThinMaterial, in: Capsule())
+                        } else {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(.secondary)
+                                .frame(width: 44, height: 44)
+                                .background(.ultraThinMaterial, in: Circle())
+                        }
                     }
                     .buttonStyle(ScaleButtonStyle())
                     .transition(.scale.combined(with: .opacity))
 
-                    CaptureButton(isCapturing: true) {
+                    adaptiveCaptureButton(isCapturing: true) {
                         Task { await viewModel.stopCapture() }
                     }
                 } else if viewModel.capturedScreenshot == nil {
-                    CaptureButton(isCapturing: false) {
+                    adaptiveCaptureButton(isCapturing: false) {
                         Task { await viewModel.startCapture(region: selectedRegion) }
                     }
                 }
             }
-            .animation(SCTheme.Animation.spring, value: viewModel.isCapturing)
+            .animation(userMode == .elder ? .easeInOut(duration: 0.2) : SCTheme.Animation.spring, value: viewModel.isCapturing)
 
             statusIndicator
+        }
+    }
+
+    @ViewBuilder
+    private func adaptiveCaptureButton(isCapturing: Bool, action: @escaping () -> Void) -> some View {
+        if userMode == .elder {
+            ElderCaptureButton(isCapturing: isCapturing, action: action)
+        } else {
+            CaptureButton(isCapturing: isCapturing, action: action)
         }
     }
 

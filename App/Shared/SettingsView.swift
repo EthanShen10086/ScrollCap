@@ -4,10 +4,38 @@ import SharedModels
 
 struct SettingsView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.userMode) private var userMode
 
     var body: some View {
         @Bindable var state = appState
         Form {
+            // MARK: - User Mode Selection
+            Section {
+                userModePicker
+            } header: {
+                Text("settings.mode")
+            } footer: {
+                Text(appState.userMode.description)
+            }
+
+            // MARK: - Minor Mode: Usage Limit
+            if appState.isMinorMode {
+                Section("settings.minor") {
+                    Stepper("settings.minor.limit \(appState.minorUsageLimitMinutes)", value: $state.minorUsageLimitMinutes, in: 15...120, step: 5)
+
+                    HStack {
+                        Image(systemName: "clock")
+                            .foregroundStyle(.orange)
+                        Text("settings.minor.sessionTime \(appState.sessionMinutesUsed)")
+                            .font(SCTheme.Typography.body)
+                    }
+
+                    Button("settings.minor.resetSession") {
+                        appState.resetSession()
+                    }
+                }
+            }
+
             Section("settings.export") {
                 Picker("export.format", selection: $state.exportFormat) {
                     ForEach(ExportFormat.allCases) { format in
@@ -33,7 +61,7 @@ struct SettingsView: View {
                 Toggle("settings.autoScroll", isOn: $state.autoScrollEnabled)
 
                 Text("settings.autoScroll.desc")
-                    .font(SCTheme.Typography.caption)
+                    .font(adaptiveCaption)
                     .foregroundStyle(.secondary)
             }
 
@@ -41,27 +69,30 @@ struct SettingsView: View {
                 Toggle("settings.iCloudSync", isOn: $state.iCloudSyncEnabled)
 
                 Text("settings.iCloudSync.desc")
-                    .font(SCTheme.Typography.caption)
+                    .font(adaptiveCaption)
                     .foregroundStyle(.secondary)
             }
 
-            Section {
-                NavigationLink {
-                    ProUpgradeTeaser()
-                } label: {
-                    HStack {
-                        Image(systemName: "star.fill")
-                            .foregroundStyle(SCTheme.Gradients.brand)
-                        Text("settings.pro")
-                            .fontWeight(.medium)
-                        Spacer()
-                        Text("settings.pro.badge")
-                            .font(SCTheme.Typography.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(SCTheme.Gradients.brand, in: Capsule())
+            // MARK: - Pro (hidden in Minor mode)
+            if !appState.shouldHidePayment {
+                Section {
+                    NavigationLink {
+                        ProUpgradeTeaser()
+                    } label: {
+                        HStack {
+                            Image(systemName: "star.fill")
+                                .foregroundStyle(SCTheme.Gradients.brand)
+                            Text("settings.pro")
+                                .fontWeight(.medium)
+                            Spacer()
+                            Text("settings.pro.badge")
+                                .font(SCTheme.Typography.caption)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(SCTheme.Gradients.brand, in: Capsule())
+                        }
                     }
                 }
             }
@@ -70,8 +101,10 @@ struct SettingsView: View {
                 LabeledContent("settings.version", value: "1.0.0")
                 LabeledContent("settings.build", value: "1")
 
-                Link(destination: URL(string: "https://github.com/EthanShen10086/ScrollCap")!) {
-                    Label("settings.sourceCode", systemImage: "curlybraces")
+                if !appState.isMinorMode {
+                    Link(destination: URL(string: "https://github.com/EthanShen10086/ScrollCap")!) {
+                        Label("settings.sourceCode", systemImage: "curlybraces")
+                    }
                 }
             }
         }
@@ -80,6 +113,25 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .frame(minWidth: 400, minHeight: 300)
         #endif
+    }
+
+    // MARK: - User Mode Picker
+
+    private var userModePicker: some View {
+        @Bindable var state = appState
+        return Picker("settings.mode.select", selection: $state.userMode) {
+            ForEach(UserMode.allCases) { mode in
+                Label(mode.displayName, systemImage: mode.icon)
+                    .tag(mode)
+            }
+        }
+        #if os(iOS)
+        .pickerStyle(.navigationLink)
+        #endif
+    }
+
+    private var adaptiveCaption: Font {
+        appState.isElderMode ? .body : SCTheme.Typography.caption
     }
 
     #if os(macOS)
@@ -97,7 +149,7 @@ struct SettingsView: View {
         Group {
             LabeledContent("settings.captureMethod", value: String(localized: "method.replayKit"))
             Text("settings.ios.captureDesc")
-                .font(SCTheme.Typography.caption)
+                .font(adaptiveCaption)
                 .foregroundStyle(.secondary)
         }
     }

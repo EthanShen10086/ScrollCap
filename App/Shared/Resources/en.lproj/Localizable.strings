@@ -154,3 +154,26 @@
 "paywall.productsUnavailable" = "Products are currently unavailable.";
 "paywall.productsUnavailable.desc" = "This is a development build. StoreKit products will be available when configured in App Store Connect.";
 "paywall.externalPayments" = "More payment options coming soon:";
+
+/* User Mode */
+"settings.mode" = "User Mode";
+"settings.mode.select" = "Select Mode";
+"mode.standard" = "Standard";
+"mode.minor" = "Minor Mode";
+"mode.elder" = "Elder Mode";
+"mode.standard.desc" = "Full-featured mode for all users.";
+"mode.minor.desc" = "Designed for minors. Hides payment features, tracks usage time, and simplifies the interface.";
+"mode.elder.desc" = "Larger text, bigger buttons, higher contrast, and reduced animations for easier use.";
+
+/* Minor Mode */
+"settings.minor" = "Minor Protection";
+"settings.minor.limit %lld" = "Usage limit: %lld min";
+"settings.minor.sessionTime %lld" = "Session time: %lld min";
+"settings.minor.resetSession" = "Reset Session Timer";
+"minor.timeWarning" = "Time to take a break!";
+"minor.timeUsed %lld %lld" = "You've been using the app for %lld minutes. Limit is %lld minutes.";
+"minor.gotIt" = "Got it";
+
+/* Elder Mode */
+"elder.capture" = "Capture";
+"elder.stop" = "Stop";

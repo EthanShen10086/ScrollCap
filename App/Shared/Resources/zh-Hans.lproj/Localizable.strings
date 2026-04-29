@@ -154,3 +154,26 @@
 "paywall.productsUnavailable" = "产品暂时不可用。";
 "paywall.productsUnavailable.desc" = "这是开发版本。StoreKit 产品将在配置 App Store Connect 后可用。";
 "paywall.externalPayments" = "更多支付方式即将推出：";
+
+/* User Mode */
+"settings.mode" = "用户模式";
+"settings.mode.select" = "选择模式";
+"mode.standard" = "标准模式";
+"mode.minor" = "未成年模式";
+"mode.elder" = "适老化模式";
+"mode.standard.desc" = "面向所有用户的完整功能模式。";
+"mode.minor.desc" = "专为未成年人设计。隐藏支付功能、追踪使用时长、简化界面。";
+"mode.elder.desc" = "更大的字体、更大的按钮、更高的对比度、减少动画，方便使用。";
+
+/* Minor Mode */
+"settings.minor" = "未成年保护";
+"settings.minor.limit %lld" = "使用限制：%lld 分钟";
+"settings.minor.sessionTime %lld" = "本次使用时长：%lld 分钟";
+"settings.minor.resetSession" = "重置会话计时器";
+"minor.timeWarning" = "该休息一下了！";
+"minor.timeUsed %lld %lld" = "你已使用 %lld 分钟，限制为 %lld 分钟。";
+"minor.gotIt" = "知道了";
+
+/* Elder Mode */
+"elder.capture" = "截图";
+"elder.stop" = "停止";
