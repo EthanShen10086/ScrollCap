@@ -253,8 +253,14 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 | 语言 | 状态 | 覆盖范围 |
 |------|------|----------|
-| English (en) | ✅ 已完成 | 全部 UI 文案（190+ 条），含 Widget / 支付方式 / iCloud 状态 / 无障碍标签 |
-| 简体中文 (zh-Hans) | ✅ 已完成 | 全部 UI 文案（190+ 条），含 Widget / 支付方式 / iCloud 状态 / 无障碍标签 |
+| English (en) | ✅ 已完成 | 全部 UI 文案（200+ 条），含 Widget / 支付方式 / iCloud 状态 / 无障碍标签 / 时长单位 / 像素单位 |
+| 简体中文 (zh-Hans) | ✅ 已完成 | 全部 UI 文案（200+ 条），完全对齐英文键集 |
+| README 双语 | ✅ 已完成 | `README.md` (英文) + `README.zh-Hans.md` (中文) 互链 |
+| InfoPlist 本地化 | ✅ 已完成 | 主应用 + BroadcastExtension 的 `InfoPlist.strings` 含 en + zh-Hans |
+| 隐私描述本地化 | ✅ 已完成 | `NSCameraUsageDescription` 中英文 |
+| 错误消息本地化 | ✅ 已完成 | CaptureViewModel 映射包层英文错误为 `SCError.userMessage` 本地化消息 |
+| 格式名本地化 | ✅ 已完成 | `ExportFormat.displayName` 走 `Localizable.strings` |
+| 捕获方式本地化 | ✅ 已完成 | `CaptureMethod.localizedName` 走 `Localizable.strings` |
 
 ---
 

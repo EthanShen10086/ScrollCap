@@ -13,10 +13,10 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable {
 
     public var displayName: String {
         switch self {
-        case .png: "PNG"
-        case .jpeg: "JPEG"
-        case .heic: "HEIC"
-        case .pdf: "PDF"
+        case .png: String(localized: "format.png")
+        case .jpeg: String(localized: "format.jpeg")
+        case .heic: String(localized: "format.heic")
+        case .pdf: String(localized: "format.pdf")
         }
     }
 

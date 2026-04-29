@@ -69,8 +69,9 @@ final class CaptureViewModel {
         do {
             try await captureService.prepare()
         } catch {
-            captureState = .failed(message: error.localizedDescription)
-            errorMessage = error.localizedDescription
+            let msg = localizedErrorMessage(error)
+            captureState = .failed(message: msg)
+            errorMessage = msg
         }
     }
 
@@ -92,8 +93,9 @@ final class CaptureViewModel {
             try await captureService.startCapture(region: region)
             HapticManager.captureStarted()
         } catch {
-            captureState = .failed(message: error.localizedDescription)
-            errorMessage = error.localizedDescription
+            let msg = localizedErrorMessage(error)
+            captureState = .failed(message: msg)
+            errorMessage = msg
             SCLogger.capture.failed("startCapture", error: error)
             AnalyticsManager.shared.track(.captureFailed(error: error.localizedDescription))
             HapticManager.captureError()
@@ -117,8 +119,9 @@ final class CaptureViewModel {
                 HapticManager.captureStopped()
             }
         } catch {
-            captureState = .failed(message: error.localizedDescription)
-            errorMessage = error.localizedDescription
+            let msg = localizedErrorMessage(error)
+            captureState = .failed(message: msg)
+            errorMessage = msg
             SCLogger.capture.failed("stopCapture", error: error)
             AnalyticsManager.shared.track(.captureFailed(error: error.localizedDescription))
             HapticManager.captureError()
@@ -140,6 +143,13 @@ final class CaptureViewModel {
         errorMessage = nil
         captureState = .idle
         syncToAppState()
+    }
+
+    private func localizedErrorMessage(_ error: Error) -> String {
+        if let scError = error as? SCError {
+            return scError.userMessage
+        }
+        return String(localized: "error.capture.recording")
     }
 
     // MARK: - Export

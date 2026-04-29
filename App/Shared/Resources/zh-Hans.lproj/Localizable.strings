@@ -249,3 +249,15 @@
 "widget.quickCapture" = "快速截图";
 "widget.configName" = "ScrollCap";
 "widget.configDesc" = "快速访问滚动截图功能。";
+
+/* Detail Duration */
+"detail.duration.value %@" = "%@秒";
+
+/* Settings Frame Rate */
+"settings.frameRate.value" = "10 帧/秒";
+
+/* macOS Pixel Dimensions */
+"mac.pixels %lld %lld" = "%lld×%lld 像素";
+
+/* History Accessibility */
+"a11y.screenshot.hint %lld %lld %lld" = "%lld 帧，%lld×%lld";

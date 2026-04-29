@@ -108,12 +108,14 @@ struct ScreenshotDetailView: View {
             metadataItem(
                 icon: "clock",
                 label: String(localized: "detail.duration"),
-                value: String(format: "%.1fs", screenshot.metadata.durationSeconds)
+                value: String(
+                    localized: "detail.duration.value \(String(format: "%.1f", screenshot.metadata.durationSeconds))"
+                )
             )
             metadataItem(
                 icon: "gearshape",
                 label: String(localized: "detail.method"),
-                value: screenshot.metadata.captureMethod.rawValue
+                value: screenshot.metadata.captureMethod.localizedName
             )
         }
         .padding(SCTheme.Spacing.md)

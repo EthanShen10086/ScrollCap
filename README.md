@@ -1,5 +1,7 @@
 # ScrollCap
 
+**English** | [简体中文](README.zh-Hans.md)
+
 A native SwiftUI scrolling screenshot tool for iOS, iPadOS, and macOS. Capture long, scrollable content as a single stitched image — no paid developer account required.
 
 ## Features

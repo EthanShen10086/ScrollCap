@@ -1,2 +1,3 @@
 CFBundleDisplayName = "ScrollCap";
 NSHumanReadableCopyright = "Copyright © 2026 Ethan Shen. 保留所有权利。";
+NSCameraUsageDescription = "ScrollCap 需要相机权限以支持屏幕捕获功能。";

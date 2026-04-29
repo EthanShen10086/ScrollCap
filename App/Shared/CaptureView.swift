@@ -357,8 +357,8 @@ struct CaptureView: View {
                 }
             case let .completed(count):
                 StatusPill(String(localized: "status.done \(count)"), color: SCTheme.Colors.captureDone)
-            case let .failed(message):
-                StatusPill(message, color: SCTheme.Colors.destructive)
+            case .failed:
+                StatusPill(String(localized: "error.capture.recording"), color: SCTheme.Colors.destructive)
             }
         }
         .transition(.opacity)

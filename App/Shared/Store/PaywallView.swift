@@ -38,7 +38,7 @@ struct PaywallView: View {
                 .task {
                     await StoreManager.shared.loadProducts()
                 }
-                .alert("Error", isPresented: .init(
+                .alert("error.title", isPresented: .init(
                     get: { errorMessage != nil },
                     set: { if !$0 { errorMessage = nil } }
                 )) {
@@ -203,7 +203,7 @@ struct PaywallView: View {
     private var externalPricingSection: some View {
         VStack(spacing: SCTheme.Spacing.md) {
             externalProductRow(
-                name: "ScrollCap Pro",
+                name: String(localized: "pro.title"),
                 description: "paywall.lifetime.desc",
                 price: selectedPaymentMethod.localizedPrice
             )
@@ -374,7 +374,7 @@ struct PaywallView: View {
         switch selectedPaymentMethod {
         case .applePay:
             return await ApplePayService.shared.requestPayment(
-                amount: 29.99, currency: "CNY", productDescription: "ScrollCap Pro"
+                amount: 29.99, currency: "CNY", productDescription: String(localized: "pro.title")
             )
         case .stripe:
             return try await StripePaymentService.shared.createCheckoutSession(

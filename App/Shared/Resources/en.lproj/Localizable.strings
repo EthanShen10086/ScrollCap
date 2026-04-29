@@ -249,3 +249,15 @@
 "widget.quickCapture" = "Quick Capture";
 "widget.configName" = "ScrollCap";
 "widget.configDesc" = "Quick access to scrolling screenshot capture.";
+
+/* Detail Duration */
+"detail.duration.value %@" = "%@s";
+
+/* Settings Frame Rate */
+"settings.frameRate.value" = "10 fps";
+
+/* macOS Pixel Dimensions */
+"mac.pixels %lld %lld" = "%lld×%lld px";
+
+/* History Accessibility */
+"a11y.screenshot.hint %lld %lld %lld" = "%lld frames, %lld×%lld";

@@ -28,7 +28,7 @@ struct MacCaptureView: View {
 
                     HStack(spacing: SCTheme.Spacing.md) {
                         Label("\(Int(region.size.width))×\(Int(region.size.height))", systemImage: "rectangle.dashed")
-                        Label("\(region.pixelWidth)×\(region.pixelHeight) px", systemImage: "square.resize")
+                        Label("mac.pixels \(region.pixelWidth) \(region.pixelHeight)", systemImage: "square.resize")
                     }
                     .font(SCTheme.Typography.monoCaption)
                     .foregroundStyle(.secondary)

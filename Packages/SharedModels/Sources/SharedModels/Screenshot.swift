@@ -57,4 +57,12 @@ public enum CaptureMethod: String, Sendable, Codable {
     case screenCaptureKit
     case replayKit
     case unknown
+
+    public var localizedName: String {
+        switch self {
+        case .screenCaptureKit: String(localized: "method.screenCaptureKit")
+        case .replayKit: String(localized: "method.replayKit")
+        case .unknown: String(localized: "method.unknown")
+        }
+    }
 }

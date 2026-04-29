@@ -20,6 +20,5 @@ struct InstructionRow: View {
             Spacer()
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(Text("instruction.step \(number): \(text)"))
     }
 }

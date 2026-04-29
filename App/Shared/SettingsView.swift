@@ -165,7 +165,7 @@ struct SettingsView: View {
         Group {
             LabeledContent("settings.captureMethod", value: String(localized: "method.screenCaptureKit"))
             Toggle("settings.showCursor", isOn: .constant(false))
-            LabeledContent("settings.frameRate", value: "10 fps")
+            LabeledContent("settings.frameRate", value: String(localized: "settings.frameRate.value"))
         }
     }
     #endif

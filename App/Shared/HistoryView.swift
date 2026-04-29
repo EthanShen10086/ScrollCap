@@ -112,7 +112,9 @@ struct HistoryScreenshotCard: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel(String(localized: "detail.title"))
         .accessibilityHint(
-            "\(screenshot.metadata.frameCount) frames, \(screenshot.image.width)×\(screenshot.image.height)"
+            Text(
+                "a11y.screenshot.hint \(screenshot.metadata.frameCount) \(screenshot.image.width) \(screenshot.image.height)"
+            )
         )
         .accessibilityAddTraits(.isButton)
     }
