@@ -1,7 +1,7 @@
 #if os(iOS)
 import Foundation
 import CoreGraphics
-import ReplayKit
+@preconcurrency import ReplayKit
 import SharedModels
 import CaptureKit
 import StitchingEngine
@@ -43,7 +43,8 @@ public final class ReplayKitCaptureService: NSObject, CaptureService {
         collectedFrames.removeAll()
         session.markStarted()
 
-        try await recorder.startCapture { [weak self] sampleBuffer, sampleBufferType, error in
+        let localRecorder = recorder
+        try await localRecorder.startCapture(handler: { @Sendable sampleBuffer, sampleBufferType, error in
             guard sampleBufferType == .video, error == nil else { return }
             guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
@@ -54,7 +55,7 @@ public final class ReplayKitCaptureService: NSObject, CaptureService {
             Task { @MainActor [weak self] in
                 await self?.processFrame(cgImage)
             }
-        }
+        })
 
         isRecording = true
         updateState(.capturing(progress: CaptureProgress()))

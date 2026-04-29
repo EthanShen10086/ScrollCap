@@ -39,22 +39,30 @@ struct ContentView: View {
                     detailContent
                 }
             } else {
-                TabView(selection: Bindable(appState).selectedDestination) {
-                    Tab("Capture", systemImage: "camera.viewfinder", value: AppDestination.capture) {
-                        NavigationStack {
-                            CaptureView()
-                        }
+                TabView(selection: $state.selectedDestination) {
+                    NavigationStack {
+                        CaptureView()
                     }
-                    Tab("History", systemImage: "clock.arrow.circlepath", value: AppDestination.history) {
-                        NavigationStack {
-                            HistoryView()
-                        }
+                    .tabItem {
+                        Label("Capture", systemImage: "camera.viewfinder")
                     }
-                    Tab("Settings", systemImage: "gear", value: AppDestination.settings) {
-                        NavigationStack {
-                            SettingsView()
-                        }
+                    .tag(Optional(AppDestination.capture))
+
+                    NavigationStack {
+                        HistoryView()
                     }
+                    .tabItem {
+                        Label("History", systemImage: "clock.arrow.circlepath")
+                    }
+                    .tag(Optional(AppDestination.history))
+
+                    NavigationStack {
+                        SettingsView()
+                    }
+                    .tabItem {
+                        Label("Settings", systemImage: "gear")
+                    }
+                    .tag(Optional(AppDestination.settings))
                 }
             }
         }
@@ -64,7 +72,8 @@ struct ContentView: View {
     // MARK: - Shared Components
 
     private var sidebarContent: some View {
-        List(selection: Bindable(appState).selectedDestination) {
+        @Bindable var state = appState
+        return List(selection: $state.selectedDestination) {
             ForEach([AppDestination.capture, .history, .settings]) { dest in
                 Label(dest.title, systemImage: dest.systemImage)
                     .tag(dest)
@@ -75,7 +84,7 @@ struct ContentView: View {
 
     @ViewBuilder
     private var detailContent: some View {
-        switch appState.selectedDestination {
+        switch appState.selectedDestination ?? .capture {
         case .capture:
             CaptureView()
         case .history:

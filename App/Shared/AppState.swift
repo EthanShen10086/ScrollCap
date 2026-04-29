@@ -8,7 +8,7 @@ final class AppState {
     var currentPreview: CGImage?
     var screenshots: [Screenshot] = []
     var selectedScreenshot: Screenshot?
-    var selectedDestination: AppDestination = .capture
+    var selectedDestination: AppDestination? = .capture
 
     var exportFormat: ExportFormat = .png
     var exportQuality: Double = 0.9
