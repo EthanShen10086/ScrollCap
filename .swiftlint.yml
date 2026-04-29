@@ -1,0 +1,59 @@
+included:
+  - App
+  - Packages
+  - ScrollCapWidget
+  - BroadcastExtension
+
+excluded:
+  - "**/.build"
+  - "**/DerivedData"
+  - ScrollCap.xcodeproj
+
+disabled_rules:
+  - trailing_comma
+  - opening_brace
+  - type_body_length
+  - file_length
+  - function_body_length
+  - line_length
+
+opt_in_rules:
+  - empty_count
+  - closure_spacing
+  - contains_over_filter_count
+  - contains_over_first_not_nil
+  - empty_string
+  - first_where
+  - last_where
+  - modifier_order
+  - overridden_super_call
+  - private_action
+  - private_outlet
+  - redundant_nil_coalescing
+  - sorted_first_last
+  - toggle_bool
+  - unneeded_parentheses_in_closure_argument
+  - vertical_whitespace_closing_braces
+
+force_cast: warning
+force_try: warning
+
+identifier_name:
+  min_length:
+    warning: 2
+  excluded:
+    - id
+    - x
+    - y
+    - i
+    - t
+
+nesting:
+  type_level: 3
+  function_level: 3
+
+type_name:
+  min_length: 3
+  max_length: 50
+
+reporter: xcode

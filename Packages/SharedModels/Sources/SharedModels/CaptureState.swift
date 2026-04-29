@@ -1,5 +1,5 @@
-import Foundation
 import CoreGraphics
+import Foundation
 
 public enum CaptureState: Sendable, Equatable {
     case idle

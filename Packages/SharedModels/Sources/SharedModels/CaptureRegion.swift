@@ -1,5 +1,5 @@
-import Foundation
 import CoreGraphics
+import Foundation
 
 public struct CaptureRegion: Sendable, Codable, Equatable {
     public let origin: CGPoint

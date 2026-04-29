@@ -1,6 +1,6 @@
 #if os(iOS)
-import Foundation
 import CoreGraphics
+import Foundation
 import ImageIO
 
 @MainActor
@@ -44,7 +44,7 @@ final class SharedFrameReader {
 
         let framesDir = containerURL.appendingPathComponent("Frames", isDirectory: true)
 
-        for frameIndex in (lastReadFrameCount + 1)...current {
+        for frameIndex in (lastReadFrameCount + 1) ... current {
             let frameURL = framesDir.appendingPathComponent("frame_\(frameIndex).jpg")
             guard FileManager.default.fileExists(atPath: frameURL.path) else { continue }
 

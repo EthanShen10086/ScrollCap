@@ -1,6 +1,6 @@
-import WidgetKit
-import SwiftUI
 import AppIntents
+import SwiftUI
+import WidgetKit
 
 // MARK: - Timeline Provider
 
@@ -95,7 +95,10 @@ struct ScrollCapWidgetEntryView: View {
                     .padding(.vertical, 4)
                     .background(
                         LinearGradient(
-                            colors: [Color(red: 0.0, green: 0.47, blue: 0.98), Color(red: 0.42, green: 0.36, blue: 0.91)],
+                            colors: [
+                                Color(red: 0.0, green: 0.47, blue: 0.98),
+                                Color(red: 0.42, green: 0.36, blue: 0.91),
+                            ],
                             startPoint: .leading,
                             endPoint: .trailing
                         ),

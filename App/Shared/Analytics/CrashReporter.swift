@@ -63,7 +63,10 @@ final class CrashReporter {
     }
 
     private func checkForPreviousCrash() {
-        guard let files = try? FileManager.default.contentsOfDirectory(at: crashLogDirectory, includingPropertiesForKeys: nil) else { return }
+        guard let files = try? FileManager.default.contentsOfDirectory(
+            at: crashLogDirectory,
+            includingPropertiesForKeys: nil
+        ) else { return }
 
         let crashFiles = files.filter { $0.pathExtension == "json" }
         for file in crashFiles {

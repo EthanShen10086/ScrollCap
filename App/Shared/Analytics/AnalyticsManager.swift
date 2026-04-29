@@ -115,47 +115,47 @@ enum AnalyticsEvent {
 
     var properties: [String: String] {
         switch self {
-        case .captureStarted(let method):
+        case let .captureStarted(method):
             ["method": method]
-        case .captureCompleted(let frames, let duration):
+        case let .captureCompleted(frames, duration):
             ["frames": "\(frames)", "duration": String(format: "%.2f", duration)]
-        case .captureFailed(let error):
+        case let .captureFailed(error):
             ["error": error]
         case .captureCancelled:
             [:]
-        case .stitchStarted(let frames):
+        case let .stitchStarted(frames):
             ["frames": "\(frames)"]
-        case .stitchCompleted(let frames, let duration):
+        case let .stitchCompleted(frames, duration):
             ["frames": "\(frames)", "duration": String(format: "%.2f", duration)]
-        case .stitchFailed(let error):
+        case let .stitchFailed(error):
             ["error": error]
-        case .exportSaved(let format):
+        case let .exportSaved(format):
             ["format": format]
-        case .exportShared(let format):
+        case let .exportShared(format):
             ["format": format]
-        case .ocrPerformed(let count):
+        case let .ocrPerformed(count):
             ["character_count": "\(count)"]
-        case .ocrFailed(let error):
+        case let .ocrFailed(error):
             ["error": error]
         case .autoScrollStarted:
             [:]
-        case .autoScrollCompleted(let distance):
+        case let .autoScrollCompleted(distance):
             ["scroll_distance": String(format: "%.0f", distance)]
         case .iCloudSyncStarted:
             [:]
-        case .iCloudSyncCompleted(let count):
+        case let .iCloudSyncCompleted(count):
             ["item_count": "\(count)"]
-        case .iCloudSyncFailed(let error):
+        case let .iCloudSyncFailed(error):
             ["error": error]
-        case .crashDetected(let name, let reason):
+        case let .crashDetected(name, reason):
             ["name": name, "reason": reason]
         case .appLaunched:
             [:]
-        case .screenViewed(let name):
+        case let .screenViewed(name):
             ["screen": name]
         case .proUpgradeTapped:
             [:]
-        case .purchaseCompleted(let productId):
+        case let .purchaseCompleted(productId):
             ["product_id": productId]
         }
     }

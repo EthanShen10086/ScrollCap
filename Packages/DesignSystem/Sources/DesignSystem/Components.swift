@@ -41,11 +41,23 @@ public struct CaptureButton: View {
                 Circle()
                     .fill(
                         isCapturing
-                            ? LinearGradient(colors: [SCTheme.Colors.captureActive, SCTheme.Colors.captureActive.opacity(0.8)], startPoint: .top, endPoint: .bottom)
-                            : LinearGradient(colors: [SCTheme.Colors.brandBlue, SCTheme.Colors.brandPurple], startPoint: .topLeading, endPoint: .bottomTrailing)
+                            ? LinearGradient(
+                                colors: [SCTheme.Colors.captureActive, SCTheme.Colors.captureActive.opacity(0.8)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                            : LinearGradient(
+                                colors: [SCTheme.Colors.brandBlue, SCTheme.Colors.brandPurple],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                     )
                     .frame(width: 64, height: 64)
-                    .shadow(color: (isCapturing ? SCTheme.Colors.captureActive : SCTheme.Colors.brandBlue).opacity(0.4), radius: 12, y: 4)
+                    .shadow(
+                        color: (isCapturing ? SCTheme.Colors.captureActive : SCTheme.Colors.brandBlue).opacity(0.4),
+                        radius: 12,
+                        y: 4
+                    )
 
                 if isCapturing {
                     RoundedRectangle(cornerRadius: 6)
@@ -62,7 +74,8 @@ public struct CaptureButton: View {
         }
         .buttonStyle(ScaleButtonStyle())
         .accessibilityLabel(isCapturing ? "Stop capture" : "Start capture")
-        .accessibilityHint(isCapturing ? "Stops the current screen recording" : "Begins a new scrolling screenshot capture")
+        .accessibilityHint(isCapturing ? "Stops the current screen recording" :
+            "Begins a new scrolling screenshot capture")
         .accessibilityAddTraits(.isButton)
         .animation(SCTheme.Animation.spring, value: isCapturing)
     }
@@ -127,7 +140,7 @@ public struct GlassCard<Content: View>: View {
                                 LinearGradient(
                                     colors: [
                                         Color.white.opacity(colorScheme == .dark ? 0.15 : 0.4),
-                                        Color.white.opacity(colorScheme == .dark ? 0.05 : 0.1)
+                                        Color.white.opacity(colorScheme == .dark ? 0.05 : 0.1),
                                     ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing

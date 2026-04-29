@@ -13,14 +13,14 @@ public enum SCLogger {
 
 extension Logger {
     func started(_ message: String = "started") {
-        self.info("▶️ \(message)")
+        info("▶️ \(message)")
     }
 
     func completed(_ message: String = "completed", duration: TimeInterval? = nil) {
         if let duration {
-            self.info("✅ \(message) (duration: \(String(format: "%.2f", duration))s)")
+            info("✅ \(message) (duration: \(String(format: "%.2f", duration))s)")
         } else {
-            self.info("✅ \(message)")
+            info("✅ \(message)")
         }
     }
 

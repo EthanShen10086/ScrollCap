@@ -34,7 +34,7 @@ public struct AnimatedMeshBackground: View {
             SIMD2(1.0 + sin(t * 0.9) * 0.04, 0.5),
             SIMD2(0.0, 1.0),
             SIMD2(0.5, 1.0),
-            SIMD2(1.0, 1.0)
+            SIMD2(1.0, 1.0),
         ]
     }
 
@@ -48,7 +48,7 @@ public struct AnimatedMeshBackground: View {
             Color(red: 0.35, green: 0.2, blue: 0.7),
             Color(red: 0.05, green: 0.15, blue: 0.35),
             Color(red: 0.15, green: 0.2, blue: 0.5),
-            Color(red: 0.3, green: 0.15, blue: 0.5)
+            Color(red: 0.3, green: 0.15, blue: 0.5),
         ]
     }
 }
@@ -71,7 +71,7 @@ public struct BrandBackground: View {
                     LinearGradient(
                         colors: [
                             SCTheme.Colors.brandBlue.opacity(0.1),
-                            SCTheme.Colors.brandPurple.opacity(0.08)
+                            SCTheme.Colors.brandPurple.opacity(0.08),
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing

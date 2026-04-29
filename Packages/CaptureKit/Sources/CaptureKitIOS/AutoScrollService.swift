@@ -22,7 +22,7 @@ public actor AutoScrollService {
         let maxOffsetY = contentHeight - viewportHeight
         var currentOffset = metrics.2
 
-        while isScrolling && currentOffset < maxOffsetY {
+        while isScrolling, currentOffset < maxOffsetY {
             let nextOffset = min(currentOffset + viewportHeight * scrollFraction, maxOffsetY)
 
             await MainActor.run {

@@ -6,13 +6,13 @@ let package = Package(
     name: "DesignSystem",
     platforms: [
         .iOS(.v17),
-        .macOS(.v14)
+        .macOS(.v14),
     ],
     products: [
-        .library(name: "DesignSystem", targets: ["DesignSystem"])
+        .library(name: "DesignSystem", targets: ["DesignSystem"]),
     ],
     targets: [
         .target(name: "DesignSystem"),
-        .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem"])
+        .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem"]),
     ]
 )

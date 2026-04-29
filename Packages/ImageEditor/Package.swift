@@ -6,13 +6,13 @@ let package = Package(
     name: "ImageEditor",
     platforms: [
         .iOS(.v17),
-        .macOS(.v14)
+        .macOS(.v14),
     ],
     products: [
-        .library(name: "ImageEditor", targets: ["ImageEditor"])
+        .library(name: "ImageEditor", targets: ["ImageEditor"]),
     ],
     dependencies: [
-        .package(path: "../SharedModels")
+        .package(path: "../SharedModels"),
     ],
     targets: [
         .target(
@@ -22,6 +22,6 @@ let package = Package(
         .testTarget(
             name: "ImageEditorTests",
             dependencies: ["ImageEditor"]
-        )
+        ),
     ]
 )

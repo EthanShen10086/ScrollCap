@@ -42,19 +42,12 @@ public struct PadMetrics: PlatformMetricsProvider {
 }
 #endif
 
-private struct PlatformMetricsKey: EnvironmentKey {
-    static let defaultValue: any PlatformMetricsProvider = {
+public extension EnvironmentValues {
+    @Entry var platformMetrics: any PlatformMetricsProvider = {
         #if os(macOS)
         return MacMetrics()
         #else
         return PhoneMetrics()
         #endif
     }()
-}
-
-public extension EnvironmentValues {
-    var platformMetrics: any PlatformMetricsProvider {
-        get { self[PlatformMetricsKey.self] }
-        set { self[PlatformMetricsKey.self] = newValue }
-    }
 }

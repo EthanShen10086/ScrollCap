@@ -44,23 +44,29 @@ public enum SCTheme {
         )
     }
 
+    public struct ShadowStyle: Sendable {
+        public let color: Color
+        public let radius: CGFloat
+        public let yOffset: CGFloat
+    }
+
     public enum Shadows {
-        public static func card(_ scheme: ColorScheme) -> (color: Color, radius: CGFloat, y: CGFloat) {
+        public static func card(_ scheme: ColorScheme) -> ShadowStyle {
             scheme == .dark
-                ? (Color.black.opacity(0.3), 12, 6)
-                : (Color.black.opacity(0.08), 8, 4)
+                ? ShadowStyle(color: Color.black.opacity(0.3), radius: 12, yOffset: 6)
+                : ShadowStyle(color: Color.black.opacity(0.08), radius: 8, yOffset: 4)
         }
 
-        public static func elevated(_ scheme: ColorScheme) -> (color: Color, radius: CGFloat, y: CGFloat) {
+        public static func elevated(_ scheme: ColorScheme) -> ShadowStyle {
             scheme == .dark
-                ? (Color.black.opacity(0.5), 20, 10)
-                : (Color.black.opacity(0.12), 16, 8)
+                ? ShadowStyle(color: Color.black.opacity(0.5), radius: 20, yOffset: 10)
+                : ShadowStyle(color: Color.black.opacity(0.12), radius: 16, yOffset: 8)
         }
 
-        public static func floating(_ scheme: ColorScheme) -> (color: Color, radius: CGFloat, y: CGFloat) {
+        public static func floating(_ scheme: ColorScheme) -> ShadowStyle {
             scheme == .dark
-                ? (Color.black.opacity(0.6), 30, 15)
-                : (Color.black.opacity(0.15), 24, 12)
+                ? ShadowStyle(color: Color.black.opacity(0.6), radius: 30, yOffset: 15)
+                : ShadowStyle(color: Color.black.opacity(0.15), radius: 24, yOffset: 12)
         }
     }
 

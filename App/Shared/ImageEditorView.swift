@@ -1,7 +1,7 @@
-import SwiftUI
 import DesignSystem
-import SharedModels
 import ImageEditor
+import SharedModels
+import SwiftUI
 
 struct ImageEditorView: View {
     let screenshot: Screenshot
@@ -15,7 +15,7 @@ struct ImageEditorView: View {
 
     init(screenshot: Screenshot) {
         self.screenshot = screenshot
-        self._editedImage = State(initialValue: screenshot.image)
+        _editedImage = State(initialValue: screenshot.image)
     }
 
     var body: some View {
@@ -40,7 +40,7 @@ struct ImageEditorView: View {
         }
         .navigationTitle("editor.title")
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
     }
 
@@ -106,7 +106,8 @@ struct ImageEditorView: View {
                         selectedColor = item.color
                     }
                     .accessibilityLabel(item.name)
-                    .accessibilityAddTraits(selectedColor.cgColor == item.color.cgColor ? [.isButton, .isSelected] : .isButton)
+                    .accessibilityAddTraits(selectedColor.cgColor == item.color
+                        .cgColor ? [.isButton, .isSelected] : .isButton)
             }
         }
     }
@@ -118,7 +119,7 @@ struct ImageEditorView: View {
             ("Green", .green),
             ("Yellow", .yellow),
             ("White", .white),
-            ("Black", .black)
+            ("Black", .black),
         ]
     }
 

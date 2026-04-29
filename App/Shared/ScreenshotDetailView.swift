@@ -1,7 +1,7 @@
-import SwiftUI
 import DesignSystem
-import SharedModels
 import ImageEditor
+import SharedModels
+import SwiftUI
 
 struct ScreenshotDetailView: View {
     let screenshot: Screenshot
@@ -27,58 +27,58 @@ struct ScreenshotDetailView: View {
         .background { BrandBackground() }
         .navigationTitle("detail.title")
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
-        .toolbar {
-            if userMode != .elder {
-                ToolbarItemGroup {
-                    Button {
-                        showOCR = true
-                    } label: {
-                        Label("OCR", systemImage: "text.viewfinder")
-                    }
-
-                    if userMode != .minor {
+            .toolbar {
+                if userMode != .elder {
+                    ToolbarItemGroup {
                         Button {
-                            showEditor = true
+                            showOCR = true
                         } label: {
-                            Label("detail.edit", systemImage: "pencil")
+                            Label("OCR", systemImage: "text.viewfinder")
                         }
-                    }
 
-                    Button {
-                        showExport = true
-                    } label: {
-                        Label("detail.export", systemImage: "square.and.arrow.up")
-                    }
+                        if userMode != .minor {
+                            Button {
+                                showEditor = true
+                            } label: {
+                                Label("detail.edit", systemImage: "pencil")
+                            }
+                        }
 
-                    Button(role: .destructive) {
-                        appState.removeScreenshot(screenshot)
-                    } label: {
-                        Label("detail.delete", systemImage: "trash")
+                        Button {
+                            showExport = true
+                        } label: {
+                            Label("detail.export", systemImage: "square.and.arrow.up")
+                        }
+
+                        Button(role: .destructive) {
+                            appState.removeScreenshot(screenshot)
+                        } label: {
+                            Label("detail.delete", systemImage: "trash")
+                        }
                     }
                 }
             }
-        }
-        .sheet(isPresented: $showEditor) {
-            NavigationStack {
-                ImageEditorView(screenshot: screenshot)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("detail.done") { showEditor = false }
+            .sheet(isPresented: $showEditor) {
+                NavigationStack {
+                    ImageEditorView(screenshot: screenshot)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("detail.done") { showEditor = false }
+                            }
                         }
-                    }
+                }
+                #if os(macOS)
+                .frame(minWidth: 600, minHeight: 400)
+                #endif
             }
-            #if os(macOS)
-            .frame(minWidth: 600, minHeight: 400)
-            #endif
-        }
-        .sheet(isPresented: $showExport) {
-            ExportSheet(screenshot: screenshot, viewModel: viewModel)
-        }
-        .sheet(isPresented: $showOCR) {
-            OCRResultView(image: screenshot.image)
-        }
+            .sheet(isPresented: $showExport) {
+                ExportSheet(screenshot: screenshot, viewModel: viewModel)
+            }
+            .sheet(isPresented: $showOCR) {
+                OCRResultView(image: screenshot.image)
+            }
     }
 
     private func imagePreview(in geometry: GeometryProxy) -> some View {
@@ -94,10 +94,26 @@ struct ScreenshotDetailView: View {
 
     private var metadataBar: some View {
         HStack(spacing: SCTheme.Spacing.lg) {
-            metadataItem(icon: "ruler", label: String(localized: "detail.size"), value: "\(screenshot.image.width)×\(screenshot.image.height)")
-            metadataItem(icon: "square.stack.3d.up", label: String(localized: "detail.frames"), value: "\(screenshot.metadata.frameCount)")
-            metadataItem(icon: "clock", label: String(localized: "detail.duration"), value: String(format: "%.1fs", screenshot.metadata.durationSeconds))
-            metadataItem(icon: "gearshape", label: String(localized: "detail.method"), value: screenshot.metadata.captureMethod.rawValue)
+            metadataItem(
+                icon: "ruler",
+                label: String(localized: "detail.size"),
+                value: "\(screenshot.image.width)×\(screenshot.image.height)"
+            )
+            metadataItem(
+                icon: "square.stack.3d.up",
+                label: String(localized: "detail.frames"),
+                value: "\(screenshot.metadata.frameCount)"
+            )
+            metadataItem(
+                icon: "clock",
+                label: String(localized: "detail.duration"),
+                value: String(format: "%.1fs", screenshot.metadata.durationSeconds)
+            )
+            metadataItem(
+                icon: "gearshape",
+                label: String(localized: "detail.method"),
+                value: screenshot.metadata.captureMethod.rawValue
+            )
         }
         .padding(SCTheme.Spacing.md)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: SCTheme.CornerRadius.lg))
@@ -122,7 +138,11 @@ struct ScreenshotDetailView: View {
     private var elderActionButtons: some View {
         VStack(spacing: SCTheme.Spacing.md) {
             HStack(spacing: SCTheme.Spacing.md) {
-                elderActionButton(title: String(localized: "detail.export"), icon: "square.and.arrow.up", color: .blue) {
+                elderActionButton(
+                    title: String(localized: "detail.export"),
+                    icon: "square.and.arrow.up",
+                    color: .blue
+                ) {
                     showExport = true
                 }
                 elderActionButton(title: String(localized: "detail.delete"), icon: "trash", color: .red) {
@@ -142,7 +162,12 @@ struct ScreenshotDetailView: View {
         .padding(.top, SCTheme.Spacing.sm)
     }
 
-    private func elderActionButton(title: String, icon: String, color: Color, action: @escaping () -> Void) -> some View {
+    private func elderActionButton(
+        title: String,
+        icon: String,
+        color: Color,
+        action: @escaping () -> Void
+    ) -> some View {
         Button(action: action) {
             HStack {
                 Image(systemName: icon)
@@ -202,23 +227,23 @@ struct OCRResultView: View {
             }
             .navigationTitle("ocr.title")
             #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+                .navigationBarTitleDisplayMode(.inline)
             #endif
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("detail.done") { dismiss() }
-                }
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("detail.done") { dismiss() }
+                    }
 
-                if !recognizedText.isEmpty {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button {
-                            copyToClipboard()
-                        } label: {
-                            Label("ocr.copy", systemImage: "doc.on.doc")
+                    if !recognizedText.isEmpty {
+                        ToolbarItem(placement: .primaryAction) {
+                            Button {
+                                copyToClipboard()
+                            } label: {
+                                Label("ocr.copy", systemImage: "doc.on.doc")
+                            }
                         }
                     }
                 }
-            }
         }
         .task {
             await performOCR()

@@ -1,6 +1,6 @@
 #if os(macOS)
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 struct MenuBarView: View {
     @Environment(AppState.self) private var appState
@@ -93,7 +93,8 @@ struct MenuBarView: View {
 
     private func openMainWindow() {
         NSApplication.shared.activate(ignoringOtherApps: true)
-        if let window = NSApplication.shared.windows.first(where: { $0.title.contains("ScrollCap") || $0.isKeyWindow }) {
+        if let window = NSApplication.shared.windows
+            .first(where: { $0.title.contains("ScrollCap") || $0.isKeyWindow }) {
             window.makeKeyAndOrderFront(nil)
         }
     }

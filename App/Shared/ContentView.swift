@@ -1,5 +1,5 @@
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 struct ContentView: View {
     @Environment(AppState.self) private var appState

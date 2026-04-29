@@ -154,6 +154,14 @@
 "paywall.productsUnavailable" = "Products are currently unavailable.";
 "paywall.productsUnavailable.desc" = "This is a development build. StoreKit products will be available when configured in App Store Connect.";
 "paywall.externalPayments" = "More payment options coming soon:";
+"paywall.paymentMethod" = "Payment Method";
+"paywall.payNow" = "Pay Now";
+"paywall.lifetime.desc" = "One-time payment, lifetime access";
+"paywall.success" = "Payment Successful!";
+"paywall.currentPlan" = "Current Plan";
+"paywall.expires" = "Expires:";
+"paywall.autoRenewOn" = "Auto-renew is ON";
+"paywall.manageSubscription" = "Manage Subscription";
 
 /* User Mode */
 "settings.mode" = "User Mode";

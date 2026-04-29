@@ -1,12 +1,12 @@
-import Foundation
 import CoreGraphics
+import Foundation
 import ImageIO
 import OSLog
 
 @MainActor
 @Observable
-final class iCloudSyncManager {
-    static let shared = iCloudSyncManager()
+final class ICloudSyncManager {
+    static let shared = ICloudSyncManager()
 
     private(set) var syncState: SyncState = .idle
     private(set) var lastSyncDate: Date?

@@ -1,7 +1,7 @@
 #if os(macOS)
-import SwiftUI
 import DesignSystem
 import SharedModels
+import SwiftUI
 
 struct MacCaptureView: View {
     @Environment(AppState.self) private var appState

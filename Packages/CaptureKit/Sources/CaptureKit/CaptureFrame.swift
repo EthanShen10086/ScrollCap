@@ -1,5 +1,5 @@
-import Foundation
 import CoreGraphics
+import Foundation
 
 public struct CaptureFrame: Sendable, Identifiable {
     public let id: UUID
@@ -19,6 +19,11 @@ public struct CaptureFrame: Sendable, Identifiable {
         self.offset = offset
     }
 
-    public var width: Int { image.width }
-    public var height: Int { image.height }
+    public var width: Int {
+        image.width
+    }
+
+    public var height: Int {
+        image.height
+    }
 }

@@ -1,6 +1,6 @@
+import CoreGraphics
 import XCTest
 @testable import ImageEditor
-import CoreGraphics
 
 final class ImageEditorTests: XCTestCase {
     private func makeTestImage(width: Int, height: Int) -> CGImage? {

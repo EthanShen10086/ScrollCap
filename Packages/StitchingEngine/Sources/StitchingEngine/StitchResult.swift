@@ -1,5 +1,5 @@
-import Foundation
 import CoreGraphics
+import Foundation
 
 public struct StitchResult: Sendable {
     public let image: CGImage

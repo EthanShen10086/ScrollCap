@@ -1,6 +1,6 @@
-import SwiftUI
 import DesignSystem
 import SharedModels
+import SwiftUI
 
 struct CaptureView: View {
     @Environment(AppState.self) private var appState
@@ -33,8 +33,14 @@ struct CaptureView: View {
                             insertion: .scale(scale: 0.95).combined(with: .opacity),
                             removal: .scale(scale: 1.05).combined(with: .opacity)
                         ))
-                        .animation(userMode == .elder ? nil : SCTheme.Animation.gentle, value: viewModel.captureState.isCapturing)
-                        .animation(userMode == .elder ? nil : SCTheme.Animation.gentle, value: viewModel.capturedScreenshot?.id)
+                        .animation(
+                            userMode == .elder ? nil : SCTheme.Animation.gentle,
+                            value: viewModel.captureState.isCapturing
+                        )
+                        .animation(
+                            userMode == .elder ? nil : SCTheme.Animation.gentle,
+                            value: viewModel.capturedScreenshot?.id
+                        )
 
                     Spacer()
 
@@ -293,7 +299,10 @@ struct CaptureView: View {
                     }
                 }
             }
-            .animation(userMode == .elder ? .easeInOut(duration: 0.2) : SCTheme.Animation.spring, value: viewModel.isCapturing)
+            .animation(
+                userMode == .elder ? .easeInOut(duration: 0.2) : SCTheme.Animation.spring,
+                value: viewModel.isCapturing
+            )
 
             statusIndicator
         }
@@ -310,7 +319,6 @@ struct CaptureView: View {
 
     // MARK: - Status
 
-    @ViewBuilder
     private var statusIndicator: some View {
         Group {
             switch viewModel.captureState {
@@ -320,7 +328,7 @@ struct CaptureView: View {
                 StatusPill(String(localized: "status.selectRegion"), color: .orange)
             case .preparing:
                 StatusPill(String(localized: "status.preparing"), color: .orange)
-            case .capturing(let progress):
+            case let .capturing(progress):
                 HStack(spacing: SCTheme.Spacing.sm) {
                     StatusPill(String(localized: "status.recording"), color: SCTheme.Colors.captureActive)
                     Text("capture.frames \(progress.capturedFrames)")
@@ -333,9 +341,9 @@ struct CaptureView: View {
                         .controlSize(.small)
                     StatusPill(String(localized: "status.stitching"), color: .purple)
                 }
-            case .completed(let count):
+            case let .completed(count):
                 StatusPill(String(localized: "status.done \(count)"), color: SCTheme.Colors.captureDone)
-            case .failed(let message):
+            case let .failed(message):
                 StatusPill(message, color: SCTheme.Colors.destructive)
             }
         }
@@ -368,7 +376,7 @@ struct ExportSheet: View {
                     if selectedFormat.supportedCompressionQuality {
                         VStack(alignment: .leading) {
                             Text("export.quality \(Int(quality * 100))")
-                            Slider(value: $quality, in: 0.1...1.0, step: 0.05)
+                            Slider(value: $quality, in: 0.1 ... 1.0, step: 0.05)
                         }
                     }
                 }
@@ -396,7 +404,10 @@ struct ExportSheet: View {
                     .disabled(isSaving)
 
                     #if os(iOS)
-                    ShareLink(item: Image(decorative: screenshot.image, scale: 1.0), preview: SharePreview(Text("export.sharePreview"))) {
+                    ShareLink(
+                        item: Image(decorative: screenshot.image, scale: 1.0),
+                        preview: SharePreview(Text("export.sharePreview"))
+                    ) {
                         HStack {
                             Spacer()
                             Label("export.share", systemImage: "square.and.arrow.up")
@@ -408,13 +419,13 @@ struct ExportSheet: View {
             }
             .navigationTitle("export.title")
             #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+                .navigationBarTitleDisplayMode(.inline)
             #endif
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("capture.cancel") { dismiss() }
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("capture.cancel") { dismiss() }
+                    }
                 }
-            }
         }
         #if os(macOS)
         .frame(minWidth: 350, minHeight: 300)

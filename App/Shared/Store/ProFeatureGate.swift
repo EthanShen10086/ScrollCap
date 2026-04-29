@@ -1,10 +1,10 @@
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 enum ProFeature: String, CaseIterable {
     case ocr = "OCR"
     case autoScroll = "AutoScroll"
-    case iCloudSync = "iCloudSync"
+    case iCloudSync
     case advancedExport = "AdvancedExport"
 
     var displayName: LocalizedStringKey {

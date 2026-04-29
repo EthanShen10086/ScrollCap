@@ -1,9 +1,9 @@
 #if os(macOS)
-import Foundation
+import CaptureKit
 import CoreGraphics
+import Foundation
 @preconcurrency import ScreenCaptureKit
 import SharedModels
-import CaptureKit
 import StitchingEngine
 
 @MainActor
@@ -19,7 +19,7 @@ public final class ScreenCaptureService: NSObject, CaptureService {
     private let aligner = FrameAligner()
     private var collectedFrames: [StitchFrame] = []
 
-    public override init() {
+    override public init() {
         super.init()
     }
 
@@ -53,7 +53,7 @@ public final class ScreenCaptureService: NSObject, CaptureService {
         config.width = region?.pixelWidth ?? display.width
         config.height = region?.pixelHeight ?? display.height
 
-        if let region = region {
+        if let region {
             config.sourceRect = region.rect
         }
 
@@ -74,7 +74,7 @@ public final class ScreenCaptureService: NSObject, CaptureService {
     }
 
     public func stopCapture() async throws -> Screenshot? {
-        guard let stream = stream else { return nil }
+        guard let stream else { return nil }
 
         try await stream.stopCapture()
         self.stream = nil
@@ -130,7 +130,11 @@ public final class ScreenCaptureService: NSObject, CaptureService {
 }
 
 extension ScreenCaptureService: SCStreamOutput {
-    nonisolated public func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
+    nonisolated public func stream(
+        _ stream: SCStream,
+        didOutputSampleBuffer sampleBuffer: CMSampleBuffer,
+        of type: SCStreamOutputType
+    ) {
         guard type == .screen else { return }
         guard let imageBuffer = sampleBuffer.imageBuffer else { return }
 

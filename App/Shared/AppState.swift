@@ -1,6 +1,6 @@
-import SwiftUI
-import SharedModels
 import DesignSystem
+import SharedModels
+import SwiftUI
 
 @Observable
 @MainActor
@@ -28,9 +28,17 @@ final class AppState {
         Int(Date().timeIntervalSince(sessionStartTime) / 60)
     }
 
-    var isMinorMode: Bool { userMode == .minor }
-    var isElderMode: Bool { userMode == .elder }
-    var shouldHidePayment: Bool { userMode == .minor }
+    var isMinorMode: Bool {
+        userMode == .minor
+    }
+
+    var isElderMode: Bool {
+        userMode == .elder
+    }
+
+    var shouldHidePayment: Bool {
+        userMode == .minor
+    }
 
     func checkUsageTime() {
         guard userMode == .minor, !usageWarningDismissed else { return }
@@ -74,7 +82,9 @@ enum AppDestination: Hashable, Identifiable {
     case history
     case settings
 
-    var id: Self { self }
+    var id: Self {
+        self
+    }
 
     var title: LocalizedStringKey {
         switch self {

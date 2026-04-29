@@ -1,6 +1,6 @@
-import SwiftUI
 import DesignSystem
 import SharedModels
+import SwiftUI
 
 struct SettingsView: View {
     @Environment(AppState.self) private var appState
@@ -10,6 +10,7 @@ struct SettingsView: View {
         @Bindable var state = appState
         Form {
             // MARK: - User Mode Selection
+
             Section {
                 userModePicker
             } header: {
@@ -19,9 +20,15 @@ struct SettingsView: View {
             }
 
             // MARK: - Minor Mode: Usage Limit
+
             if appState.isMinorMode {
                 Section("settings.minor") {
-                    Stepper("settings.minor.limit \(appState.minorUsageLimitMinutes)", value: $state.minorUsageLimitMinutes, in: 15...120, step: 5)
+                    Stepper(
+                        "settings.minor.limit \(appState.minorUsageLimitMinutes)",
+                        value: $state.minorUsageLimitMinutes,
+                        in: 15 ... 120,
+                        step: 5
+                    )
 
                     HStack {
                         Image(systemName: "clock")
@@ -46,7 +53,7 @@ struct SettingsView: View {
                 if appState.exportFormat.supportedCompressionQuality {
                     VStack(alignment: .leading) {
                         Text("export.quality \(Int(appState.exportQuality * 100))")
-                        Slider(value: $state.exportQuality, in: 0.1...1.0, step: 0.05)
+                        Slider(value: $state.exportQuality, in: 0.1 ... 1.0, step: 0.05)
                     }
                 }
             }
@@ -74,6 +81,7 @@ struct SettingsView: View {
             }
 
             // MARK: - Pro (hidden in Minor mode)
+
             if !appState.shouldHidePayment {
                 Section {
                     NavigationLink {
@@ -110,8 +118,8 @@ struct SettingsView: View {
         }
         .navigationTitle("nav.settings")
         #if os(macOS)
-        .formStyle(.grouped)
-        .frame(minWidth: 400, minHeight: 300)
+            .formStyle(.grouped)
+            .frame(minWidth: 400, minHeight: 300)
         #endif
     }
 
@@ -179,10 +187,22 @@ struct ProUpgradeTeaser: View {
                 }
 
                 VStack(alignment: .leading, spacing: SCTheme.Spacing.md) {
-                    proFeatureRow(icon: "text.viewfinder", title: "pro.feature.ocr", description: "pro.feature.ocr.desc")
-                    proFeatureRow(icon: "arrow.up.and.down.text.horizontal", title: "pro.feature.autoScroll", description: "pro.feature.autoScroll.desc")
+                    proFeatureRow(
+                        icon: "text.viewfinder",
+                        title: "pro.feature.ocr",
+                        description: "pro.feature.ocr.desc"
+                    )
+                    proFeatureRow(
+                        icon: "arrow.up.and.down.text.horizontal",
+                        title: "pro.feature.autoScroll",
+                        description: "pro.feature.autoScroll.desc"
+                    )
                     proFeatureRow(icon: "icloud", title: "pro.feature.iCloud", description: "pro.feature.iCloud.desc")
-                    proFeatureRow(icon: "photo.badge.plus", title: "pro.feature.formats", description: "pro.feature.formats.desc")
+                    proFeatureRow(
+                        icon: "photo.badge.plus",
+                        title: "pro.feature.formats",
+                        description: "pro.feature.formats.desc"
+                    )
                 }
                 .padding(SCTheme.Spacing.lg)
                 .background {
@@ -200,7 +220,7 @@ struct ProUpgradeTeaser: View {
         .background { BrandBackground() }
         .navigationTitle("pro.title")
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
     }
 

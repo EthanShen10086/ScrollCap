@@ -154,6 +154,14 @@
 "paywall.productsUnavailable" = "产品暂时不可用。";
 "paywall.productsUnavailable.desc" = "这是开发版本。StoreKit 产品将在配置 App Store Connect 后可用。";
 "paywall.externalPayments" = "更多支付方式即将推出：";
+"paywall.paymentMethod" = "支付方式";
+"paywall.payNow" = "立即支付";
+"paywall.lifetime.desc" = "一次付费，终身使用";
+"paywall.success" = "支付成功！";
+"paywall.currentPlan" = "当前订阅";
+"paywall.expires" = "到期时间：";
+"paywall.autoRenewOn" = "自动续费已开启";
+"paywall.manageSubscription" = "管理订阅";
 
 /* User Mode */
 "settings.mode" = "用户模式";

@@ -77,7 +77,7 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 本地持久化存储 | ✅ 已完成 | `ScreenshotStore` Actor - 文件系统 + JSON Manifest |
 | 截图详情查看 | ✅ 已完成 | `ScreenshotDetailView` + 元数据展示 |
 | 截图删除 | ✅ 已完成 | Context Menu + `AppState.removeScreenshot` |
-| iCloud 云同步 | ✅ 已完成 | `iCloudSyncManager` + `NSMetadataQuery` + `NSFileCoordinator` |
+| iCloud 云同步 | ✅ 已完成 | `ICloudSyncManager` + `NSMetadataQuery` + `NSFileCoordinator` |
 
 ---
 
@@ -107,16 +107,68 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 ## 支付系统 (Freemium)
 
+### StoreKit 2 (Apple 内购)
+
 | 功能 | 状态 | 技术实现 |
 |------|------|----------|
-| StoreKit 2 产品加载 | ✅ 已完成 | `StoreManager` - Product.products / Transaction.updates |
-| 月度/年度/终身订阅 | ✅ 已完成 | 3 个产品 ID 预定义 |
-| 购买流程 | ✅ 已完成 | `StoreManager.purchase` + 交易验证 |
-| 恢复购买 | ✅ 已完成 | `Transaction.currentEntitlements` |
-| Pro 功能门控 | ✅ 已完成 | `ProFeatureGate` ViewModifier |
-| 付费墙 UI | ✅ 已完成 | `PaywallView` - 功能对比 + 价格卡片 |
-| StoreKit 测试配置 | ✅ 已完成 | `Products.storekit` 本地测试文件 |
-| 第三方支付预留 | ✅ 已完成 | `ExternalPaymentProvider` protocol (WeChat/Alipay/PayPal/Stripe) |
+| 产品加载 | ✅ 已完成 | `StoreManager` - `Product.products` / 按价格排序 |
+| 月度/年度/终身订阅 | ✅ 已完成 | 3 个产品 ID: monthly / yearly / lifetime |
+| 购买流程 | ✅ 已完成 | `StoreManager.purchase` + `VerificationResult` 交易验证 |
+| 恢复购买 | ✅ 已完成 | `Transaction.currentEntitlements` 遍历 |
+| 订阅状态管理 | ✅ 已完成 | `SubscriptionInfo` + `Product.SubscriptionInfo.status` |
+| 自动续费检测 | ✅ 已完成 | `RenewalState` 检查 (subscribed/inGracePeriod/expired/revoked) |
+| 管理订阅跳转 | ✅ 已完成 | `AppStore.showManageSubscriptions` (iOS) / URL (macOS) |
+| 交易监听 | ✅ 已完成 | `Transaction.updates` 后台监听 + 自动刷新 |
+| Pro 功能门控 | ✅ 已完成 | `ProFeatureGate` ViewModifier + 模糊遮罩 |
+| StoreKit 测试配置 | ✅ 已完成 | `Products.storekit` 含 introductory offer |
+
+### Apple Pay (PassKit 原生)
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 可用性检测 | ✅ 已完成 | `PKPaymentAuthorizationController.canMakePayments` |
+| 支付网络支持 | ✅ 已完成 | Visa / MasterCard / Amex / UnionPay / JCB / Discover |
+| 支付请求构建 | ✅ 已完成 | `PKPaymentRequest` + merchantIdentifier |
+| 授权回调处理 | ✅ 已完成 | `PKPaymentAuthorizationControllerDelegate` |
+| 服务端 Token 处理 | ✅ 已完成 | `paymentToken.paymentData` → base64 → Server |
+
+### Stripe (REST API 直调)
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| Checkout Session 创建 | ✅ 已完成 | `URLSession` POST → `/api/payments/stripe/create-session` |
+| 浏览器跳转支付 | ✅ 已完成 | `UIApplication.open` / `NSWorkspace.open` → Stripe Checkout |
+| 支付验证 | ✅ 已完成 | Server-side verify → `/api/payments/stripe/verify` |
+| 回调处理 | ✅ 已完成 | `scrollcap://payment/success` Deep Link |
+
+### 微信支付 / 支付宝
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 微信 App 检测 | ✅ 已完成 | `canOpenURL("weixin://")` |
+| 支付宝 App 检测 | ✅ 已完成 | `canOpenURL("alipay://")` |
+| 服务端预下单 | ✅ 已完成 | `URLSession` POST → `/api/payments/{wechat,alipay}/create-order` |
+| URL Scheme 唤起 | ✅ 已完成 | `UIApplication.open(paymentScheme)` |
+| Web 支付降级 | ✅ 已完成 | `webPaymentURL` fallback (macOS / App 未安装时) |
+| 订单验证 | ✅ 已完成 | Server-side verify → `/api/payments/verify` |
+| 支付回调 | ✅ 已完成 | `scrollcap://payment/{provider}/callback` Deep Link |
+
+### PayPal
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 服务端下单 | ✅ 已完成 | `URLSession` POST → `/api/payments/paypal/create-order` |
+| 浏览器 Approval 跳转 | ✅ 已完成 | `approvalURL` → 浏览器 PayPal 授权 |
+| 订单验证 | ✅ 已完成 | Server-side verify |
+
+### 付费墙 UI
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 支付方式选择器 | ✅ 已完成 | 6 种方式 Grid 切换 (App Store / Apple Pay / Stripe / 微信 / 支付宝 / PayPal) |
+| 动态可用性 | ✅ 已完成 | 仅显示当前设备可用的支付方式 |
+| 订阅状态展示 | ✅ 已完成 | 到期时间 / 自动续费 / 管理入口 |
+| 统一配置 | ✅ 已完成 | `PaymentConfig` 服务端 URL 管理 + Info.plist 可配 |
 
 ---
 
@@ -198,6 +250,51 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 ---
 
+## 用户模式
+
+### 未成年模式 (Minor Mode)
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 支付内容隐藏 | ✅ 已完成 | `appState.shouldHidePayment` 条件渲染 Pro/支付相关入口 |
+| 使用时长追踪 | ✅ 已完成 | `sessionStartTime` + 定时 `checkUsageTime()` 检查 |
+| 时长超限提醒 | ✅ 已完成 | `UsageTimerBanner` 弹出横幅 + 可自定义时限 (默认 40 分钟) |
+| 外部链接隐藏 | ✅ 已完成 | 设置中源码链接在未成年模式下不可见 |
+| 界面简化 | ✅ 已完成 | 截图详情隐藏编辑器入口 |
+| 会话重置 | ✅ 已完成 | 手动重置使用时长计时器 |
+
+### 适老化模式 (Elder Mode)
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 大字体 | ✅ 已完成 | `UserModeAdaptiveModifier` 全局设置 `.dynamicTypeSize(.xxxLarge)` |
+| 大按钮 | ✅ 已完成 | `ElderCaptureButton` 80pt 圆形按钮 + 文字标签 |
+| 专用按钮样式 | ✅ 已完成 | `ElderButtonStyle` 自定义 ButtonStyle |
+| 动画简化 | ✅ 已完成 | 适老化模式下禁用 transition 和 pulse 动画 |
+| 截图详情适配 | ✅ 已完成 | 隐藏工具栏按钮，改为大尺寸 `elderActionButtons` |
+| 设置文字适配 | ✅ 已完成 | `adaptiveCaption` 字体放大 |
+
+### 模式管理
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 三种模式切换 | ✅ 已完成 | `UserMode` 枚举: `.standard` / `.minor` / `.elder` |
+| Environment 传递 | ✅ 已完成 | `@Environment(\.userMode)` 自定义环境键 |
+| 全局模式修饰器 | ✅ 已完成 | `.applyUserMode()` ViewModifier 应用于 App 根视图 |
+| 设置 UI 集成 | ✅ 已完成 | `Picker` 模式选择器 + 图标 + 描述 |
+
+---
+
+## 代码质量
+
+| 工具 | 状态 | 说明 |
+|------|------|------|
+| SwiftLint | ✅ 已完成 | `.swiftlint.yml` 配置，包含 opt-in 规则，CI 集成 |
+| SwiftFormat | ✅ 已完成 | `.swiftformat` 配置，Swift 6.0，120 字符宽度限制 |
+| CI Lint Job | ✅ 已完成 | GitHub Actions `lint` job：SwiftLint strict + SwiftFormat --lint |
+
+---
+
 ## 额外优化
 
 | 特性 | 状态 | 说明 |
@@ -218,6 +315,7 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 │  CaptureView ←→ CaptureViewModel       │
 │  HistoryView / SettingsView / Editor    │
 │  Analytics / Store / iCloudSync         │
+│  UserMode (Minor / Elder)               │
 │  ScrollCapWidget (WidgetKit)            │
 ├─────────────────────────────────────────┤
 │          Platform Layer                 │
@@ -254,6 +352,7 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 日志系统 | OSLog |
 | 项目生成 | XcodeGen |
 | CI/CD | GitHub Actions |
+| 代码检查 | SwiftLint + SwiftFormat |
 | 第三方依赖 | **零** |
 
 ---
@@ -267,4 +366,4 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | Live Activity | 中 | 实时活动显示捕获进度 |
 | 视频录制模式 | 低 | 滚动过程录制为视频 |
 | TestFlight 分发 | 低 | 需要 Apple Developer 账号 |
-| 第三方支付对接 | 低 | WeChat Pay / Alipay / PayPal / Stripe 实际集成 |
+| 第三方支付 SDK 集成 | 中 | WeChat Pay / Alipay 服务端对接，Stripe SDK 嵌入 |

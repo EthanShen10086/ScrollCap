@@ -30,8 +30,8 @@ final class GlobalShortcutManager {
         )
 
         var handlerRef: EventHandlerRef?
-        let callback: EventHandlerUPP = { _, event, userData -> OSStatus in
-            guard let userData = userData else { return noErr }
+        let callback: EventHandlerUPP = { _, _, userData -> OSStatus in
+            guard let userData else { return noErr }
             let manager = Unmanaged<GlobalShortcutManager>.fromOpaque(userData).takeUnretainedValue()
 
             Task { @MainActor in

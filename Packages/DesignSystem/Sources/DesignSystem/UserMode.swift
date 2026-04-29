@@ -7,7 +7,9 @@ public enum UserMode: String, CaseIterable, Identifiable, Sendable {
     case minor
     case elder
 
-    public var id: String { rawValue }
+    public var id: String {
+        rawValue
+    }
 
     public var displayName: LocalizedStringKey {
         switch self {
@@ -34,17 +36,8 @@ public enum UserMode: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-// MARK: - Environment Key
-
-private struct UserModeKey: EnvironmentKey {
-    static let defaultValue: UserMode = .standard
-}
-
 public extension EnvironmentValues {
-    var userMode: UserMode {
-        get { self[UserModeKey.self] }
-        set { self[UserModeKey.self] = newValue }
-    }
+    @Entry var userMode: UserMode = .standard
 }
 
 // MARK: - User Mode Adaptive Modifier
@@ -118,10 +111,18 @@ public struct ElderCaptureButton: View {
                         .fill(
                             isCapturing
                                 ? AnyShapeStyle(Color.red)
-                                : AnyShapeStyle(LinearGradient(colors: [SCTheme.Colors.brandBlue, SCTheme.Colors.brandPurple], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                : AnyShapeStyle(LinearGradient(
+                                    colors: [SCTheme.Colors.brandBlue, SCTheme.Colors.brandPurple],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
                         )
                         .frame(width: 88, height: 88)
-                        .shadow(color: (isCapturing ? Color.red : SCTheme.Colors.brandBlue).opacity(0.4), radius: 12, y: 4)
+                        .shadow(
+                            color: (isCapturing ? Color.red : SCTheme.Colors.brandBlue).opacity(0.4),
+                            radius: 12,
+                            y: 4
+                        )
 
                     if isCapturing {
                         RoundedRectangle(cornerRadius: 8)
@@ -141,7 +142,8 @@ public struct ElderCaptureButton: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(isCapturing ? "Stop capture" : "Start capture")
-        .accessibilityHint(isCapturing ? "Stops the current screen recording" : "Begins a new scrolling screenshot capture")
+        .accessibilityHint(isCapturing ? "Stops the current screen recording" :
+            "Begins a new scrolling screenshot capture")
         .accessibilityAddTraits(.isButton)
     }
 }

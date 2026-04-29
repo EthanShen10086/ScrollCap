@@ -6,16 +6,16 @@ let package = Package(
     name: "CaptureKit",
     platforms: [
         .iOS(.v17),
-        .macOS(.v14)
+        .macOS(.v14),
     ],
     products: [
         .library(name: "CaptureKit", targets: ["CaptureKit"]),
         .library(name: "CaptureKitMac", targets: ["CaptureKitMac"]),
-        .library(name: "CaptureKitIOS", targets: ["CaptureKitIOS"])
+        .library(name: "CaptureKitIOS", targets: ["CaptureKitIOS"]),
     ],
     dependencies: [
         .package(path: "../SharedModels"),
-        .package(path: "../StitchingEngine")
+        .package(path: "../StitchingEngine"),
     ],
     targets: [
         .target(
@@ -33,6 +33,6 @@ let package = Package(
         .testTarget(
             name: "CaptureKitTests",
             dependencies: ["CaptureKit"]
-        )
+        ),
     ]
 )

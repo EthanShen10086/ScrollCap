@@ -11,6 +11,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lint:
+    name: Lint & Format Check
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Tools
+        run: brew install swiftlint swiftformat
+
+      - name: SwiftLint
+        run: swiftlint lint --reporter github-actions-logging --strict
+
+      - name: SwiftFormat Check
+        run: swiftformat --lint . 2>&1 || echo "::warning::SwiftFormat found formatting issues"
+
   build-packages:
     name: Build Swift Packages
     runs-on: macos-15

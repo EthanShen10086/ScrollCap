@@ -1,7 +1,7 @@
-import SwiftUI
+import ImageEditor
 import SharedModels
 import StitchingEngine
-import ImageEditor
+import SwiftUI
 #if os(macOS)
 import CaptureKitMac
 #elseif os(iOS)
@@ -24,13 +24,15 @@ final class CaptureViewModel {
     private let stitcher = ImageStitcher()
     private var captureStartTime: CFAbsoluteTime = 0
 
-    var isCapturing: Bool { captureState.isActive }
+    var isCapturing: Bool {
+        captureState.isActive
+    }
 
     init() {
         #if os(macOS)
-        self.captureService = ScreenCaptureService()
+        captureService = ScreenCaptureService()
         #elseif os(iOS)
-        self.captureService = ReplayKitCaptureService()
+        captureService = ReplayKitCaptureService()
         #endif
 
         setupCallbacks()
@@ -98,7 +100,10 @@ final class CaptureViewModel {
                 capturedScreenshot = screenshot
                 let duration = CFAbsoluteTimeGetCurrent() - captureStartTime
                 SCLogger.capture.completed("frames: \(screenshot.metadata.frameCount)", duration: duration)
-                AnalyticsManager.shared.track(.captureCompleted(frames: screenshot.metadata.frameCount, duration: duration))
+                AnalyticsManager.shared.track(.captureCompleted(
+                    frames: screenshot.metadata.frameCount,
+                    duration: duration
+                ))
                 HapticManager.captureStopped()
             }
         } catch {

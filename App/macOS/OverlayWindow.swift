@@ -1,7 +1,7 @@
 #if os(macOS)
 import AppKit
-import SwiftUI
 import SharedModels
+import SwiftUI
 
 @MainActor
 final class OverlayWindowController {

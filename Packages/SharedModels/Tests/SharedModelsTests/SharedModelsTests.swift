@@ -1,6 +1,6 @@
+import CoreGraphics
 import XCTest
 @testable import SharedModels
-import CoreGraphics
 
 final class SharedModelsTests: XCTestCase {
     func testCaptureRegionPixelDimensions() {

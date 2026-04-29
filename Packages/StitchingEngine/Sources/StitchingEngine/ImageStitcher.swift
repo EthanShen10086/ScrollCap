@@ -1,8 +1,8 @@
-import Foundation
 import CoreGraphics
 import CoreImage
-import Vision
+import Foundation
 import SharedModels
+import Vision
 
 public actor ImageStitcher {
     private let overlapThreshold: CGFloat
@@ -71,10 +71,16 @@ public actor ImageStitcher {
             )
 
             if index > 0 {
-                let overlapHeight = CGFloat(frame.image.height) - abs(frame.cumulativeOffset.y - frames[index - 1].cumulativeOffset.y)
+                let overlapHeight = CGFloat(frame.image.height) -
+                    abs(frame.cumulativeOffset.y - frames[index - 1].cumulativeOffset.y)
                 if overlapHeight > 0 {
                     context.saveGState()
-                    context.clip(to: CGRect(x: 0, y: drawY, width: CGFloat(totalWidth), height: CGFloat(frame.image.height) - overlapHeight))
+                    context.clip(to: CGRect(
+                        x: 0,
+                        y: drawY,
+                        width: CGFloat(totalWidth),
+                        height: CGFloat(frame.image.height) - overlapHeight
+                    ))
                     context.draw(frame.image, in: drawRect)
                     context.restoreGState()
                     currentY += CGFloat(frame.image.height) - overlapHeight
@@ -99,7 +105,7 @@ public actor ImageStitcher {
         }
 
         var height = CGFloat(frames[0].image.height)
-        for i in 1..<frames.count {
+        for i in 1 ..< frames.count {
             let delta = abs(frames[i].cumulativeOffset.y - frames[i - 1].cumulativeOffset.y)
             height += delta
         }

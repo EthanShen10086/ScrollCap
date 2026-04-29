@@ -1,6 +1,6 @@
+import CoreGraphics
 import XCTest
 @testable import StitchingEngine
-import CoreGraphics
 
 final class StitchingEngineTests: XCTestCase {
     private func makeTestImage(width: Int, height: Int) -> CGImage? {

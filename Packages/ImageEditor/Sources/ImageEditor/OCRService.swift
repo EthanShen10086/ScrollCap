@@ -1,5 +1,5 @@
-import Foundation
 import CoreGraphics
+import Foundation
 import Vision
 
 public struct RecognizedTextBlock: Identifiable, Sendable {
@@ -18,7 +18,10 @@ public struct RecognizedTextBlock: Identifiable, Sendable {
 public actor OCRService {
     public init() {}
 
-    public func recognizeText(in image: CGImage, languages: [String] = ["zh-Hans", "en-US"]) async throws -> [RecognizedTextBlock] {
+    public func recognizeText(
+        in image: CGImage,
+        languages: [String] = ["zh-Hans", "en-US"]
+    ) async throws -> [RecognizedTextBlock] {
         try await withCheckedThrowingContinuation { continuation in
             let request = VNRecognizeTextRequest { request, error in
                 if let error {
@@ -56,7 +59,10 @@ public actor OCRService {
         }
     }
 
-    public func recognizeFullText(in image: CGImage, languages: [String] = ["zh-Hans", "en-US"]) async throws -> String {
+    public func recognizeFullText(
+        in image: CGImage,
+        languages: [String] = ["zh-Hans", "en-US"]
+    ) async throws -> String {
         let blocks = try await recognizeText(in: image, languages: languages)
         return blocks.map(\.text).joined(separator: "\n")
     }

@@ -1,8 +1,8 @@
 #if os(iOS)
-import SwiftUI
-import ReplayKit
 import DesignSystem
+import ReplayKit
 import SharedModels
+import SwiftUI
 
 struct IOSCaptureView: View {
     @Environment(AppState.self) private var appState
@@ -45,7 +45,7 @@ struct IOSCaptureView: View {
                         .foregroundStyle(SCTheme.Colors.captureActive)
                 }
 
-                if case .capturing(let progress) = appState.captureState {
+                if case let .capturing(progress) = appState.captureState {
                     Text("ios.framesCaptured \(progress.capturedFrames)")
                         .font(SCTheme.Typography.monoCaption)
                         .foregroundStyle(.secondary)

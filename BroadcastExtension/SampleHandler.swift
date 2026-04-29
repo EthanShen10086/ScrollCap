@@ -1,5 +1,5 @@
-import ReplayKit
 import CoreMedia
+import ReplayKit
 
 class SampleHandler: RPBroadcastSampleHandler {
     private let appGroupID = "group.com.scrollcap.shared"
@@ -80,7 +80,7 @@ class SampleHandler: RPBroadcastSampleHandler {
         ) else { return }
 
         let properties: [CFString: Any] = [
-            kCGImageDestinationLossyCompressionQuality: 0.7
+            kCGImageDestinationLossyCompressionQuality: 0.7,
         ]
         CGImageDestinationAddImage(destination, cgImage, properties as CFDictionary)
         CGImageDestinationFinalize(destination)

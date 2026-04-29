@@ -1,9 +1,9 @@
 #if os(iOS)
-import Foundation
+import CaptureKit
 import CoreGraphics
+import Foundation
 @preconcurrency import ReplayKit
 import SharedModels
-import CaptureKit
 import StitchingEngine
 
 @MainActor
@@ -19,7 +19,7 @@ public final class ReplayKitCaptureService: NSObject, CaptureService {
     private let recorder = RPScreenRecorder.shared()
     private var isRecording = false
 
-    public override init() {
+    override public init() {
         super.init()
     }
 

@@ -1,5 +1,5 @@
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 @main
 struct ScrollCapApp: App {
@@ -66,6 +66,10 @@ struct ScrollCapApp: App {
             #if os(macOS)
             startQuickCapture()
             #endif
+        case "payment":
+            Task {
+                _ = await ThirdPartyPaymentService.shared.handlePaymentCallback(url: url)
+            }
         default:
             break
         }

@@ -1,6 +1,6 @@
+import CoreGraphics
 import XCTest
 @testable import CaptureKit
-import CoreGraphics
 
 final class CaptureKitTests: XCTestCase {
     func testCaptureFrameProperties() {

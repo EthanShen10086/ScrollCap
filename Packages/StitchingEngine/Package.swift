@@ -6,13 +6,13 @@ let package = Package(
     name: "StitchingEngine",
     platforms: [
         .iOS(.v17),
-        .macOS(.v14)
+        .macOS(.v14),
     ],
     products: [
-        .library(name: "StitchingEngine", targets: ["StitchingEngine"])
+        .library(name: "StitchingEngine", targets: ["StitchingEngine"]),
     ],
     dependencies: [
-        .package(path: "../SharedModels")
+        .package(path: "../SharedModels"),
     ],
     targets: [
         .target(
@@ -22,6 +22,6 @@ let package = Package(
         .testTarget(
             name: "StitchingEngineTests",
             dependencies: ["StitchingEngine"]
-        )
+        ),
     ]
 )

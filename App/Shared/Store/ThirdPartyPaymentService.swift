@@ -1,0 +1,231 @@
+import Foundation
+import OSLog
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
+
+@MainActor
+@Observable
+final class ThirdPartyPaymentService {
+    static let shared = ThirdPartyPaymentService()
+
+    private(set) var isProcessing = false
+    private(set) var pendingOrderId: String?
+
+    private let logger = Logger(subsystem: "com.ethanshen.scrollcap", category: "thirdparty-pay")
+
+    private init() {}
+
+    // MARK: - WeChat Pay
+
+    var isWeChatPayAvailable: Bool {
+        #if os(iOS)
+        guard let url = URL(string: "weixin://") else { return false }
+        return UIApplication.shared.canOpenURL(url)
+        #else
+        return false
+        #endif
+    }
+
+    func requestWeChatPay(
+        productId: String,
+        amount: Decimal,
+        currency: String = "CNY"
+    ) async throws -> PaymentResult {
+        isProcessing = true
+        defer { isProcessing = false }
+
+        let order = try await createServerOrder(
+            provider: "wechat",
+            productId: productId,
+            amount: amount,
+            currency: currency
+        )
+
+        pendingOrderId = order.orderId
+
+        #if os(iOS)
+        if let payURL = URL(string: order.paymentScheme) {
+            let opened = await UIApplication.shared.open(payURL)
+            if !opened {
+                logger.failed("Failed to open WeChat", error: StoreError.purchaseFailed)
+                return .failed(StoreError.purchaseFailed)
+            }
+            logger.info("WeChat Pay initiated for order: \(order.orderId)")
+            return .success(transactionId: order.orderId)
+        }
+        #endif
+
+        return .failed(StoreError.purchaseFailed)
+    }
+
+    // MARK: - Alipay
+
+    var isAlipayAvailable: Bool {
+        #if os(iOS)
+        guard let url = URL(string: "alipay://") else { return false }
+        return UIApplication.shared.canOpenURL(url)
+        #else
+        return true
+        #endif
+    }
+
+    func requestAlipay(
+        productId: String,
+        amount: Decimal,
+        currency: String = "CNY"
+    ) async throws -> PaymentResult {
+        isProcessing = true
+        defer { isProcessing = false }
+
+        let order = try await createServerOrder(
+            provider: "alipay",
+            productId: productId,
+            amount: amount,
+            currency: currency
+        )
+
+        pendingOrderId = order.orderId
+
+        guard let payURL = URL(string: order.paymentScheme) else {
+            return .failed(StoreError.purchaseFailed)
+        }
+
+        #if os(iOS)
+        let opened = await UIApplication.shared.open(payURL)
+        if !opened {
+            if let webURL = URL(string: order.webPaymentURL ?? "") {
+                await UIApplication.shared.open(webURL)
+            }
+        }
+        #elseif os(macOS)
+        if let webURL = URL(string: order.webPaymentURL ?? "") {
+            NSWorkspace.shared.open(webURL)
+        }
+        #endif
+
+        logger.info("Alipay initiated for order: \(order.orderId)")
+        return .success(transactionId: order.orderId)
+    }
+
+    // MARK: - PayPal
+
+    func requestPayPal(
+        productId: String,
+        amount: Decimal,
+        currency: String = "USD"
+    ) async throws -> PaymentResult {
+        isProcessing = true
+        defer { isProcessing = false }
+
+        let order = try await createServerOrder(
+            provider: "paypal",
+            productId: productId,
+            amount: amount,
+            currency: currency
+        )
+
+        pendingOrderId = order.orderId
+
+        guard let approvalURL = URL(string: order.webPaymentURL ?? order.paymentScheme) else {
+            return .failed(StoreError.purchaseFailed)
+        }
+
+        #if os(iOS)
+        await UIApplication.shared.open(approvalURL)
+        #elseif os(macOS)
+        NSWorkspace.shared.open(approvalURL)
+        #endif
+
+        logger.info("PayPal initiated for order: \(order.orderId)")
+        return .success(transactionId: order.orderId)
+    }
+
+    // MARK: - Verify Callback
+
+    func handlePaymentCallback(url: URL) async -> Bool {
+        guard let orderId = pendingOrderId else { return false }
+
+        let verified = await verifyOrder(orderId: orderId)
+        if verified {
+            logger.completed("Third-party payment verified: \(orderId)")
+            AnalyticsManager.shared.track(.purchaseCompleted(productId: orderId))
+        }
+        pendingOrderId = nil
+        return verified
+    }
+
+    // MARK: - Server Communication
+
+    private func createServerOrder(
+        provider: String,
+        productId: String,
+        amount: Decimal,
+        currency: String
+    ) async throws -> ServerOrderResponse {
+        let serverURL = PaymentConfig.shared.serverBaseURL
+            .appendingPathComponent("/api/payments/\(provider)/create-order")
+
+        var request = URLRequest(url: serverURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body = OrderRequest(
+            productId: productId,
+            amount: "\(amount)",
+            currency: currency,
+            callbackURL: "scrollcap://payment/\(provider)/callback"
+        )
+        request.httpBody = try JSONEncoder().encode(body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse,
+              200 ... 299 ~= httpResponse.statusCode
+        else {
+            throw StoreError.networkError("\(provider) order creation failed")
+        }
+
+        return try JSONDecoder().decode(ServerOrderResponse.self, from: data)
+    }
+
+    private func verifyOrder(orderId: String) async -> Bool {
+        let serverURL = PaymentConfig.shared.serverBaseURL
+            .appendingPathComponent("/api/payments/verify")
+
+        var request = URLRequest(url: serverURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONEncoder().encode(["orderId": orderId])
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse,
+                  200 ... 299 ~= httpResponse.statusCode
+            else {
+                return false
+            }
+            let result = try JSONDecoder().decode(PaymentServerResponse.self, from: data)
+            return result.status == "paid"
+        } catch {
+            logger.failed("Order verification failed", error: error)
+            return false
+        }
+    }
+}
+
+// MARK: - Models
+
+private struct OrderRequest: Codable {
+    let productId: String
+    let amount: String
+    let currency: String
+    let callbackURL: String
+}
+
+struct ServerOrderResponse: Codable {
+    let orderId: String
+    let paymentScheme: String
+    let webPaymentURL: String?
+}

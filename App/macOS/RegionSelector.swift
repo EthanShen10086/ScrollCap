@@ -1,7 +1,7 @@
 #if os(macOS)
-import SwiftUI
 import AppKit
 import SharedModels
+import SwiftUI
 
 struct RegionSelectorView: NSViewRepresentable {
     @Binding var selectedRegion: CaptureRegion?
@@ -52,7 +52,7 @@ class RegionSelectionNSView: NSView {
 
     override func mouseUp(with event: NSEvent) {
         isSelecting = false
-        if selectionRect.width > 10 && selectionRect.height > 10 {
+        if selectionRect.width > 10, selectionRect.height > 10 {
             onSelectionComplete?(selectionRect)
         }
         selectionStart = nil
@@ -64,7 +64,7 @@ class RegionSelectionNSView: NSView {
         NSColor.clear.setFill()
         dirtyRect.fill()
 
-        if isSelecting && selectionRect != .zero {
+        if isSelecting, selectionRect != .zero {
             NSColor.systemBlue.withAlphaComponent(0.15).setFill()
             let path = NSBezierPath(roundedRect: selectionRect, xRadius: 4, yRadius: 4)
             path.fill()

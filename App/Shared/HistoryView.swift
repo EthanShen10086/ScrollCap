@@ -1,13 +1,13 @@
-import SwiftUI
 import DesignSystem
 import SharedModels
+import SwiftUI
 
 struct HistoryView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.colorScheme) private var colorScheme
 
     private let columns = [
-        GridItem(.adaptive(minimum: 180, maximum: 280), spacing: SCTheme.Spacing.md)
+        GridItem(.adaptive(minimum: 180, maximum: 280), spacing: SCTheme.Spacing.md),
     ]
 
     var body: some View {
@@ -111,7 +111,9 @@ struct HistoryScreenshotCard: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(String(localized: "detail.title"))
-        .accessibilityHint("\(screenshot.metadata.frameCount) frames, \(screenshot.image.width)×\(screenshot.image.height)")
+        .accessibilityHint(
+            "\(screenshot.metadata.frameCount) frames, \(screenshot.image.width)×\(screenshot.image.height)"
+        )
         .accessibilityAddTraits(.isButton)
     }
 }

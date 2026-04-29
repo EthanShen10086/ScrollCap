@@ -7,7 +7,9 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable {
     case heic
     case pdf
 
-    public var id: String { rawValue }
+    public var id: String {
+        rawValue
+    }
 
     public var displayName: String {
         switch self {
@@ -18,7 +20,9 @@ public enum ExportFormat: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    public var fileExtension: String { rawValue }
+    public var fileExtension: String {
+        rawValue
+    }
 
     public var utType: UTType {
         switch self {
