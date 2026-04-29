@@ -1,0 +1,125 @@
+---
+description: Observability rules - analytics, error handling, crash reporting, performance, logging
+alwaysApply: true
+---
+
+# Observability Rules (可观测性)
+
+Every user action, error, and performance-critical operation MUST be instrumented.
+
+## 1. Event Analytics (AnalyticsManager)
+
+```swift
+// ✅ GOOD - track every user action with typed event
+AnalyticsManager.shared.track(.captureStarted(method: "ReplayKit"))
+AnalyticsManager.shared.track(.exportSaved(format: "png"))
+AnalyticsManager.shared.track(.settingsChanged(key: "autoScroll", value: "true"))
+
+// ✅ GOOD - track failures in EVERY catch block
+} catch {
+    AnalyticsManager.shared.track(.captureFailed(error: error.localizedDescription))
+}
+
+// ❌ BAD - silent catch
+} catch { errorMessage = error.localizedDescription }  // no tracking
+```
+
+### Required events for new features
+
+- `*Started` / `*Completed` / `*Failed` for any async operation
+- `settingsChanged(key:value:)` for every toggle/picker in Settings
+- `screenshotDeleted` / `screenshotOpened` for user data actions
+- `error(domain:code:)` for non-feature errors (memory, config, etc.)
+
+## 2. Error Handling (SCError + ErrorPresenter)
+
+```swift
+// ✅ GOOD - ALL errors go through SCError
+throw SCError.capture(.permissionDenied)
+throw SCError.network(.offline)
+
+// ✅ GOOD - present to user via ErrorPresenter (auto-tracks analytics)
+ErrorPresenter.shared.present(error)
+
+// ✅ GOOD - map package errors to SCError at boundary
+} catch {
+    let msg = (error as? SCError)?.userMessage ?? String(localized: "error.capture.recording")
+    ErrorPresenter.shared.present(error)
+}
+
+// ❌ BAD - local errorMessage without ErrorPresenter or analytics
+self.errorMessage = error.localizedDescription  // user sees raw English, no tracking
+```
+
+### Rules
+
+- Never show `error.localizedDescription` to users — use `SCError.userMessage`
+- Every `catch` block must either `ErrorPresenter.shared.present()` or `AnalyticsManager.track()`
+- Map package-level errors (`CaptureServiceError`, `StoreError`) to `SCError` at app boundary
+
+## 3. Performance (PerformanceMonitor)
+
+```swift
+// ✅ GOOD - wrap hot paths with signposts
+let sid = PerformanceMonitor.beginCapture()
+// ... capture work ...
+PerformanceMonitor.endCapture(sid, frames: count)
+
+let sid = PerformanceMonitor.beginExport(format: "png")
+// ... export work ...
+PerformanceMonitor.endExport(sid)
+
+// ✅ GOOD - memory check runs periodically (every 60s in ScrollCapApp)
+PerformanceMonitor.reportMemoryUsage()
+```
+
+### Rules
+
+- Capture, stitch, and export MUST have begin/end signposts
+- Memory is checked every 60s; >500MB triggers an analytics event
+- Use `PerformanceMonitor.measure("name") { }` for ad-hoc measurements
+
+## 4. Crash Reporting (CrashReporter)
+
+- Installed in `ScrollCapApp.init()` (before UI loads)
+- Signal handler is async-signal-safe (only `write(2)` + `_exit`)
+- NSException handler captures full stack trace
+- Previous crashes detected on next launch via sentinel file
+
+## 5. Network (APIClient)
+
+```swift
+// ✅ GOOD - all HTTP goes through APIClient
+try await APIClient.shared.request(Response.self, url: endpoint)
+
+// ❌ BAD - raw URLSession
+let (data, _) = try await URLSession.shared.data(from: url)
+```
+
+### Rules
+
+- NEVER use raw `URLSession` — always `APIClient.shared`
+- `NetworkMonitor.shared.isConnected` checked before every request
+- Exponential backoff retry for 408/429/5xx
+- Request/response logged with method, URL, status code, and duration
+
+## 6. Logging (SCLogger)
+
+```swift
+// ✅ GOOD - use typed logger categories
+SCLogger.capture.started("region: full")
+SCLogger.capture.completed("frames: 42", duration: 3.2)
+SCLogger.capture.failed("startCapture", error: error)
+
+// ❌ BAD - print() or unstructured logging
+print("capture started")
+```
+
+## Checklist for new features
+
+- [ ] User action tracked with `AnalyticsManager.shared.track()`
+- [ ] Every `catch` has either `ErrorPresenter.present()` or `track()`
+- [ ] Async operations have begin/end signposts if >100ms expected
+- [ ] Errors mapped to `SCError` at package boundary
+- [ ] Uses `SCLogger` category, not `print()`
+- [ ] No raw `URLSession` — uses `APIClient`

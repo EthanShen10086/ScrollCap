@@ -8,6 +8,10 @@ struct ScrollCapApp: App {
     @State private var overlayController = OverlayWindowController()
     #endif
 
+    init() {
+        CrashReporter.shared.install()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -15,7 +19,6 @@ struct ScrollCapApp: App {
                 .environment(\.userMode, self.appState.userMode)
                 .applyUserMode(self.appState.userMode)
                 .onAppear {
-                    CrashReporter.shared.install()
                     AnalyticsManager.shared.track(.appLaunched)
                     if self.appState.iCloudSyncEnabled {
                         ICloudSyncManager.shared.startMonitoring()
@@ -31,6 +34,7 @@ struct ScrollCapApp: App {
                     while !Task.isCancelled {
                         try? await Task.sleep(for: .seconds(60))
                         self.appState.checkUsageTime()
+                        PerformanceMonitor.reportMemoryUsage()
                     }
                 }
         }

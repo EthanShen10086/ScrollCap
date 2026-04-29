@@ -48,6 +48,7 @@ struct HistoryView: View {
                             withAnimation(SCTheme.Animation.spring) {
                                 self.appState.removeScreenshot(screenshot)
                             }
+                            AnalyticsManager.shared.track(.screenshotDeleted)
                         }
                     }
                     .transition(.scale.combined(with: .opacity))

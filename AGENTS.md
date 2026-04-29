@@ -61,6 +61,7 @@ Mode is set via `AppState.userMode` and propagated through `@Environment(\.userM
 | `accessibility.mdc` | Always | VoiceOver labels, ReduceMotion, traits |
 | `dark-mode.mdc` | `**/*.swift` | Semantic colors, adaptive shadows, contrast |
 | `multi-platform.mdc` | Always | iOS/iPadOS/macOS layout, environment injection |
+| `observability.mdc` | Always | Analytics, error handling, crash, perf, logging |
 
 ## Testing
 

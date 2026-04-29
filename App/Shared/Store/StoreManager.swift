@@ -44,6 +44,7 @@ final class StoreManager {
             self.logger.info("Loaded \(self.products.count) products")
         } catch {
             self.logger.failed("Failed to load products", error: error)
+            AnalyticsManager.shared.track(.error(domain: "store", code: "load_products_failed"))
         }
     }
 

@@ -355,6 +355,7 @@ struct PaywallView: View {
             if success { self.dismiss() }
         } catch {
             self.errorMessage = error.localizedDescription
+            AnalyticsManager.shared.track(.purchaseFailed(productId: product.id, error: error.localizedDescription))
         }
     }
 
@@ -367,6 +368,10 @@ struct PaywallView: View {
             self.handlePaymentResult(result)
         } catch {
             self.errorMessage = error.localizedDescription
+            AnalyticsManager.shared.track(.purchaseFailed(
+                productId: self.selectedPaymentMethod.rawValue,
+                error: error.localizedDescription
+            ))
         }
     }
 
@@ -398,10 +403,16 @@ struct PaywallView: View {
     }
 
     private func handlePaymentResult(_ result: PaymentResult) {
+        let methodId = self.selectedPaymentMethod.rawValue
         switch result {
-        case .success: self.showSuccessAlert = true
-        case .cancelled: break
-        case let .failed(error): self.errorMessage = error.localizedDescription
+        case .success:
+            self.showSuccessAlert = true
+            AnalyticsManager.shared.track(.purchaseCompleted(productId: methodId))
+        case .cancelled:
+            AnalyticsManager.shared.track(.purchaseCancelled(productId: methodId))
+        case let .failed(error):
+            self.errorMessage = error.localizedDescription
+            AnalyticsManager.shared.track(.purchaseFailed(productId: methodId, error: error.localizedDescription))
         }
     }
 

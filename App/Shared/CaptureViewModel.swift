@@ -72,6 +72,9 @@ final class CaptureViewModel {
             let msg = self.localizedErrorMessage(error)
             self.captureState = .failed(message: msg)
             self.errorMessage = msg
+            SCLogger.capture.failed("prepare", error: error)
+            AnalyticsManager.shared.track(.captureFailed(error: "prepare: \(error.localizedDescription)"))
+            ErrorPresenter.shared.present(error)
         }
     }
 
@@ -98,6 +101,7 @@ final class CaptureViewModel {
             self.errorMessage = msg
             SCLogger.capture.failed("startCapture", error: error)
             AnalyticsManager.shared.track(.captureFailed(error: error.localizedDescription))
+            ErrorPresenter.shared.present(error)
             HapticManager.captureError()
         }
     }
@@ -117,6 +121,12 @@ final class CaptureViewModel {
                     duration: duration
                 ))
                 HapticManager.captureStopped()
+            } else {
+                let duration = CFAbsoluteTimeGetCurrent() - self.captureStartTime
+                SCLogger.capture.failed("stopCapture returned nil (stitch failed)", error: nil)
+                AnalyticsManager.shared.track(.stitchFailed(error: "returned_nil"))
+                AnalyticsManager.shared
+                    .track(.captureFailed(error: "stitch_returned_nil_after_\(String(format: "%.1f", duration))s"))
             }
         } catch {
             let msg = self.localizedErrorMessage(error)
@@ -124,6 +134,7 @@ final class CaptureViewModel {
             self.errorMessage = msg
             SCLogger.capture.failed("stopCapture", error: error)
             AnalyticsManager.shared.track(.captureFailed(error: error.localizedDescription))
+            ErrorPresenter.shared.present(error)
             HapticManager.captureError()
         }
     }

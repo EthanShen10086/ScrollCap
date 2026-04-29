@@ -6,7 +6,10 @@ import UniformTypeIdentifiers
 
 struct ExportService {
     func export(image: CGImage, options: ExportOptions, to url: URL) async throws {
-        let data = try await exportToData(image: image, options: options)
+        let signpostID = PerformanceMonitor.beginExport(format: options.format.rawValue)
+        defer { PerformanceMonitor.endExport(signpostID) }
+
+        let data = try await self.exportToData(image: image, options: options)
         guard let data else {
             throw SCError.export(.fileWriteFailed)
         }

@@ -7,7 +7,7 @@ import OSLog
 final class NetworkMonitor {
     static let shared = NetworkMonitor()
 
-    private(set) var isConnected = true
+    private(set) var isConnected: Bool
     private(set) var connectionType: ConnectionType = .unknown
 
     private let monitor = NWPathMonitor()
@@ -22,6 +22,7 @@ final class NetworkMonitor {
     }
 
     private init() {
+        self.isConnected = self.monitor.currentPath.status == .satisfied
         self.startMonitoring()
     }
 

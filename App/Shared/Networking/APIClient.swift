@@ -92,8 +92,20 @@ actor APIClient {
         config: RequestConfig,
         attempt: Int = 0
     ) async throws -> T {
+        let method = request.httpMethod ?? "GET"
+        let urlString = request.url?.absoluteString ?? "unknown"
+        if attempt == 0 {
+            self.logger.info("→ \(method) \(urlString)")
+        } else {
+            self.logger.info("→ \(method) \(urlString) [retry \(attempt)/\(config.maxRetries)]")
+        }
+
         do {
-            let (data, response) = try await session.data(for: request)
+            let startTime = CFAbsoluteTimeGetCurrent()
+            let (data, response) = try await self.session.data(for: request)
+            let elapsed = CFAbsoluteTimeGetCurrent() - startTime
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            self.logger.info("← \(statusCode) \(urlString) [\(String(format: "%.0f", elapsed * 1000))ms]")
             return try await self.processResponse(
                 data: data,
                 response: response,
