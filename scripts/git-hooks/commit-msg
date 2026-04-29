@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# commit-msg hook: Conventional Commits 格式校验
+#
+# 合法格式：
+#   feat: add payment integration
+#   fix: resolve crash on launch
+#   docs: update REQUIREMENTS.md
+#   refactor(store): extract payment config
+#   chore(ci): add lint job
+#
+# 允许的类型：
+#   feat / fix / docs / style / refactor / perf / test / build / ci / chore / revert
+
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG=$(head -1 "$COMMIT_MSG_FILE")
+
+# 跳过 merge commits 和 revert commits
+if echo "$COMMIT_MSG" | grep -qE "^Merge |^Revert "; then
+    exit 0
+fi
+
+# Conventional Commits 正则
+# type(optional-scope): description
+PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,}"
+
+if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
+    echo ""
+    echo "╔════════════════════════════════════════════════════╗"
+    echo "║  ✘ Commit message format error                     ║"
+    echo "╚════════════════════════════════════════════════════╝"
+    echo ""
+    echo "  Your message:  $COMMIT_MSG"
+    echo ""
+    echo "  Expected format:"
+    echo "    <type>(<scope>): <description>"
+    echo ""
+    echo "  Allowed types:"
+    echo "    feat     - New feature"
+    echo "    fix      - Bug fix"
+    echo "    docs     - Documentation"
+    echo "    style    - Code style (formatting, no logic change)"
+    echo "    refactor - Code restructuring"
+    echo "    perf     - Performance improvement"
+    echo "    test     - Tests"
+    echo "    build    - Build system"
+    echo "    ci       - CI/CD"
+    echo "    chore    - Misc tasks"
+    echo "    revert   - Revert a commit"
+    echo ""
+    echo "  Examples:"
+    echo "    feat: add Apple Pay integration"
+    echo "    fix(store): handle nil product list"
+    echo "    docs: update payment section in REQUIREMENTS.md"
+    echo ""
+    echo "❌ Commit blocked. Fix your commit message."
+    echo "   To bypass (not recommended): git commit --no-verify"
+    exit 1
+fi
+
+# 检查 description 长度（首行不超过 72 字符）
+MSG_LENGTH=${#COMMIT_MSG}
+if [ "$MSG_LENGTH" -gt 72 ]; then
+    echo ""
+    echo "⚠  Commit message first line is $MSG_LENGTH chars (max 72)."
+    echo "   Consider shortening: $COMMIT_MSG"
+    echo ""
+fi

@@ -292,6 +292,9 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | SwiftLint | ✅ 已完成 | `.swiftlint.yml` 配置，包含 opt-in 规则，CI 集成 |
 | SwiftFormat | ✅ 已完成 | `.swiftformat` 配置，Swift 6.0，120 字符宽度限制 |
 | CI Lint Job | ✅ 已完成 | GitHub Actions `lint` job：SwiftLint strict + SwiftFormat --lint |
+| Git pre-commit Hook | ✅ 已完成 | 提交前自动检查暂存的 `.swift` 文件，不通过则阻断提交 |
+| Git commit-msg Hook | ✅ 已完成 | Conventional Commits 格式校验 (feat/fix/docs/refactor/...) |
+| Hook 自动安装 | ✅ 已完成 | `scripts/install-hooks.sh` + `setup.sh` 集成，clone 后一键生效 |
 
 ---
 

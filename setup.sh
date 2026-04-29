@@ -37,10 +37,21 @@ if ! command -v xcodegen &>/dev/null; then
     HOMEBREW_NO_AUTO_UPDATE=1 brew install xcodegen
 fi
 
-# 生成 Xcode 项目
+# 项目根目录
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# 安装 Git Hooks
+echo "⚙️  安装 Git Hooks (SwiftLint + SwiftFormat + Conventional Commits)..."
+bash scripts/install-hooks.sh
+
+# 安装代码质量工具
+if ! command -v swiftlint &>/dev/null || ! command -v swiftformat &>/dev/null; then
+    echo "⚙️  安装 SwiftLint + SwiftFormat..."
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install swiftlint swiftformat
+fi
+
+# 生成 Xcode 项目
 echo "⚙️  生成 Xcode 项目..."
 xcodegen generate
 

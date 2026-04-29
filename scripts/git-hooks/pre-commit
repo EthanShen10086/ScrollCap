@@ -1,0 +1,86 @@
+#!/bin/bash
+#
+# pre-commit hook: SwiftLint + SwiftFormat 检查
+# 仅检查本次暂存的 .swift 文件，未修改的文件不会被阻断
+
+set -e
+
+STAGED_SWIFT_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.swift')
+
+if [ -z "$STAGED_SWIFT_FILES" ]; then
+    exit 0
+fi
+
+PASS=true
+
+# ──────────────── SwiftFormat ────────────────
+
+if command -v swiftformat &>/dev/null; then
+    echo "🔍 SwiftFormat: checking staged files..."
+
+    UNFORMATTED=""
+    for file in $STAGED_SWIFT_FILES; do
+        if [ -f "$file" ]; then
+            OUTPUT=$(swiftformat --lint "$file" 2>&1) || UNFORMATTED="$UNFORMATTED\n$OUTPUT"
+        fi
+    done
+
+    if [ -n "$UNFORMATTED" ]; then
+        echo ""
+        echo "╔════════════════════════════════════════════════╗"
+        echo "║  ✘ SwiftFormat: formatting issues detected     ║"
+        echo "╚════════════════════════════════════════════════╝"
+        echo -e "$UNFORMATTED"
+        echo ""
+        echo "💡 Auto-fix:  swiftformat ."
+        echo ""
+        PASS=false
+    else
+        echo "✔ SwiftFormat: all staged files OK"
+    fi
+else
+    echo "⚠ SwiftFormat not installed. Run: brew install swiftformat"
+fi
+
+# ──────────────── SwiftLint ────────────────
+
+if command -v swiftlint &>/dev/null; then
+    echo "🔍 SwiftLint: checking staged files..."
+
+    LINT_ERRORS=""
+    for file in $STAGED_SWIFT_FILES; do
+        if [ -f "$file" ]; then
+            OUTPUT=$(swiftlint lint --strict --quiet "$file" 2>&1) || true
+            if [ -n "$OUTPUT" ]; then
+                LINT_ERRORS="$LINT_ERRORS\n$OUTPUT"
+            fi
+        fi
+    done
+
+    if [ -n "$LINT_ERRORS" ]; then
+        echo ""
+        echo "╔════════════════════════════════════════════════╗"
+        echo "║  ✘ SwiftLint: violations detected              ║"
+        echo "╚════════════════════════════════════════════════╝"
+        echo -e "$LINT_ERRORS"
+        echo ""
+        echo "💡 Auto-fix:  swiftlint --fix && swiftformat ."
+        echo ""
+        PASS=false
+    else
+        echo "✔ SwiftLint: all staged files OK"
+    fi
+else
+    echo "⚠ SwiftLint not installed. Run: brew install swiftlint"
+fi
+
+# ──────────────── Result ────────────────
+
+if ! $PASS; then
+    echo ""
+    echo "❌ Commit blocked. Fix the issues above, then re-stage and commit."
+    echo "   To bypass (not recommended): git commit --no-verify"
+    exit 1
+fi
+
+echo "✅ Pre-commit checks passed."
