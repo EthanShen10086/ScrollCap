@@ -71,9 +71,11 @@ final class CaptureViewModel {
 
         do {
             try await captureService.startCapture(region: region)
+            HapticManager.captureStarted()
         } catch {
             captureState = .failed(message: error.localizedDescription)
             errorMessage = error.localizedDescription
+            HapticManager.captureError()
         }
     }
 
@@ -81,10 +83,12 @@ final class CaptureViewModel {
         do {
             if let screenshot = try await captureService.stopCapture() {
                 capturedScreenshot = screenshot
+                HapticManager.captureStopped()
             }
         } catch {
             captureState = .failed(message: error.localizedDescription)
             errorMessage = error.localizedDescription
+            HapticManager.captureError()
         }
     }
 
