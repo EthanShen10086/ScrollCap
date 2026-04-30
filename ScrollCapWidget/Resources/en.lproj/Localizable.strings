@@ -1,0 +1,19 @@
+/* Widget */
+"widget.name" = "ScrollCap";
+"widget.capture" = "Capture";
+"widget.quickCapture" = "Quick Capture";
+"widget.captures %lld" = "%lld captures";
+"widget.configName" = "ScrollCap";
+"widget.configDesc" = "Quick access to scrolling screenshot capture.";
+
+/* Capture Status */
+"status.preparing" = "Preparing...";
+"status.recording" = "Recording";
+"status.stitching" = "Stitching...";
+"status.completed" = "Completed";
+"status.failed" = "Failed";
+
+/* Live Activity */
+"liveactivity.frames %lld" = "%lld frames";
+"liveactivity.elapsed %lld" = "%llds";
+"liveactivity.estimatedHeight %lld" = "~%lldpx";

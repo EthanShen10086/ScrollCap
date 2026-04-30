@@ -10,26 +10,28 @@ class SampleHandler: RPBroadcastSampleHandler {
         self.frameCount = 0
         let defaults = UserDefaults(suiteName: appGroupID)
         defaults?.set(true, forKey: AppConstants.UserDefaultsKeys.isBroadcasting)
-        defaults?.set(Date().timeIntervalSince1970, forKey: "broadcastStartTime")
+        defaults?.set(Date().timeIntervalSince1970, forKey: AppConstants.UserDefaultsKeys.broadcastStartTime)
         defaults?.synchronize()
     }
 
     override func broadcastPaused() {
         let defaults = UserDefaults(suiteName: appGroupID)
-        defaults?.set(true, forKey: "isBroadcastPaused")
+        defaults?.set(true, forKey: AppConstants.UserDefaultsKeys.isBroadcastPaused)
         defaults?.synchronize()
     }
 
     override func broadcastResumed() {
         let defaults = UserDefaults(suiteName: appGroupID)
-        defaults?.set(false, forKey: "isBroadcastPaused")
+        defaults?.set(false, forKey: AppConstants.UserDefaultsKeys.isBroadcastPaused)
         defaults?.synchronize()
     }
 
     override func broadcastFinished() {
         let defaults = UserDefaults(suiteName: appGroupID)
-        defaults?.set(false, forKey: "isBroadcasting")
-        defaults?.set(self.frameCount, forKey: "totalFrameCount")
+        defaults?.set(false, forKey: AppConstants.UserDefaultsKeys.isBroadcasting)
+        defaults?.set(false, forKey: AppConstants.UserDefaultsKeys.isBroadcastPaused)
+        defaults?.set(self.frameCount, forKey: AppConstants.UserDefaultsKeys.totalFrameCount)
+        defaults?.set(0, forKey: AppConstants.UserDefaultsKeys.currentFrameCount)
         defaults?.synchronize()
     }
 
@@ -53,7 +55,7 @@ class SampleHandler: RPBroadcastSampleHandler {
         // Using UserDefaults for frame count signaling; actual frame data
         // transfers via shared container directory for performance
         let defaults = UserDefaults(suiteName: appGroupID)
-        defaults?.set(self.frameCount, forKey: "currentFrameCount")
+        defaults?.set(self.frameCount, forKey: AppConstants.UserDefaultsKeys.currentFrameCount)
 
         if self.frameCount % 3 == 0 { // Sample every 3rd frame to reduce processing load
             self.writeFrameToSharedContainer(imageBuffer)

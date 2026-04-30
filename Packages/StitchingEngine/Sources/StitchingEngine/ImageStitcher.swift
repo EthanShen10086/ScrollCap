@@ -1,15 +1,12 @@
 import CoreGraphics
 import CoreImage
 import Foundation
-import SharedModels
 import Vision
 
 public actor ImageStitcher {
-    private let overlapThreshold: CGFloat
     private let minScrollDelta: CGFloat
 
-    public init(overlapThreshold: CGFloat = 0.05, minScrollDelta: CGFloat = 5.0) {
-        self.overlapThreshold = overlapThreshold
+    public init(minScrollDelta: CGFloat = 5.0) {
         self.minScrollDelta = minScrollDelta
     }
 
@@ -128,6 +125,7 @@ public enum StitchingError: Error, LocalizedError {
     case alignmentFailed
     case noFrames
     case contextCreationFailed
+    /// Reserved for future overlap validation.
     case insufficientOverlap
 
     public var errorDescription: String? {

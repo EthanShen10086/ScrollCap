@@ -4,7 +4,6 @@ import SwiftUI
 
 struct ExportSheet: View {
     let screenshot: Screenshot
-    let viewModel: CaptureViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.userMode) private var userMode
     @State private var selectedFormat: ExportFormat = .png
@@ -111,6 +110,7 @@ struct ExportSheet: View {
         defer { isSaving = false }
 
         let options = ExportOptions(format: selectedFormat, compressionQuality: quality)
+        let service = ExportService()
 
         #if os(macOS)
         let panel = NSSavePanel()
@@ -122,7 +122,7 @@ struct ExportSheet: View {
         }
 
         do {
-            try await self.viewModel.exportScreenshot(options: options, to: url)
+            try await service.export(image: self.screenshot.image, options: options, to: url)
             AnalyticsManager.shared.track(.exportSaved(format: self.selectedFormat.fileExtension))
             self.dismiss()
         } catch {
@@ -130,7 +130,7 @@ struct ExportSheet: View {
         }
         #elseif os(iOS)
         do {
-            if let data = try await viewModel.exportToData(options: options) {
+            if let data = try await service.exportToData(image: self.screenshot.image, options: options) {
                 let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(
                     "ScrollCap_\(Int(Date().timeIntervalSince1970)).\(self.selectedFormat.fileExtension)"
                 )

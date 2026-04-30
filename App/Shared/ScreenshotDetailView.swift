@@ -11,7 +11,6 @@ struct ScreenshotDetailView: View {
     @State private var showExport = false
     @State private var showOCR = false
     @State private var showPaywall = false
-    @State private var viewModel = CaptureViewModel()
 
     var body: some View {
         GeometryReader { geometry in
@@ -89,7 +88,7 @@ struct ScreenshotDetailView: View {
                 #endif
             }
             .sheet(isPresented: self.$showExport) {
-                ExportSheet(screenshot: self.screenshot, viewModel: self.viewModel)
+                ExportSheet(screenshot: self.screenshot)
             }
             .sheet(isPresented: self.$showOCR) {
                 OCRResultView(image: self.screenshot.image)

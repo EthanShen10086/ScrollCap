@@ -78,9 +78,10 @@ actor APIClient: NetworkClient {
         _ type: T.Type,
         url: URL,
         body: any Encodable,
+        headers: [String: String]? = nil,
         config: RequestConfig = .default
     ) async throws -> T {
-        try await self.request(type, url: url, method: .post, body: body, config: config)
+        try await self.request(type, url: url, method: .post, body: body, headers: headers, config: config)
     }
 
     // MARK: - Fire & Forget (for analytics uploads, etc.)

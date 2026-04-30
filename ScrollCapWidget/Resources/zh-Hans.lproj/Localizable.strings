@@ -1,0 +1,19 @@
+/* Widget */
+"widget.name" = "ScrollCap";
+"widget.capture" = "截图";
+"widget.quickCapture" = "快速截图";
+"widget.captures %lld" = "%lld 张截图";
+"widget.configName" = "ScrollCap";
+"widget.configDesc" = "快速访问滚动截图功能。";
+
+/* Capture Status */
+"status.preparing" = "准备中...";
+"status.recording" = "录制中";
+"status.stitching" = "拼接中...";
+"status.completed" = "已完成";
+"status.failed" = "失败";
+
+/* Live Activity */
+"liveactivity.frames %lld" = "%lld 帧";
+"liveactivity.elapsed %lld" = "%lld秒";
+"liveactivity.estimatedHeight %lld" = "约%lld像素";

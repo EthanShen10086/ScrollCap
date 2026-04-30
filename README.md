@@ -12,6 +12,12 @@ A native SwiftUI scrolling screenshot tool for iOS, iPadOS, and macOS. Capture l
 - **Vision-Powered Stitching**: Uses Apple's Vision framework (`VNTranslationalImageRegistrationRequest`) for pixel-accurate frame alignment
 - **Zero Dependencies**: Built entirely with Apple-native frameworks — no third-party libraries
 - **Image Editor**: Crop, annotate, and export in PNG/JPEG/HEIC/PDF formats
+- **OCR Text Recognition**: Extract Chinese and English text from screenshots
+- **iCloud Sync**: Cross-device screenshot history synchronization
+- **Widget**: Home Screen / Lock Screen one-tap quick capture
+- **Multiple Payment Methods**: App Store, Apple Pay, Stripe, WeChat Pay, Alipay, PayPal
+- **Minor Mode**: Hide payments, limit usage time, simplified interface
+- **Elder-Friendly Mode**: Large fonts, large buttons, high contrast, reduced animations
 
 ## Architecture
 
@@ -22,6 +28,7 @@ ScrollCap/
 │   ├── iOS/                     # iOS/iPadOS-specific views
 │   └── macOS/                   # macOS-specific views (MenuBarExtra, region selector)
 ├── BroadcastExtension/          # iOS ReplayKit Broadcast Upload Extension
+├── ScrollCapWidget/             # WidgetKit widget extension
 └── Packages/                    # Modular Swift Packages
     ├── SharedModels/            # Data models shared across all modules
     ├── DesignSystem/            # Liquid Glass compat, theme, adaptive navigation
@@ -63,16 +70,19 @@ git clone https://github.com/EthanShen10086/ScrollCap.git
 cd ScrollCap
 ```
 
-### 2. Generate Xcode Project
+### 2. One-Click Setup (Recommended)
+
+```bash
+bash setup.sh
+```
+
+This script automatically installs XcodeGen, SwiftLint, SwiftFormat, configures Git Hooks, generates and opens the Xcode project.
+
+### 3. Manual Setup
 
 ```bash
 brew install xcodegen   # if not already installed
 xcodegen generate
-```
-
-### 3. Open & Build
-
-```bash
 open ScrollCap.xcodeproj
 ```
 
@@ -91,14 +101,28 @@ open ScrollCap.xcodeproj
   5. App expires after 7 days — rebuild to renew
 - **macOS**: Build & Run directly, no special signing needed
 
+## Code Quality
+
+- **SwiftLint** + **SwiftFormat** — automatic code style checking
+- **Git Hooks** — pre-commit auto lint, commit messages follow Conventional Commits
+- **CI/CD** — GitHub Actions automated build and checks
+
 ## Tech Stack
 
-- **SwiftUI** — declarative UI framework
-- **ScreenCaptureKit** — macOS screen capture (macOS 14+)
-- **ReplayKit** — iOS screen recording
-- **Vision** — image alignment and registration
-- **Swift Package Manager** — modular dependency management
-- **XcodeGen** — Xcode project generation from YAML
+| Category | Technology |
+|----------|-----------|
+| Language | Swift 6 |
+| UI Framework | SwiftUI |
+| State Management | `@Observable` + SwiftUI Environment |
+| macOS Capture | ScreenCaptureKit |
+| iOS Capture | ReplayKit + Broadcast Extension |
+| Image Alignment | Vision Framework |
+| Text Recognition | Vision Framework |
+| In-App Purchase | StoreKit 2 |
+| Cloud Sync | iCloud Documents |
+| Widgets | WidgetKit + AppIntents |
+| Project Generation | XcodeGen |
+| Third-Party Dependencies | **Zero** |
 
 ## License
 

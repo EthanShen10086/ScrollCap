@@ -18,6 +18,7 @@ public final class ReplayKitCaptureService: NSObject, CaptureService {
     private var collectedFrames: [StitchFrame] = []
     private let recorder = RPScreenRecorder.shared()
     private var isRecording = false
+    private let ciContext = CIContext()
 
     override public init() {
         super.init()
@@ -49,8 +50,7 @@ public final class ReplayKitCaptureService: NSObject, CaptureService {
             guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
             let ciImage = CIImage(cvImageBuffer: imageBuffer)
-            let context = CIContext()
-            guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
+            guard let cgImage = self.ciContext.createCGImage(ciImage, from: ciImage.extent) else { return }
 
             Task { @MainActor [weak self] in
                 await self?.processFrame(cgImage)

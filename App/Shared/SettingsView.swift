@@ -132,8 +132,14 @@ struct SettingsView: View {
             }
 
             Section("settings.about") {
-                LabeledContent("settings.version", value: "1.0.0")
-                LabeledContent("settings.build", value: "1")
+                LabeledContent(
+                    "settings.version",
+                    value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+                )
+                LabeledContent(
+                    "settings.build",
+                    value: Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+                )
 
                 if !self.appState.isMinorMode {
                     Link(destination: URL(string: "https://github.com/EthanShen10086/ScrollCap")!) {
@@ -173,6 +179,12 @@ struct SettingsView: View {
         Group {
             LabeledContent("settings.captureMethod", value: String(localized: "method.screenCaptureKit"))
             Toggle("settings.showCursor", isOn: .constant(false))
+                .disabled(true)
+                .overlay(alignment: .trailing) {
+                    Text("settings.comingSoon")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             LabeledContent("settings.frameRate", value: String(localized: "settings.frameRate.value"))
         }
     }

@@ -9,6 +9,10 @@ public enum AppConstants {
         public static let isBroadcasting = "isBroadcasting"
         public static let latestFrameTimestamp = "latestFrameTimestamp"
         public static let broadcastFrameData = "broadcastFrameData"
+        public static let broadcastStartTime = "broadcastStartTime"
+        public static let isBroadcastPaused = "isBroadcastPaused"
+        public static let currentFrameCount = "currentFrameCount"
+        public static let totalFrameCount = "totalFrameCount"
     }
 
     public enum URLSchemes {

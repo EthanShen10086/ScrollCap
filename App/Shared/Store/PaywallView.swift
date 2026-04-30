@@ -405,9 +405,7 @@ struct PaywallView: View {
     private func handlePaymentResult(_ result: PaymentResult) {
         let methodId = self.selectedPaymentMethod.rawValue
         switch result {
-        case let .success(transactionId):
-            let source = self.entitlementSource(for: self.selectedPaymentMethod)
-            EntitlementManager.shared.onThirdPartyPaymentVerified(source: source, transactionId: transactionId)
+        case .success:
             self.showSuccessAlert = true
             AnalyticsManager.shared.track(.purchaseCompleted(productId: methodId))
         case .cancelled:
@@ -415,17 +413,6 @@ struct PaywallView: View {
         case let .failed(error):
             self.errorMessage = error.localizedDescription
             AnalyticsManager.shared.track(.purchaseFailed(productId: methodId, error: error.localizedDescription))
-        }
-    }
-
-    private func entitlementSource(for method: PaymentMethod) -> EntitlementSource {
-        switch method {
-        case .applePurchase: return .appStoreIAP
-        case .applePay: return .applePay
-        case .stripe: return .stripe
-        case .wechatPay: return .wechatPay
-        case .alipay: return .alipay
-        case .paypal: return .paypal
         }
     }
 

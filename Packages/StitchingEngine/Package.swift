@@ -11,13 +11,9 @@ let package = Package(
     products: [
         .library(name: "StitchingEngine", targets: ["StitchingEngine"]),
     ],
-    dependencies: [
-        .package(path: "../SharedModels"),
-    ],
     targets: [
         .target(
-            name: "StitchingEngine",
-            dependencies: ["SharedModels"]
+            name: "StitchingEngine"
         ),
         .testTarget(
             name: "StitchingEngineTests",

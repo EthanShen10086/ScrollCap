@@ -18,6 +18,7 @@ public final class ScreenCaptureService: NSObject, CaptureService {
     private let session = CaptureSession()
     private let aligner = FrameAligner()
     private var collectedFrames: [StitchFrame] = []
+    private let ciContext = CIContext()
 
     override public init() {
         super.init()
@@ -139,8 +140,7 @@ extension ScreenCaptureService: SCStreamOutput {
         guard let imageBuffer = sampleBuffer.imageBuffer else { return }
 
         let ciImage = CIImage(cvImageBuffer: imageBuffer)
-        let context = CIContext()
-        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
+        guard let cgImage = ciContext.createCGImage(ciImage, from: ciImage.extent) else { return }
 
         Task { @MainActor in
             await self.processFrame(cgImage)

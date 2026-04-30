@@ -12,7 +12,7 @@ enum SCError: Error, LocalizedError, Identifiable {
     case generic(String)
 
     var id: String {
-        localizedDescription
+        "\(self.analyticsDomain).\(self.analyticsCode).\(UUID().uuidString)"
     }
 
     enum CaptureFailure: String {

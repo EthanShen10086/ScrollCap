@@ -1,10 +1,27 @@
 # ScrollCap 需求与功能追踪文档
 
-> 最后更新：2026-04-30 (第 7 轮迭代)
+> 最后更新：2026-04-30 (第 8 轮迭代)
 
 ## 项目概述
 
 ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadOS。使用 SwiftUI 构建，采用 Clean Architecture + MVVM 架构设计。
+
+---
+
+## 最近更新
+
+### 2026-04-30 — 第 8 轮审计修复
+
+| 修复项 | 说明 |
+|--------|------|
+| CIContext 性能优化 | 复用 CIContext 实例，避免重复创建带来的性能开销 |
+| 支付流程安全修复 | 修复支付验证流程中的安全隐患 |
+| 导出流程修复 | 修复导出失败时的错误处理和用户反馈 |
+| Widget 本地化 | Widget 文案支持中英文国际化 |
+| Live Activity i18n | 灵动岛/锁屏实时进度文案国际化 |
+| SampleHandler 清理 | BroadcastExtension SampleHandler 代码清理和优化 |
+| 协议一致性修复 | 统一各模块协议实现，确保接口一致性 |
+| GlobalShortcutManager 内存泄漏修复 | 修复全局快捷键管理器的内存泄漏问题 |
 
 ---
 

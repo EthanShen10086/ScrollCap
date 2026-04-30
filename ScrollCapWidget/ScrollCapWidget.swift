@@ -169,7 +169,7 @@ struct CaptureActivityWidget: Widget {
                         .foregroundStyle(.blue)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text("\(context.state.elapsedSeconds)s")
+                    Text(String(localized: "liveactivity.elapsed \(context.state.elapsedSeconds)"))
                         .font(.system(.headline, design: .monospaced))
                         .foregroundStyle(.secondary)
                 }
@@ -181,7 +181,7 @@ struct CaptureActivityWidget: Widget {
                     if context.state.estimatedHeight > 0 {
                         HStack {
                             Image(systemName: "arrow.up.and.down")
-                            Text("~\(context.state.estimatedHeight)px")
+                            Text(String(localized: "liveactivity.estimatedHeight \(context.state.estimatedHeight)"))
                                 .font(.system(.caption, design: .monospaced))
                         }
                         .foregroundStyle(.secondary)
@@ -216,10 +216,16 @@ struct CaptureActivityLockScreenView: View {
                     .font(.system(.headline, design: .rounded))
 
                 HStack(spacing: 12) {
-                    Label("\(self.state.capturedFrames) frames", systemImage: "photo.stack")
-                    Label("\(self.state.elapsedSeconds)s", systemImage: "clock")
+                    Label(
+                        String(localized: "liveactivity.frames \(self.state.capturedFrames)"),
+                        systemImage: "photo.stack"
+                    )
+                    Label(String(localized: "liveactivity.elapsed \(self.state.elapsedSeconds)"), systemImage: "clock")
                     if self.state.estimatedHeight > 0 {
-                        Label("~\(self.state.estimatedHeight)px", systemImage: "arrow.up.and.down")
+                        Label(
+                            String(localized: "liveactivity.estimatedHeight \(self.state.estimatedHeight)"),
+                            systemImage: "arrow.up.and.down"
+                        )
                     }
                 }
                 .font(.system(.caption, design: .monospaced))
