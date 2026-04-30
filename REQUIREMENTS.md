@@ -1,6 +1,6 @@
 # ScrollCap 需求与功能追踪文档
 
-> 最后更新：2026-04-29 (第 6 轮迭代)
+> 最后更新：2026-04-30 (第 7 轮迭代)
 
 ## 项目概述
 
@@ -90,6 +90,21 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 圆形 Widget | ✅ 已完成 | `.accessoryCircular` - 图标快捷方式 |
 | Deep Link | ✅ 已完成 | `scrollcap://capture` + `onOpenURL` 处理 |
 | App Intent | ✅ 已完成 | `QuickCaptureIntent` 打开应用并触发截图 |
+
+---
+
+## Live Activity (灵动岛 / 锁屏实时进度)
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| ActivityAttributes 定义 | ✅ 已完成 | `CaptureActivityAttributes` in SharedModels（帧数/时间/高度/阶段）|
+| 灵动岛 compact | ✅ 已完成 | Leading: 相机图标 / Trailing: 帧数 |
+| 灵动岛 expanded | ✅ 已完成 | 帧数 + 耗时 + 阶段 + 预估高度 |
+| 锁屏展示 | ✅ 已完成 | `CaptureActivityLockScreenView` 横向布局 |
+| 生命周期管理 | ✅ 已完成 | `LiveActivityManager` - start/update/end + CaptureViewModel 自动挂钩 |
+| Info.plist 声明 | ✅ 已完成 | `NSSupportsLiveActivities = true` |
+| 状态同步 | ✅ 已完成 | `CaptureState` 变化自动 → `Activity.update` |
+| 失败/取消自动关闭 | ✅ 已完成 | `endWithFailure()` 立即 dismiss |
 
 ---
 
@@ -400,26 +415,37 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 ## 架构设计
 
 ```
-┌─────────────────────────────────────────┐
-│            App Layer (SwiftUI)          │
-│  ScrollCapApp → ContentView            │
-│  CaptureView ←→ CaptureViewModel       │
-│  HistoryView / SettingsView / Editor    │
-│  Analytics / Store / iCloudSync         │
-│  UserMode (Minor / Elder)               │
-│  ScrollCapWidget (WidgetKit)            │
-├─────────────────────────────────────────┤
-│          Platform Layer                 │
-│  macOS: ScreenCaptureService            │
-│  iOS:   ReplayKitCaptureService         │
-│         AutoScrollService               │
-│         BroadcastExtension              │
-├─────────────────────────────────────────┤
-│          Core Packages (SPM)            │
-│  SharedModels │ DesignSystem            │
-│  StitchingEngine │ CaptureKit           │
-│  ImageEditor (+ OCRService)             │
-└─────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                    App Layer (SwiftUI)                        │
+│  ScrollCapApp → ContentView                                  │
+│  CaptureView ←→ CaptureViewModel                            │
+│  HistoryView / SettingsView / ImageEditorView                │
+│  UserMode (Minor / Elder / Standard)                         │
+│  ScrollCapWidget (WidgetKit + Live Activity)                 │
+├──────────────────────────────────────────────────────────────┤
+│                 Service Layer (Protocols)                     │
+│  AnalyticsTracking  → AnalyticsManager (JSONL + OSLog)       │
+│  NetworkClient      → APIClient actor (retry + logging)      │
+│  EntitlementProviding → EntitlementManager (Keychain)        │
+│  ErrorPresenter (singleton, bridges SCError → Analytics)     │
+│  PerformanceMonitor (signpost + memory)                      │
+│  CrashReporter (signal-safe + sentinel file)                 │
+├──────────────────────────────────────────────────────────────┤
+│                 Store Layer (Payment)                         │
+│  StoreManager (StoreKit 2 IAP)                               │
+│  ApplePayService / StripeService / ThirdPartyService         │
+│  → All bridge to EntitlementManager on verification          │
+├──────────────────────────────────────────────────────────────┤
+│                 Platform Layer                                │
+│  macOS: ScreenCaptureService + GlobalShortcutManager         │
+│  iOS:   ReplayKitCaptureService + AutoScrollService          │
+│         BroadcastExtension + LiveActivityManager             │
+├──────────────────────────────────────────────────────────────┤
+│              Core Packages (SPM, zero deps)                   │
+│  SharedModels (AppConstants / CaptureState / Screenshot)     │
+│  DesignSystem (SCTheme / UserMode / Components)              │
+│  StitchingEngine / CaptureKit / ImageEditor (+ OCR)          │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ---
