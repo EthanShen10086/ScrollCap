@@ -66,6 +66,12 @@ targets:
       properties:
         com.apple.security.application-groups:
           - group.com.scrollcap.shared
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.ethanshen.scrollcap
+        com.apple.developer.icloud-services:
+          - CloudDocuments
+        com.apple.developer.ubiquity-container-identifiers:
+          - iCloud.com.ethanshen.scrollcap
 
   ScrollCap-macOS:
     type: application
@@ -98,6 +104,13 @@ targets:
         com.apple.security.app-sandbox: true
         com.apple.security.files.user-selected.read-write: true
         com.apple.security.assets.pictures.read-write: true
+        com.apple.security.network.client: true
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.ethanshen.scrollcap
+        com.apple.developer.icloud-services:
+          - CloudDocuments
+        com.apple.developer.ubiquity-container-identifiers:
+          - iCloud.com.ethanshen.scrollcap
 
   BroadcastExtension:
     type: app-extension

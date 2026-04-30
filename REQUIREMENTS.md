@@ -489,4 +489,4 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 第三方支付后端 | 中 | 客户端已完成，需部署服务端预下单 / 验证接口 |
 | 视频录制模式 | 低 | 滚动过程录制为视频 |
 | TestFlight 分发 | 低 | 需要 Apple Developer 账号 |
-| macOS iCloud Entitlement | 中 | macOS 构建需添加 iCloud 容器能力才能实际同步 |
+| ~~macOS iCloud Entitlement~~ | ~~中~~ | ✅ 已完成：macOS + iOS 均已添加 iCloud 容器 + CloudDocuments entitlement |
