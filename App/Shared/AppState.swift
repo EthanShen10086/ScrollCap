@@ -1,4 +1,5 @@
 import DesignSystem
+import OSLog
 import SharedModels
 import SwiftUI
 import WidgetKit
@@ -82,7 +83,7 @@ final class AppState {
 
     private func syncToCloudIfEnabled(_ screenshot: Screenshot) {
         guard self.iCloudSyncEnabled, ICloudSyncManager.shared.isAvailable else { return }
-        Task {
+        Task.detached(priority: .utility) {
             guard let data = screenshot.pngData else { return }
             let record = ScreenshotSyncRecord(
                 id: screenshot.id,
@@ -104,6 +105,11 @@ final class AppState {
             self.selectedScreenshot = self.screenshots.first
         }
         AnalyticsManager.shared.track(.screenshotDeleted)
+    }
+
+    func handleMemoryWarning() {
+        self.currentPreview = nil
+        SCLogger.app.warning("Memory warning: cleared preview cache")
     }
 }
 

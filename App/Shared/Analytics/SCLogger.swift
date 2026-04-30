@@ -8,6 +8,7 @@ public enum SCLogger {
     public static let sync = Logger(subsystem: "com.ethanshen.scrollcap", category: "sync")
     public static let payment = Logger(subsystem: "com.ethanshen.scrollcap", category: "payment")
     public static let general = Logger(subsystem: "com.ethanshen.scrollcap", category: "general")
+    public static let app = Logger(subsystem: "com.ethanshen.scrollcap", category: "app")
     public static let ocr = Logger(subsystem: "com.ethanshen.scrollcap", category: "ocr")
 }
 

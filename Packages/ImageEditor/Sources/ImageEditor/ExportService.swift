@@ -11,64 +11,68 @@ public actor ExportService {
         image: CGImage,
         options: ExportOptions,
         to url: URL
-    ) throws {
-        let utType = options.format.utType
+    ) async throws {
+        try await Task.detached(priority: .userInitiated) {
+            let utType = options.format.utType
 
-        guard let destination = CGImageDestinationCreateWithURL(
-            url as CFURL,
-            utType.identifier as CFString,
-            1,
-            nil
-        ) else {
-            throw ExportError.destinationCreationFailed
-        }
+            guard let destination = CGImageDestinationCreateWithURL(
+                url as CFURL,
+                utType.identifier as CFString,
+                1,
+                nil
+            ) else {
+                throw ExportError.destinationCreationFailed
+            }
 
-        var properties: [CFString: Any] = [:]
+            var properties: [CFString: Any] = [:]
 
-        if options.format.supportedCompressionQuality {
-            properties[kCGImageDestinationLossyCompressionQuality] = options.compressionQuality
-        }
+            if options.format.supportedCompressionQuality {
+                properties[kCGImageDestinationLossyCompressionQuality] = options.compressionQuality
+            }
 
-        if options.scale != 1.0 {
-            properties[kCGImagePropertyDPIWidth] = 72.0 * options.scale
-            properties[kCGImagePropertyDPIHeight] = 72.0 * options.scale
-        }
+            if options.scale != 1.0 {
+                properties[kCGImagePropertyDPIWidth] = 72.0 * options.scale
+                properties[kCGImagePropertyDPIHeight] = 72.0 * options.scale
+            }
 
-        CGImageDestinationAddImage(destination, image, properties as CFDictionary)
+            CGImageDestinationAddImage(destination, image, properties as CFDictionary)
 
-        guard CGImageDestinationFinalize(destination) else {
-            throw ExportError.finalizationFailed
-        }
+            guard CGImageDestinationFinalize(destination) else {
+                throw ExportError.finalizationFailed
+            }
+        }.value
     }
 
     public func exportToData(
         image: CGImage,
         options: ExportOptions
-    ) throws -> Data {
-        let data = NSMutableData()
-        let utType = options.format.utType
+    ) async throws -> Data {
+        try await Task.detached(priority: .userInitiated) {
+            let data = NSMutableData()
+            let utType = options.format.utType
 
-        guard let destination = CGImageDestinationCreateWithData(
-            data,
-            utType.identifier as CFString,
-            1,
-            nil
-        ) else {
-            throw ExportError.destinationCreationFailed
-        }
+            guard let destination = CGImageDestinationCreateWithData(
+                data,
+                utType.identifier as CFString,
+                1,
+                nil
+            ) else {
+                throw ExportError.destinationCreationFailed
+            }
 
-        var properties: [CFString: Any] = [:]
-        if options.format.supportedCompressionQuality {
-            properties[kCGImageDestinationLossyCompressionQuality] = options.compressionQuality
-        }
+            var properties: [CFString: Any] = [:]
+            if options.format.supportedCompressionQuality {
+                properties[kCGImageDestinationLossyCompressionQuality] = options.compressionQuality
+            }
 
-        CGImageDestinationAddImage(destination, image, properties as CFDictionary)
+            CGImageDestinationAddImage(destination, image, properties as CFDictionary)
 
-        guard CGImageDestinationFinalize(destination) else {
-            throw ExportError.finalizationFailed
-        }
+            guard CGImageDestinationFinalize(destination) else {
+                throw ExportError.finalizationFailed
+            }
 
-        return data as Data
+            return data as Data
+        }.value
     }
 
     public func suggestedFilename(format: ExportFormat) -> String {

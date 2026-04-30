@@ -130,14 +130,13 @@ struct ExportSheet: View {
         }
         #elseif os(iOS)
         do {
-            if let data = try await service.exportToData(image: self.screenshot.image, options: options) {
-                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(
-                    "ScrollCap_\(Int(Date().timeIntervalSince1970)).\(self.selectedFormat.fileExtension)"
-                )
-                try data.write(to: tempURL)
-                AnalyticsManager.shared.track(.exportSaved(format: self.selectedFormat.fileExtension))
-                self.dismiss()
-            }
+            let data = try await service.exportToData(image: self.screenshot.image, options: options)
+            let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+                "ScrollCap_\(Int(Date().timeIntervalSince1970)).\(self.selectedFormat.fileExtension)"
+            )
+            try data.write(to: tempURL)
+            AnalyticsManager.shared.track(.exportSaved(format: self.selectedFormat.fileExtension))
+            self.dismiss()
         } catch {
             ErrorPresenter.shared.present(.export(.fileWriteFailed))
         }

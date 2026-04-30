@@ -10,7 +10,7 @@ public struct AnimatedMeshBackground: View {
     }
 
     public var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / 15.0)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
             MeshGradient(
                 width: 3,

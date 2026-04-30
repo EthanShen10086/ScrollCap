@@ -76,7 +76,7 @@ struct HistoryScreenshotCard: View {
     var body: some View {
         Button(action: self.action) {
             VStack(alignment: .leading, spacing: SCTheme.Spacing.sm) {
-                Image(decorative: self.screenshot.image, scale: 1.0)
+                Image(decorative: self.screenshot.thumbnail, scale: 1.0)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 160)

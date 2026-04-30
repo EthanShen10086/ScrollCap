@@ -110,9 +110,6 @@
 "pro.feature.editor.desc" = "使用专业工具对截图进行标注、裁剪和编辑。";
 
 /* Live Activity */
-"status.preparing" = "准备中...";
-"status.recording" = "录制中";
-"status.stitching" = "拼接中...";
 "status.completed" = "已完成";
 "status.failed" = "失败";
 

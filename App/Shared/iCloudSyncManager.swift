@@ -65,7 +65,9 @@ final class ICloudSyncManager {
 
         let fileURL = documentsURL.appendingPathComponent(record.filename)
         do {
-            try imageData.write(to: fileURL)
+            try await Task.detached(priority: .utility) {
+                try imageData.write(to: fileURL)
+            }.value
             try await self.updateManifest(adding: record)
             self.syncState = .synced
             self.lastSyncDate = Date()

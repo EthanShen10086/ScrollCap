@@ -1,5 +1,9 @@
 import DesignSystem
+import OSLog
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 @main
 struct ScrollCapApp: App {
@@ -19,9 +23,15 @@ struct ScrollCapApp: App {
                 .environment(\.userMode, self.appState.userMode)
                 .applyUserMode(self.appState.userMode)
                 .onAppear {
-                    AnalyticsManager.shared.track(.appLaunched)
+                    Task(priority: .utility) {
+                        await MainActor.run {
+                            AnalyticsManager.shared.track(.appLaunched)
+                        }
+                    }
                     if self.appState.iCloudSyncEnabled {
-                        ICloudSyncManager.shared.startMonitoring()
+                        Task(priority: .utility) {
+                            await ICloudSyncManager.shared.startMonitoring()
+                        }
                     }
                     #if os(macOS)
                     self.setupMacOS()
@@ -37,6 +47,13 @@ struct ScrollCapApp: App {
                         PerformanceMonitor.reportMemoryUsage()
                     }
                 }
+            #if os(iOS)
+                .onReceive(NotificationCenter.default
+                    .publisher(for: UIApplication.didReceiveMemoryWarningNotification)) { _ in
+                        SCLogger.app.warning("Memory warning received, clearing caches")
+                        self.appState.handleMemoryWarning()
+                }
+            #endif
         }
         #if os(macOS)
         .windowStyle(.titleBar)

@@ -110,9 +110,6 @@
 "pro.feature.editor.desc" = "Annotate, crop, and edit your screenshots with professional tools.";
 
 /* Live Activity */
-"status.preparing" = "Preparing...";
-"status.recording" = "Recording";
-"status.stitching" = "Stitching...";
 "status.completed" = "Completed";
 "status.failed" = "Failed";
 

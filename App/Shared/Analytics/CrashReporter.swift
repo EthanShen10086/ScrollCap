@@ -35,7 +35,12 @@ final class CrashReporter {
         }
 
         self.setupSignalHandlers()
-        self.checkForPreviousCrash()
+
+        Task.detached(priority: .utility) {
+            await MainActor.run {
+                self.checkForPreviousCrash()
+            }
+        }
     }
 
     private func setupSignalHandlers() {
