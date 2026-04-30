@@ -1,6 +1,6 @@
 # ScrollCap 需求与功能追踪文档
 
-> 最后更新：2026-04-30 (第 8 轮迭代)
+> 最后更新：2026-04-30 (第 9 轮迭代)
 
 ## 项目概述
 
@@ -9,6 +9,24 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 ---
 
 ## 最近更新
+
+### 2026-04-30 — 第 9 轮性能与体积优化
+
+| 优化项 | 类别 | 说明 |
+|--------|------|------|
+| CrashReporter 启动延迟 | 启动速度 | 信号处理器保持同步安装，崩溃历史分析延迟到 `Task.detached` 后台执行 |
+| Analytics/iCloud 延迟初始化 | 启动速度 | `appLaunched` 埋点和 iCloud 监听延迟到首帧渲染后的 `Task(priority: .utility)` |
+| iCloud 文件 I/O 后台化 | 启动速度 | PNG 编码 + 文件写入通过 `Task.detached` 移出主线程 |
+| Screenshot 缩略图系统 | 交互流畅 | `Screenshot` 模型新增存储型 `thumbnail` 属性（400px），HistoryView 列表使用缩略图 |
+| ExportService 后台编码 | 交互流畅 | 图片编码和文件写入通过 `Task.detached(priority: .userInitiated)` 在后台线程执行 |
+| iOS 内存警告处理 | 内存管理 | 监听 `didReceiveMemoryWarningNotification`，自动清除 preview 缓存 |
+| Release Thin LTO | 包体积 | 启用链接时优化（`LLVM_LTO: YES_THIN`），跨模块死代码消除 |
+| Dead Code Stripping | 包体积 | `DEAD_CODE_STRIPPING: YES` + `STRIP_SWIFT_SYMBOLS: YES` |
+| Whole Module Optimization | 包体积 | `SWIFT_COMPILATION_MODE: wholemodule` + `GCC_OPTIMIZATION_LEVEL: s` |
+| Release 断言移除 | 包体积 | `ENABLE_NS_ASSERTIONS: NO`，移除生产环境断言代码 |
+| Widget 依赖精简 | 包体积 | 移除 ScrollCapWidget 未使用的 DesignSystem 依赖 |
+| 重复本地化键清理 | 代码质量 | 清理 en/zh-Hans Localizable.strings 中的重复 key |
+| AnimatedMeshBackground 降频 | GPU/电池 | 背景动画帧率从 30fps 降至 15fps，GPU 负载减半 |
 
 ### 2026-04-30 — 第 8 轮审计修复
 
@@ -415,6 +433,61 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | **共享常量统一** | ✅ 已完成 | `AppConstants` 集中 App Group ID / UserDefaults keys / URL Schemes |
 | **SCError 解耦** | ✅ 已完成 | 域模型不再依赖 `AnalyticsEvent`，改暴露纯 `String` 属性 |
 | **未成年支付防护** | ✅ 已完成 | `ProFeatureGate`/`ExportSheet`/`proAction` 统一拦截未成年升级入口 |
+
+---
+
+## 性能优化
+
+### 启动速度
+
+| 优化项 | 状态 | 说明 |
+|--------|------|------|
+| CrashReporter 延迟加载 | ✅ 已完成 | 信号处理器同步安装，崩溃历史分析延迟到 `Task.detached(priority: .utility)` |
+| Analytics 延迟初始化 | ✅ 已完成 | `appLaunched` 埋点延迟到首帧渲染后 `Task(priority: .utility)` |
+| iCloud 延迟初始化 | ✅ 已完成 | `startMonitoring` 延迟到 `Task(priority: .utility)` |
+| 单例惰性初始化 | ✅ 已完成 | `StoreManager`、`APIClient`、`EntitlementManager` 等仅在首次使用时初始化 |
+
+### 包体积 (Release)
+
+| 优化项 | 状态 | 说明 |
+|--------|------|------|
+| Thin LTO | ✅ 已完成 | `LLVM_LTO: YES_THIN` 跨模块死代码消除 |
+| Dead Code Stripping | ✅ 已完成 | `DEAD_CODE_STRIPPING: YES` 剥离未引用符号 |
+| Swift Symbol Stripping | ✅ 已完成 | `STRIP_SWIFT_SYMBOLS: YES` 剥离 Swift 元数据 |
+| Whole Module Optimization | ✅ 已完成 | `SWIFT_COMPILATION_MODE: wholemodule` 全模块优化 |
+| Size-optimized C/ObjC | ✅ 已完成 | `GCC_OPTIMIZATION_LEVEL: s` 按体积优化 |
+| Release 断言移除 | ✅ 已完成 | `ENABLE_NS_ASSERTIONS: NO` |
+| Widget 依赖精简 | ✅ 已完成 | 移除 ScrollCapWidget 未使用的 DesignSystem 依赖 |
+
+### 交互流畅度
+
+| 优化项 | 状态 | 说明 |
+|--------|------|------|
+| 缩略图系统 | ✅ 已完成 | `Screenshot.thumbnail` 存储型属性，初始化时生成 400px 缩略图 |
+| 列表使用缩略图 | ✅ 已完成 | `HistoryView` 网格使用 `thumbnail` 而非全分辨率 `image` |
+| 导出后台化 | ✅ 已完成 | `ExportService` 编码和写盘通过 `Task.detached(priority: .userInitiated)` |
+| iCloud I/O 后台化 | ✅ 已完成 | PNG 编码 + 文件写入移出主线程 |
+| 动画帧率优化 | ✅ 已完成 | `AnimatedMeshBackground` 30fps → 15fps，GPU 负载减半 |
+| 内存警告处理 | ✅ 已完成 | iOS `didReceiveMemoryWarningNotification` 清除 preview 缓存 |
+
+### 分包策略 (App Thinning / SPM 模块化)
+
+| 策略 | 状态 | 说明 |
+|------|------|------|
+| SPM 模块分包 | ✅ 已完成 | 5 个独立 Swift Package：SharedModels / DesignSystem / StitchingEngine / CaptureKit / ImageEditor |
+| 平台代码隔离 | ✅ 已完成 | `CaptureKitMac` 和 `CaptureKitIOS` 分别编译，各平台只链接必要模块 |
+| Extension 最小依赖 | ✅ 已完成 | Widget 和 BroadcastExtension 仅依赖 SharedModels |
+| App Thinning | ✅ 已完成 | Xcode 上架时自动按设备切片，仅下载对应分辨率资源 |
+| `#if os()` 条件编译 | ✅ 已完成 | 平台特有代码通过编译条件隔离，不会进入其他平台的二进制 |
+
+### 多端编译产物
+
+| 目标 | 产物类型 | 链接的 SPM 包 |
+|------|----------|--------------|
+| ScrollCap-iOS | `.app` (ARM64) | SharedModels + DesignSystem + CaptureKit + CaptureKitIOS + StitchingEngine + ImageEditor |
+| ScrollCap-macOS | `.app` (ARM64/x86_64) | SharedModels + DesignSystem + CaptureKit + CaptureKitMac + StitchingEngine + ImageEditor |
+| ScrollCapWidget | `.appex` | SharedModels |
+| BroadcastExtension | `.appex` | SharedModels |
 
 ---
 
