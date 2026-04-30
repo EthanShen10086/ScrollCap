@@ -40,6 +40,18 @@ alwaysApply: true
 - Persistence: Keychain-backed. Survives app reinstall on same device.
 - NEVER read `StoreManager.shared.isPro` from UI layer — it's an internal IAP detail.
 
+## Constants & Shared Keys
+
+- All App Group IDs, UserDefaults keys, URL schemes: `AppConstants` in SharedModels.
+- **NEVER** hardcode `"group.com.scrollcap.shared"` or `"captureCount"` as string literals.
+
+## Dependency Injection & Testability
+
+- Core services expose **protocols**: `AnalyticsTracking`, `NetworkClient`, `EntitlementProviding`.
+- Production uses `.shared` singletons; tests can swap implementations.
+- Domain types (e.g. `SCError`) must NOT import observability types (`AnalyticsEvent`).
+  Use primitive data (`analyticsDomain: String`, `analyticsCode: String`) for bridge.
+
 ## Code Quality
 
 - SwiftLint + SwiftFormat enforced via pre-commit hook.
@@ -47,8 +59,9 @@ alwaysApply: true
 
 ## Cross-cutting concerns (detailed in dedicated rules)
 
-- **User modes**: See `user-modes.mdc` — minor/elder adaptation
+- **User modes**: See `user-modes.mdc` — minor/elder adaptation + payment blocking
 - **i18n**: See `i18n.mdc` — all strings localized
 - **Accessibility**: See `accessibility.mdc` — VoiceOver, ReduceMotion
 - **Dark mode**: See `dark-mode.mdc` — semantic colors
 - **Multi-platform**: See `multi-platform.mdc` — iOS/iPadOS/macOS
+- **Observability**: See `observability.mdc` — analytics, crash, perf, network

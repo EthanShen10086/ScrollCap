@@ -65,7 +65,7 @@ final class AppState {
         self.captureState.isActive
     }
 
-    private static let appGroupID = "group.com.scrollcap.shared"
+    private static let appGroupID = AppConstants.appGroupID
 
     func addScreenshot(_ screenshot: Screenshot) {
         self.screenshots.insert(screenshot, at: 0)
@@ -76,7 +76,7 @@ final class AppState {
 
     private func updateWidgetData() {
         let defaults = UserDefaults(suiteName: Self.appGroupID)
-        defaults?.set(self.screenshots.count, forKey: "captureCount")
+        defaults?.set(self.screenshots.count, forKey: AppConstants.UserDefaultsKeys.captureCount)
         WidgetCenter.shared.reloadAllTimelines()
     }
 

@@ -2,14 +2,14 @@ import Foundation
 import OSLog
 import Security
 
-// MARK: - Entitlement Protocol
+// MARK: - Entitlement Protocol (for DI / Testing)
 
-protocol EntitlementProvider: Sendable {
-    var isPro: Bool { get async }
-    func hasEntitlement(_ entitlement: Entitlement) async -> Bool
-    func grantEntitlement(_ entitlement: Entitlement, source: EntitlementSource, transactionId: String?) async
-    func revokeEntitlement(_ entitlement: Entitlement) async
-    func refreshAll() async
+@MainActor
+protocol EntitlementProviding {
+    var isPro: Bool { get }
+    func hasEntitlement(_ entitlement: Entitlement) -> Bool
+    func grantPro(source: EntitlementSource, transactionId: String?)
+    func revokeEntitlement(_ entitlement: Entitlement)
 }
 
 // MARK: - Entitlement Types
@@ -49,8 +49,8 @@ struct EntitlementRecord: Codable {
 
 @MainActor
 @Observable
-final class EntitlementManager {
-    static let shared = EntitlementManager()
+final class EntitlementManager: EntitlementProviding {
+    static let shared: EntitlementManager = .init()
 
     private(set) var activeEntitlements: Set<Entitlement> = []
     private let logger = Logger(subsystem: "com.ethanshen.scrollcap", category: "entitlement")

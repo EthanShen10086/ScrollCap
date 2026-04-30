@@ -47,6 +47,7 @@
 		5E57A0A80B2384FEF79FC438 /* SCLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA3AE8F59DE0947CA0890E9 /* SCLogger.swift */; };
 		6243032F9387DE3DCF517D75 /* StripePaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B728A43D8FB6CD231265C223 /* StripePaymentService.swift */; };
 		628034598A099757CEB1054C /* ScrollCapWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D465E85947A603F13DFC75D /* ScrollCapWidget.swift */; };
+		6361C5C35D1CA3F41FE99649 /* SharedModels in Frameworks */ = {isa = PBXBuildFile; productRef = DBC2EFBAB8E160806733B71F /* SharedModels */; };
 		6488AEB79A7F8001949D7C57 /* ProFeatureGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38EE49C167657533408F2E13 /* ProFeatureGate.swift */; };
 		66BB6A901DE051E16D4FA88D /* ImageEditor in Frameworks */ = {isa = PBXBuildFile; productRef = 19B81147C7EAE772870A4C4C /* ImageEditor */; };
 		67659ADBC2672026E3354573 /* CrashReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DEE3483E91336546F1098BD /* CrashReporter.swift */; };
@@ -215,6 +216,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		7496397635A8BB7A8083FC60 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6361C5C35D1CA3F41FE99649 /* SharedModels in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		94B9C81F109E44FCF2249B1D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -512,6 +521,7 @@
 			buildPhases = (
 				F5992DFBF5A6518BAC7CD85E /* Sources */,
 				E4DB12ABCD94CCFEA329BA18 /* Resources */,
+				7496397635A8BB7A8083FC60 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -519,6 +529,7 @@
 			);
 			name = BroadcastExtension;
 			packageProductDependencies = (
+				DBC2EFBAB8E160806733B71F /* SharedModels */,
 			);
 			productName = BroadcastExtension;
 			productReference = 501DEC1DB73CF20CED6818EA /* BroadcastExtension.appex */;
@@ -1151,6 +1162,10 @@
 		D5705CAE0516B1FE38F39D3F /* CaptureKitIOS */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CaptureKitIOS;
+		};
+		DBC2EFBAB8E160806733B71F /* SharedModels */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SharedModels;
 		};
 		EE076D6E4D76320DE2C1D956 /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -31,6 +31,7 @@ enum ProFeature: String, CaseIterable {
 
 struct ProFeatureGate: ViewModifier {
     let feature: ProFeature
+    @Environment(\.userMode) private var userMode
     @State private var showPaywall = false
 
     func body(content: Content) -> some View {
@@ -51,9 +52,11 @@ struct ProFeatureGate: ViewModifier {
                             Text(self.feature.displayName)
                                 .font(SCTheme.Typography.headline)
 
-                            BrandedButton("pro.upgrade", systemImage: "sparkles") {
-                                self.showPaywall = true
-                                AnalyticsManager.shared.track(.proUpgradeTapped)
+                            if self.userMode != .minor {
+                                BrandedButton("pro.upgrade", systemImage: "sparkles") {
+                                    self.showPaywall = true
+                                    AnalyticsManager.shared.track(.proUpgradeTapped)
+                                }
                             }
                         }
                     }

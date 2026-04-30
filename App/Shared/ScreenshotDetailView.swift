@@ -249,6 +249,8 @@ struct ScreenshotDetailView: View {
     private func proAction(_ feature: ProFeature, perform action: () -> Void) {
         if EntitlementManager.shared.isPro {
             action()
+        } else if self.userMode == .minor {
+            return
         } else {
             AnalyticsManager.shared.track(.proUpgradeTapped)
             self.showPaywall = true

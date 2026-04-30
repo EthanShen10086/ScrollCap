@@ -1,14 +1,15 @@
 import CoreMedia
 import ReplayKit
+import SharedModels
 
 class SampleHandler: RPBroadcastSampleHandler {
-    private let appGroupID = "group.com.scrollcap.shared"
+    private let appGroupID = AppConstants.appGroupID
     private var frameCount = 0
 
     override func broadcastStarted(withSetupInfo setupInfo: [String: NSObject]?) {
         self.frameCount = 0
         let defaults = UserDefaults(suiteName: appGroupID)
-        defaults?.set(true, forKey: "isBroadcasting")
+        defaults?.set(true, forKey: AppConstants.UserDefaultsKeys.isBroadcasting)
         defaults?.set(Date().timeIntervalSince1970, forKey: "broadcastStartTime")
         defaults?.synchronize()
     }

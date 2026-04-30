@@ -2,10 +2,11 @@
 import CoreGraphics
 import Foundation
 import ImageIO
+import SharedModels
 
 @MainActor
 final class SharedFrameReader {
-    private let appGroupID = "group.com.scrollcap.shared"
+    private let appGroupID = AppConstants.appGroupID
     private var lastReadFrameCount = 0
     private var timer: Timer?
     var onNewFrame: ((CGImage) -> Void)?

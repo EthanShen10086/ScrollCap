@@ -1,8 +1,29 @@
 import Foundation
 import OSLog
 
-actor APIClient {
-    static let shared = APIClient()
+// MARK: - Protocol (for DI / Testing)
+
+protocol NetworkClient: Sendable {
+    func request<T: Decodable>(
+        _ type: T.Type,
+        url: URL,
+        method: HTTPMethod,
+        body: (any Encodable)?,
+        headers: [String: String]?,
+        config: APIClient.RequestConfig
+    ) async throws -> T
+
+    func post<T: Decodable>(
+        _ type: T.Type,
+        url: URL,
+        body: any Encodable,
+        headers: [String: String]?,
+        config: APIClient.RequestConfig
+    ) async throws -> T
+}
+
+actor APIClient: NetworkClient {
+    static let shared: any NetworkClient = APIClient()
 
     private let logger = Logger(subsystem: "com.ethanshen.scrollcap", category: "api")
     private let decoder = JSONDecoder()

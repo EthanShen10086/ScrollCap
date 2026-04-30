@@ -113,16 +113,29 @@ enum SCError: Error, LocalizedError, Identifiable {
         }
     }
 
-    var analyticsEvent: AnalyticsEvent {
+    var analyticsDomain: String {
         switch self {
-        case let .capture(failure): .error(domain: "capture", code: failure.rawValue)
-        case let .stitch(failure): .error(domain: "stitch", code: failure.rawValue)
-        case let .export(failure): .error(domain: "export", code: failure.rawValue)
-        case let .store(failure): .error(domain: "store", code: failure.rawValue)
-        case let .network(failure): .error(domain: "network", code: failure.rawValue)
-        case let .ocr(failure): .error(domain: "ocr", code: failure.rawValue)
-        case let .sync(failure): .error(domain: "sync", code: failure.rawValue)
-        case let .generic(msg): .error(domain: "generic", code: msg)
+        case .capture: "capture"
+        case .stitch: "stitch"
+        case .export: "export"
+        case .store: "store"
+        case .network: "network"
+        case .ocr: "ocr"
+        case .sync: "sync"
+        case .generic: "generic"
+        }
+    }
+
+    var analyticsCode: String {
+        switch self {
+        case let .capture(failure): failure.rawValue
+        case let .stitch(failure): failure.rawValue
+        case let .export(failure): failure.rawValue
+        case let .store(failure): failure.rawValue
+        case let .network(failure): failure.rawValue
+        case let .ocr(failure): failure.rawValue
+        case let .sync(failure): failure.rawValue
+        case let .generic(msg): msg
         }
     }
 }
@@ -143,7 +156,7 @@ final class ErrorPresenter {
         self.currentError = error
         self.isPresented = true
         self.logger.error("\(error.localizedDescription)")
-        AnalyticsManager.shared.track(error.analyticsEvent)
+        AnalyticsManager.shared.track(.error(domain: error.analyticsDomain, code: error.analyticsCode))
     }
 
     func present(_ error: Error) {

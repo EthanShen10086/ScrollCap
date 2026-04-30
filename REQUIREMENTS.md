@@ -372,13 +372,17 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 
 | 特性 | 状态 | 说明 |
 |------|------|------|
-| Cursor Rules | ✅ 已完成 | `.cursor/rules/architecture.md` + `.cursor/rules/swiftui.md` |
+| Cursor Rules | ✅ 已完成 | `.cursor/rules/architecture.md` + `.cursor/rules/swiftui.md` + 8 个专项规则 |
 | AGENTS.md | ✅ 已完成 | 项目入门指南、架构说明、开发约定 |
 | 状态管理统一 | ✅ 已完成 | `CaptureViewModel.bind(to:)` 同步 → `AppState` 为全局单一真相来源 |
 | Widget 数据联动 | ✅ 已完成 | 截图保存后自动更新 `captureCount` + `WidgetCenter.reloadAllTimelines` |
 | 文件拆分 | ✅ 已完成 | `ExportSheet` / `InstructionRow` / `OCRResultView` / `PaymentMethod` 独立文件 |
 | 死代码清理 | ✅ 已完成 | CaptureViewModel 移除未使用的 stitching 字段 (aligner/stitcher/collectedFrames) |
 | import 精简 | ✅ 已完成 | CaptureViewModel 移除不必要的 StitchingEngine / ImageEditor import |
+| **协议抽象层** | ✅ 已完成 | `AnalyticsTracking`、`NetworkClient`、`EntitlementProviding` — 可替换、可 mock |
+| **共享常量统一** | ✅ 已完成 | `AppConstants` 集中 App Group ID / UserDefaults keys / URL Schemes |
+| **SCError 解耦** | ✅ 已完成 | 域模型不再依赖 `AnalyticsEvent`，改暴露纯 `String` 属性 |
+| **未成年支付防护** | ✅ 已完成 | `ProFeatureGate`/`ExportSheet`/`proAction` 统一拦截未成年升级入口 |
 
 ---
 

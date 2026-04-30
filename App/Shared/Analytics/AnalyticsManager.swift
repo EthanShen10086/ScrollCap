@@ -1,9 +1,16 @@
 import Foundation
 import OSLog
 
+// MARK: - Protocol (for DI / Testing)
+
 @MainActor
-final class AnalyticsManager {
-    static let shared = AnalyticsManager()
+protocol AnalyticsTracking {
+    func track(_ event: AnalyticsEvent)
+}
+
+@MainActor
+final class AnalyticsManager: AnalyticsTracking {
+    static var shared: AnalyticsTracking = AnalyticsManager()
 
     private let logger = Logger(subsystem: "com.ethanshen.scrollcap", category: "analytics")
     private let eventsFileURL: URL

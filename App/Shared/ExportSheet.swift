@@ -6,6 +6,7 @@ struct ExportSheet: View {
     let screenshot: Screenshot
     let viewModel: CaptureViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.userMode) private var userMode
     @State private var selectedFormat: ExportFormat = .png
     @State private var quality: Double = 0.9
     @State private var isSaving = false
@@ -29,7 +30,7 @@ struct ExportSheet: View {
                     }
                     .pickerStyle(.segmented)
 
-                    if !EntitlementManager.shared.isPro {
+                    if !EntitlementManager.shared.isPro, self.userMode != .minor {
                         Button {
                             self.showPaywall = true
                             AnalyticsManager.shared.track(.proUpgradeTapped)

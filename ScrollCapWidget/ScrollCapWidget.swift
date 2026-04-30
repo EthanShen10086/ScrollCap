@@ -23,8 +23,8 @@ struct ScrollCapProvider: TimelineProvider {
     }
 
     private func getCaptureCount() -> Int {
-        let defaults = UserDefaults(suiteName: "group.com.scrollcap.shared")
-        return defaults?.integer(forKey: "captureCount") ?? 0
+        let defaults = UserDefaults(suiteName: AppConstants.appGroupID)
+        return defaults?.integer(forKey: AppConstants.UserDefaultsKeys.captureCount) ?? 0
     }
 }
 
