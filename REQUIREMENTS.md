@@ -169,6 +169,22 @@ ScrollCap 是一款跨平台滚动长截图应用，支持 macOS、iOS 和 iPadO
 | 交易监听 | ✅ 已完成 | `Transaction.updates` 后台监听 + 自动刷新 |
 | Pro 功能门控 | ✅ 已完成 | `ProFeatureGate` ViewModifier + 模糊遮罩；OCR/编辑/iCloud/自动滚动/高级导出均已接入门控 |
 | StoreKit 测试配置 | ✅ 已完成 | `Products.storekit` 含 introductory offer |
+| **统一权益管理** | ✅ 已完成 | `EntitlementManager` 单例 + Keychain 持久化 + 多源桥接 |
+
+### 权益管理架构 (EntitlementService)
+
+| 功能 | 状态 | 技术实现 |
+|------|------|----------|
+| 统一抽象层 | ✅ 已完成 | `EntitlementManager` 独立于 StoreKit，所有付费入口统一汇入 |
+| Keychain 持久化 | ✅ 已完成 | `EntitlementPersistence` - 冷启动即可恢复权益，防篡改 |
+| IAP 桥接 | ✅ 已完成 | `StoreManager` 购买/恢复/订阅刷新/Transaction.updates 全路径同步 |
+| Apple Pay 桥接 | ✅ 已完成 | `ApplePayService` 服务端验证成功后自动解锁 |
+| Stripe 桥接 | ✅ 已完成 | `StripePaymentService.verifyPayment` 成功后自动解锁 |
+| 第三方支付桥接 | ✅ 已完成 | `ThirdPartyPaymentService.handlePaymentCallback` 验证后自动解锁 |
+| PaywallView 桥接 | ✅ 已完成 | `handlePaymentResult` 成功路径统一解锁 |
+| 细粒度权益 | ✅ 已完成 | `Entitlement` enum 支持 per-feature 控制（OCR/编辑/iCloud/自动滚动/高级导出）|
+| 过期清理 | ✅ 已完成 | 冷启动时自动清除 `expiresAt < now` 的过期记录 |
+| 全项目消费统一 | ✅ 已完成 | 所有 UI 视图通过 `EntitlementManager.shared.isPro` 判断，不再直接依赖 StoreManager |
 
 ### Apple Pay (PassKit 原生)
 

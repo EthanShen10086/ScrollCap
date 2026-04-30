@@ -23,6 +23,7 @@
 		1FD146A83274446CEF81CBA1 /* FrameReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C69C486217F7AAD152A918F /* FrameReader.swift */; };
 		23601B72436BBC2DA4E1963F /* GlobalShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E9B52C273BD554C337AB16 /* GlobalShortcutManager.swift */; };
 		27C51478F5F16A1F42236A92 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D1C9941B4ECB78C28F4622 /* PaywallView.swift */; };
+		2A459D5F7DB3CC3D28D9A0F9 /* EntitlementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0DCDFCB688C7326D7D6EBE /* EntitlementService.swift */; };
 		2E7C8E930FDF9AE431D0B42D /* SharedModels in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0A0E8976A7BFDDCA0E1248 /* SharedModels */; };
 		30A7DE26099B85C84E5B5824 /* SCLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA3AE8F59DE0947CA0890E9 /* SCLogger.swift */; };
 		380C8D1EF9C2F98891D68D05 /* MacCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A435D4A74016EA22D0DB077 /* MacCaptureView.swift */; };
@@ -76,6 +77,7 @@
 		B3A9EFA39F193FD227858172 /* SharedModels in Frameworks */ = {isa = PBXBuildFile; productRef = C300AFD238809A65D3BD439C /* SharedModels */; };
 		B89C1EB2DA86C2102A4CD4D8 /* ScreenshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62003B71C939E17BCBE8F621 /* ScreenshotStore.swift */; };
 		BA51637AA054CAA14E628A84 /* InstructionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7177E76703474CBFAE75E3E /* InstructionRow.swift */; };
+		BB1C31640F594E85990B7147 /* EntitlementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB0DCDFCB688C7326D7D6EBE /* EntitlementService.swift */; };
 		BBB71407F85C83052AB88003 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F52AFE5FB70E99571CCF685 /* StoreManager.swift */; };
 		C2F1706DC33862EA914C87F1 /* ExportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E6C9828EAE4261EE8BDAFB7 /* ExportSheet.swift */; };
 		C6C5DB9979781051B0479305 /* ApplePayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46145B7A5CF3C1C9BF46DCEA /* ApplePayService.swift */; };
@@ -203,6 +205,7 @@
 		DFD109F49DB746F5B123EE87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E0A95E68B34BB3FACB61CF87 /* BroadcastSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastSetupView.swift; sourceTree = "<group>"; };
 		E7EE66A5D760403DA5FF1336 /* ScreenshotDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotDetailView.swift; sourceTree = "<group>"; };
+		EB0DCDFCB688C7326D7D6EBE /* EntitlementService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntitlementService.swift; sourceTree = "<group>"; };
 		EC287BDB7BF28C68DB291573 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F01D8E25B14490A12FC5E2E9 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 		F2315735985033BA0606F4EE /* ScrollCapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollCapApp.swift; sourceTree = "<group>"; };
@@ -335,6 +338,7 @@
 			isa = PBXGroup;
 			children = (
 				46145B7A5CF3C1C9BF46DCEA /* ApplePayService.swift */,
+				EB0DCDFCB688C7326D7D6EBE /* EntitlementService.swift */,
 				D7FB40459A356CCD237AE0F5 /* PaymentConfig.swift */,
 				87D453F7E3FF83C4BA3C53F5 /* PaymentMethod.swift */,
 				C2D1C9941B4ECB78C28F4622 /* PaywallView.swift */,
@@ -622,6 +626,7 @@
 				FC7221FDFB90EFD70EEC4E0B /* CaptureViewModel.swift in Sources */,
 				394E43E021011765620692F6 /* ContentView.swift in Sources */,
 				67659ADBC2672026E3354573 /* CrashReporter.swift in Sources */,
+				BB1C31640F594E85990B7147 /* EntitlementService.swift in Sources */,
 				FA1C8E0987F5545EFEADD40E /* ExportService.swift in Sources */,
 				01216A1F77CF48CA2DC3FA37 /* ExportSheet.swift in Sources */,
 				1FD146A83274446CEF81CBA1 /* FrameReader.swift in Sources */,
@@ -663,6 +668,7 @@
 				F88F897C058695CFF4035AC7 /* CaptureViewModel.swift in Sources */,
 				7DF0F1ACB4FE9EB79A2DB0DC /* ContentView.swift in Sources */,
 				D27FE68DD2C5BD83E65C1834 /* CrashReporter.swift in Sources */,
+				2A459D5F7DB3CC3D28D9A0F9 /* EntitlementService.swift in Sources */,
 				6E0A8A450488F66F5FA54547 /* ExportService.swift in Sources */,
 				C2F1706DC33862EA914C87F1 /* ExportSheet.swift in Sources */,
 				23601B72436BBC2DA4E1963F /* GlobalShortcutManager.swift in Sources */,

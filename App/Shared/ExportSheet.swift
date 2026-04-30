@@ -12,7 +12,7 @@ struct ExportSheet: View {
     @State private var showPaywall = false
 
     private var availableFormats: [ExportFormat] {
-        if StoreManager.shared.isPro {
+        if EntitlementManager.shared.isPro {
             return ExportFormat.allCases
         }
         return [.png, .jpeg]
@@ -29,7 +29,7 @@ struct ExportSheet: View {
                     }
                     .pickerStyle(.segmented)
 
-                    if !StoreManager.shared.isPro {
+                    if !EntitlementManager.shared.isPro {
                         Button {
                             self.showPaywall = true
                             AnalyticsManager.shared.track(.proUpgradeTapped)

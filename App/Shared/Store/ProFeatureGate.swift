@@ -34,7 +34,7 @@ struct ProFeatureGate: ViewModifier {
     @State private var showPaywall = false
 
     func body(content: Content) -> some View {
-        if StoreManager.shared.isPro {
+        if EntitlementManager.shared.isPro {
             content
         } else {
             content

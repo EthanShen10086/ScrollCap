@@ -87,6 +87,7 @@ extension ApplePayService: @preconcurrency PKPaymentAuthorizationControllerDeleg
                 let transactionID = try await self.processPaymentOnServer(tokenData: tokenData)
                 self.logger.completed("Apple Pay transaction: \(transactionID)")
                 AnalyticsManager.shared.track(.purchaseCompleted(productId: "applepay"))
+                EntitlementManager.shared.onThirdPartyPaymentVerified(source: .applePay, transactionId: transactionID)
                 self.paymentCompletion?(.success(transactionId: transactionID))
                 self.paymentCompletion = nil
                 completion(PKPaymentAuthorizationResult(status: .success, errors: nil))

@@ -59,6 +59,7 @@ final class StoreManager {
             self.purchasedProductIDs.insert(transaction.productID)
             await transaction.finish()
             await self.refreshSubscriptionStatus()
+            EntitlementManager.shared.syncFromStoreKit(purchasedProductIDs: self.purchasedProductIDs)
             self.logger.completed("Purchased \(product.id)")
             AnalyticsManager.shared.track(.purchaseCompleted(productId: product.id))
             return true
@@ -88,6 +89,7 @@ final class StoreManager {
             }
         }
         await self.refreshSubscriptionStatus()
+        EntitlementManager.shared.syncFromStoreKit(purchasedProductIDs: self.purchasedProductIDs)
         self.logger.info("Restored \(restored) purchases")
         AnalyticsManager.shared.track(.restoreCompleted(count: restored))
     }
@@ -101,6 +103,7 @@ final class StoreManager {
             }
         }
         await self.refreshSubscriptionStatus()
+        EntitlementManager.shared.syncFromStoreKit(purchasedProductIDs: self.purchasedProductIDs)
     }
 
     func refreshSubscriptionStatus() async {
@@ -125,6 +128,7 @@ final class StoreManager {
                 self.purchasedProductIDs.remove(transaction.productID)
             }
         }
+        EntitlementManager.shared.syncFromStoreKit(purchasedProductIDs: self.purchasedProductIDs)
     }
 
     @available(iOS 17.0, macOS 14.0, *)
@@ -156,6 +160,7 @@ final class StoreManager {
                 }
                 await MainActor.run {
                     self.purchasedProductIDs.insert(transaction.productID)
+                    EntitlementManager.shared.syncFromStoreKit(purchasedProductIDs: self.purchasedProductIDs)
                 }
                 await transaction.finish()
                 await self.refreshSubscriptionStatus()

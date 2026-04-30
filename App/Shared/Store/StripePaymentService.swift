@@ -57,6 +57,7 @@ final class StripePaymentService {
         if result.status == "paid" {
             self.logger.completed("Stripe payment verified: \(sessionId)")
             AnalyticsManager.shared.track(.purchaseCompleted(productId: "stripe_\(sessionId)"))
+            EntitlementManager.shared.onThirdPartyPaymentVerified(source: .stripe, transactionId: sessionId)
             return true
         }
         return false

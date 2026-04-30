@@ -93,6 +93,9 @@ enum AnalyticsEvent {
 
     case error(domain: String, code: String)
 
+    case entitlementGranted(source: String)
+    case entitlementRevoked
+
     case settingsChanged(key: String, value: String)
     case screenshotDeleted
     case screenshotOpened
@@ -125,6 +128,8 @@ enum AnalyticsEvent {
         case .restoreCompleted: "restore_completed"
         case .restoreFailed: "restore_failed"
         case .error: "error"
+        case .entitlementGranted: "entitlement_granted"
+        case .entitlementRevoked: "entitlement_revoked"
         case .settingsChanged: "settings_changed"
         case .screenshotDeleted: "screenshot_deleted"
         case .screenshotOpened: "screenshot_opened"
@@ -185,6 +190,10 @@ enum AnalyticsEvent {
             ["error": error]
         case let .error(domain, code):
             ["domain": domain, "code": code]
+        case let .entitlementGranted(source):
+            ["source": source]
+        case .entitlementRevoked:
+            [:]
         case let .settingsChanged(key, value):
             ["key": key, "value": value]
         case .screenshotDeleted:

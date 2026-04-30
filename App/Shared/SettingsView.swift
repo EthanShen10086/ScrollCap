@@ -67,7 +67,7 @@ struct SettingsView: View {
 
                 VStack(alignment: .leading) {
                     Toggle("settings.autoScroll", isOn: $state.autoScrollEnabled)
-                        .disabled(!StoreManager.shared.isPro)
+                        .disabled(!EntitlementManager.shared.isPro)
 
                     Text("settings.autoScroll.desc")
                         .font(self.adaptiveCaption)
@@ -79,7 +79,7 @@ struct SettingsView: View {
             Section("settings.sync") {
                 VStack(alignment: .leading) {
                     Toggle("settings.iCloudSync", isOn: $state.iCloudSyncEnabled)
-                        .disabled(!StoreManager.shared.isPro)
+                        .disabled(!EntitlementManager.shared.isPro)
                         .onChange(of: self.appState.iCloudSyncEnabled) { _, enabled in
                             if enabled {
                                 ICloudSyncManager.shared.startMonitoring()

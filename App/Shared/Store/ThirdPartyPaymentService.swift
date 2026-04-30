@@ -152,9 +152,21 @@ final class ThirdPartyPaymentService {
         if verified {
             self.logger.completed("Third-party payment verified: \(orderId)")
             AnalyticsManager.shared.track(.purchaseCompleted(productId: orderId))
+            await MainActor.run {
+                let source = self.resolveEntitlementSource(from: url)
+                EntitlementManager.shared.onThirdPartyPaymentVerified(source: source, transactionId: orderId)
+            }
         }
         self.pendingOrderId = nil
         return verified
+    }
+
+    private func resolveEntitlementSource(from url: URL) -> EntitlementSource {
+        let host = url.host ?? ""
+        if host.contains("wechat") || host.contains("wx") { return .wechatPay }
+        if host.contains("alipay") { return .alipay }
+        if host.contains("paypal") { return .paypal }
+        return .stripe
     }
 
     // MARK: - Server Communication

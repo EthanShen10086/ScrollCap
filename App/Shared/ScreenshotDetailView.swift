@@ -247,7 +247,7 @@ struct ScreenshotDetailView: View {
     }
 
     private func proAction(_ feature: ProFeature, perform action: () -> Void) {
-        if StoreManager.shared.isPro {
+        if EntitlementManager.shared.isPro {
             action()
         } else {
             AnalyticsManager.shared.track(.proUpgradeTapped)

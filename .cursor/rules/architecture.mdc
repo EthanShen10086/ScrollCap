@@ -32,6 +32,14 @@ alwaysApply: true
 
 - All HTTP: `APIClient.shared`. Never raw `URLSession`.
 
+## Entitlement / Subscription
+
+- **Truth source**: `EntitlementManager.shared` — NOT `StoreManager.shared.isPro`.
+- All payment success paths (IAP, Stripe, Apple Pay, WeChat, Alipay, PayPal) MUST call `EntitlementManager.shared.grantPro(source:transactionId:)` or `onThirdPartyPaymentVerified`.
+- UI gates: Use `EntitlementManager.shared.isPro` or `EntitlementManager.shared.hasEntitlement(_:)`.
+- Persistence: Keychain-backed. Survives app reinstall on same device.
+- NEVER read `StoreManager.shared.isPro` from UI layer — it's an internal IAP detail.
+
 ## Code Quality
 
 - SwiftLint + SwiftFormat enforced via pre-commit hook.

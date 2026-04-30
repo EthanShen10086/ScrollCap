@@ -325,7 +325,7 @@ struct PaywallView: View {
         Button("paywall.restore") {
             Task {
                 await StoreManager.shared.restorePurchases()
-                if StoreManager.shared.isPro {
+                if EntitlementManager.shared.isPro {
                     self.restoreMessage = String(localized: "paywall.restoreSuccess")
                 } else {
                     self.restoreMessage = String(localized: "paywall.restoreEmpty")
@@ -337,7 +337,7 @@ struct PaywallView: View {
         .foregroundStyle(.secondary)
         .alert("paywall.restore", isPresented: self.$showRestoreAlert) {
             Button("permission.ok") {
-                if StoreManager.shared.isPro { self.dismiss() }
+                if EntitlementManager.shared.isPro { self.dismiss() }
             }
         } message: {
             if let msg = restoreMessage { Text(msg) }
@@ -405,7 +405,9 @@ struct PaywallView: View {
     private func handlePaymentResult(_ result: PaymentResult) {
         let methodId = self.selectedPaymentMethod.rawValue
         switch result {
-        case .success:
+        case let .success(transactionId):
+            let source = self.entitlementSource(for: self.selectedPaymentMethod)
+            EntitlementManager.shared.onThirdPartyPaymentVerified(source: source, transactionId: transactionId)
             self.showSuccessAlert = true
             AnalyticsManager.shared.track(.purchaseCompleted(productId: methodId))
         case .cancelled:
@@ -413,6 +415,17 @@ struct PaywallView: View {
         case let .failed(error):
             self.errorMessage = error.localizedDescription
             AnalyticsManager.shared.track(.purchaseFailed(productId: methodId, error: error.localizedDescription))
+        }
+    }
+
+    private func entitlementSource(for method: PaymentMethod) -> EntitlementSource {
+        switch method {
+        case .applePurchase: return .appStoreIAP
+        case .applePay: return .applePay
+        case .stripe: return .stripe
+        case .wechatPay: return .wechatPay
+        case .alipay: return .alipay
+        case .paypal: return .paypal
         }
     }
 
